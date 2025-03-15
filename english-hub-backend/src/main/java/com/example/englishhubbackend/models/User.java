@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,9 +22,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
     String username;
+    @Column(unique = true, nullable = false)
     String email;
+    @Column(nullable = false)
     String password;
     LocalDate dob;
+    boolean enabled;
+    String verificationCode;
+    LocalDateTime verificationCodeExpiresAt;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     Role role;
