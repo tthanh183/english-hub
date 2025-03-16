@@ -26,7 +26,6 @@ public class User {
     String email;
     @Column(nullable = false)
     String password;
-    LocalDate dob;
     boolean enabled;
     String verificationCode;
     LocalDateTime verificationCodeExpiresAt;
