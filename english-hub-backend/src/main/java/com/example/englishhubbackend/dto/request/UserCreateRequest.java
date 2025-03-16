@@ -15,6 +15,4 @@ public class UserCreateRequest {
     String username;
     @Email(message = "Please enter valid email")
     String email;
-    String password;
-    LocalDate dob;
 }
