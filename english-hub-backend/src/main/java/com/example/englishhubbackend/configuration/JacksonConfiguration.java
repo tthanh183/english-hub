@@ -14,18 +14,18 @@ import java.time.format.DateTimeFormatter;
 public class JacksonConfiguration {
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return builder -> {
+        return jackson2ObjectMapperBuilder -> {
             // formatter
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             DateTimeFormatter dateTimeFormatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
             // deserializers
-            builder.deserializers(new LocalDateDeserializer(dateFormatter));
-            builder.deserializers(new LocalDateTimeDeserializer(dateTimeFormatter));
+            jackson2ObjectMapperBuilder.deserializers(new LocalDateDeserializer(dateFormatter));
+            jackson2ObjectMapperBuilder.deserializers(new LocalDateTimeDeserializer(dateTimeFormatter));
 
             // serializers
-            builder.serializers(new LocalDateSerializer(dateFormatter));
-            builder.serializers(new LocalDateTimeSerializer(dateTimeFormatter));
+            jackson2ObjectMapperBuilder.serializers(new LocalDateSerializer(dateFormatter));
+            jackson2ObjectMapperBuilder.serializers(new LocalDateTimeSerializer(dateTimeFormatter));
         };
     }
 }
