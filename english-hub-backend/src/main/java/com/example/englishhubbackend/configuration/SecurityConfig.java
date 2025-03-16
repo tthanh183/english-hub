@@ -23,11 +23,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
-@EnableWebMvc
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/users",
+            "/api/auth/*",
             "/auth/token",
             "/auth/introspect",
             "/auth/refresh",
