@@ -14,6 +14,10 @@ public enum ErrorCode {
     UNAUTHENTICATED(1005, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1006, "You do not have permission", HttpStatus.UNAUTHORIZED),
     EMAIL_SEND_FAILED(1007, "Email send failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    VERIFICATION_CODE_EXPIRED(1008,"Verification code has expired" , HttpStatus.BAD_REQUEST ),
+    INVALID_VERIFICATION_CODE(1009, "Invalid verification code", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(1010, "User not found", HttpStatus.NOT_FOUND),
+    ACCOUNT_ALREADY_VERIFIED(1011, "Account already verified", HttpStatus.CONFLICT),
     ;
     private int code;
     private String message;

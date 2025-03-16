@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.request.RegisterRequest;
+import com.example.englishhubbackend.dto.request.VerifyRequest;
 import com.example.englishhubbackend.dto.response.UserResponse;
 import com.example.englishhubbackend.enums.RoleEnum;
 import com.example.englishhubbackend.exception.AppException;
@@ -20,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +44,46 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(30));
         Role userRole = roleService.getRole(RoleEnum.USER.name());
         user.setRole(userRole);
-//        sendVerificationEmail(user);
+        sendVerificationEmail(user);
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public void verifyEmail(VerifyRequest verifyRequest) {
+        Optional<User> optionalUser = userRepository.findByEmail(verifyRequest.getEmail());
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if(user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+                throw new AppException(ErrorCode.VERIFICATION_CODE_EXPIRED);
+            }
+            if(user.getVerificationCode().equals(verifyRequest.getVerificationCode())) {
+                user.setEnabled(true);
+                user.setVerificationCode(null);
+                user.setVerificationCodeExpiresAt(null);
+                userRepository.save(user);
+            }else {
+                throw new AppException(ErrorCode.INVALID_VERIFICATION_CODE);
+            }
+        }else {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void resendVerificationCode(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if(user.isEnabled()) {
+                throw new AppException(ErrorCode.ACCOUNT_ALREADY_VERIFIED);
+            }
+            user.setVerificationCode(VerificationCodeUtil.generateVerificationCode());
+            user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(30));
+            sendVerificationEmail(user);
+            userRepository.save(user);
+        }else {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
     }
 
 
