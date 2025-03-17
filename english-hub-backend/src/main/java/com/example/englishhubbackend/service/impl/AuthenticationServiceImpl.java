@@ -134,7 +134,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String accessToken = generateAccessToken(user);
         String refreshToken = generateRefreshToken(user);
-        redisTemplate.opsForValue().set("refresh:" + user.getEmail(), refreshToken, REFRESH_TOKEN_EXPIRY, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set("refresh:" + user.getId(), refreshToken, REFRESH_TOKEN_EXPIRY, TimeUnit.MILLISECONDS);
         return AuthenticateResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -151,13 +151,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
 
-            String email = getEmailFromToken(signedJWT);
+            String userId = getUserIdFromToken(signedJWT);
 
-            if (!isRefreshTokenValid(email, refreshRequest.getRefreshToken())) {
+            if (!isRefreshTokenValid(userId, refreshRequest.getRefreshToken())) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
 
-            var user = userRepository.findByEmail(email)
+            var user = userRepository.findById(UUID.fromString(userId))
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
             var newAccessToken = generateAccessToken(user);
@@ -176,13 +176,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void logout(RefreshRequest refreshRequest) {
         try {
             SignedJWT signedJWT = parseAndVerifyToken(refreshRequest.getRefreshToken());
-            String email = getEmailFromToken(signedJWT);
+            String userId = getUserIdFromToken(signedJWT);
 
-            if (!isRefreshTokenValid(email, refreshRequest.getRefreshToken())) {
+            if (!isRefreshTokenValid(userId, refreshRequest.getRefreshToken())) {
                 throw new AppException(ErrorCode.UNAUTHENTICATED);
             }
 
-            redisTemplate.delete("refresh:" + email);
+            redisTemplate.delete("refresh:" + userId);
         } catch (Exception e) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
@@ -224,7 +224,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private String generateToken(User user, long expiryMillis, boolean isAccessToken) {
         try {
             JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
-                    .subject(user.getEmail())
+                    .subject(user.getId().toString())
                     .issuer("senior-project")
                     .issueTime(new Date())
                     .expirationTime(new Date(System.currentTimeMillis() + expiryMillis));
@@ -266,12 +266,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return signedJWT.getJWTClaimsSet().getExpirationTime().before(new Date());
     }
 
-    private String getEmailFromToken(SignedJWT signedJWT) throws ParseException {
+    private String getUserIdFromToken(SignedJWT signedJWT) throws ParseException {
         return signedJWT.getJWTClaimsSet().getSubject();
     }
 
-    private boolean isRefreshTokenValid(String email, String refreshToken) {
-        String storedToken = redisTemplate.opsForValue().get("refresh:" + email);
+    private boolean isRefreshTokenValid(String userId, String refreshToken) {
+        String storedToken = redisTemplate.opsForValue().get("refresh:" + userId);
         return storedToken != null && storedToken.equals(refreshToken);
     }
 }
