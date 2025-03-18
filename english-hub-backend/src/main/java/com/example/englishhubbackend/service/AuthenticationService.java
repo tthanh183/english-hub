@@ -10,7 +10,7 @@ import java.text.ParseException;
 
 public interface AuthenticationService {
     UserResponse register(RegisterRequest registerRequest);
-    void verifyEmail(VerifyRequest verifyRequest);
+    void verifyEmail(String email, String verificationCode);
     void resendVerificationCode(String email);
     IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException;
     AuthenticateResponse authenticate(AuthenticateRequest authenticateRequest);

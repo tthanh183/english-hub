@@ -27,8 +27,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify")
-    public ApiResponse<String> verify(@RequestBody VerifyRequest verifyRequest) {
-        authenticationService.verifyEmail(verifyRequest);
+    public ApiResponse<String> verify(@RequestParam String email, @RequestParam String verificationCode) {
+        authenticationService.verifyEmail(email, verificationCode);
         return ApiResponse.<String>builder().message("Verified successfully").build();
     }
 

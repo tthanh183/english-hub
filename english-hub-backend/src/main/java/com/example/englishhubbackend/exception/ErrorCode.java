@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_VERIFICATION_CODE(1009, "Invalid verification code", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1010, "User not found", HttpStatus.NOT_FOUND),
     ACCOUNT_ALREADY_VERIFIED(1011, "Account already verified", HttpStatus.CONFLICT),
+    ACCOUNT_UNVERIFIED(1012, "Account unverified", HttpStatus.CONFLICT),
     ;
     private int code;
     private String message;
