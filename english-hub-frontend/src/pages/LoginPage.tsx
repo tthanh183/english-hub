@@ -41,8 +41,8 @@ export default function LoginPage() {
     } catch (error) {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
-        showError('Please visit your email to verify your account.');
         if (error.response?.data.code === 1012) {
+          showError('Please visit your email to verify your account.');
           await resendVerificationCode(email);
           navigate('/verify', { state: { email } });
         }
