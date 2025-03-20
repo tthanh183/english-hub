@@ -27,15 +27,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify")
-    public ApiResponse<String> verify(@RequestParam String email, @RequestParam String verificationCode) {
-        authenticationService.verifyEmail(email, verificationCode);
+    public ApiResponse<String> verify(@RequestBody VerifyRequest verifyRequest) {
+        authenticationService.verifyEmail(verifyRequest);
         return ApiResponse.<String>builder().message("Verified successfully").build();
     }
 
     @PostMapping("/resend")
-    public ApiResponse<String> resend(@RequestParam String email) {
-        authenticationService.resendVerificationCode(email);
-        return ApiResponse.<String>builder().result("Verification code sent").build();
+    public ApiResponse<String> resend(@RequestBody ResendVerificationRequest resendVerificationRequest) {
+        authenticationService.resendVerificationCode(resendVerificationRequest);
+        return ApiResponse.<String>builder().message("Verification code sent").build();
     }
 
     @PostMapping("/login")

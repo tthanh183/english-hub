@@ -10,8 +10,8 @@ import java.text.ParseException;
 
 public interface AuthenticationService {
     UserResponse register(RegisterRequest registerRequest);
-    void verifyEmail(String email, String verificationCode);
-    void resendVerificationCode(String email);
+    void verifyEmail(VerifyRequest verifyRequest);
+    void resendVerificationCode(ResendVerificationRequest resendVerificationRequest);
     IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException;
     AuthenticateResponse authenticate(AuthenticateRequest authenticateRequest);
     AuthenticateResponse refreshToken(RefreshRequest refreshRequest);
