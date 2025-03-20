@@ -1,28 +1,37 @@
 import axiosInstance from './axiosInstance';
 
-export interface RegisterRequest {
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type RegisterRequest = {
   email: string;
   password: string;
   username: string;
-}
+};
 
-export interface VerifyRequest {
+export type VerifyRequest = {
   email: string;
-  code: string;
-}
+  verificationCode: string;
+};
 
 export const registerUser = async (data: RegisterRequest) => {
-  return axiosInstance.post('/auth/register', data);
+  return await axiosInstance.post('/auth/register', data);
 };
 
 export const verifyUser = async (data: VerifyRequest) => {
-  return axiosInstance.post('/auth/verify', data);
+  return await axiosInstance.post('/auth/verify', data);
 };
 
-export const login = async (email: string, password: string) => {
-  return axiosInstance.post('/auth/login', { email, password });
+export const login = async (data: LoginRequest) => {
+  return await axiosInstance.post('/auth/login', data);
+};
+
+export const resendVerificationCode = async (email: string) => {
+  return await axiosInstance.post('/auth/resend', { email });
 };
 
 export const logout = async () => {
-  return axiosInstance.post('/auth/logout');
+  return await axiosInstance.post('/auth/logout');
 };
