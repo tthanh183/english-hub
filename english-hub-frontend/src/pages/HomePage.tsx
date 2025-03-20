@@ -4,7 +4,7 @@ import CategoryCard from '@/components/CategoryCard';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
-const HomePage = () => {
+export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -37,6 +37,4 @@ const HomePage = () => {
       <Footer />
     </div>
   );
-};
-
-export default HomePage;
+}
