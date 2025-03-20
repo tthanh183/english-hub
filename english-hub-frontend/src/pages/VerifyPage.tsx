@@ -82,6 +82,8 @@ export default function VerifyPage() {
         email,
         verificationCode,
       });
+      console.log(response);
+
       showSuccess(response.data.message);
       navigate('/login');
     } catch (error) {
@@ -170,7 +172,7 @@ export default function VerifyPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" onClick={handleResend}>
+            <Button type="submit" className="w-full">
               Verify
             </Button>
             <div className="text-center text-sm">
