@@ -83,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if(user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
                 throw new AppException(ErrorCode.VERIFICATION_CODE_EXPIRED);
             }
-            if(user.getVerificationCode().equals(verifyRequest.getVerificationCode()    )) {
+            if(user.getVerificationCode().equals(verifyRequest.getVerificationCode())) {
                 user.setEnabled(true);
                 user.setVerificationCode(null);
                 user.setVerificationCodeExpiresAt(null);
