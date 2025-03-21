@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BarChart, BookOpen, Home, LogOut, Users } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
 import { useMobile } from '@/hooks/useMobile';
 
 export default function AdminSideBar() {
   const [sidebarOpen] = useState(false);
   const isMobile = useMobile();
-  const { pathname } = useLocation(); // Sử dụng useLocation hook để lấy pathname
+  const { pathname } = useLocation(); 
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
