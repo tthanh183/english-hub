@@ -12,8 +12,8 @@ export default function ProtectedRoute({ adminRequired }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin } = useAuthStore();
 
   useEffect(() => {
-    console.log('Auth ssss:', isAuthenticated);
-  }, [isAuthenticated]);
+    console.log('Auth ssss:', isAdmin);
+  }, [isAdmin]);
 
   if (!isAuthenticated) {
     showError('You need to login first');

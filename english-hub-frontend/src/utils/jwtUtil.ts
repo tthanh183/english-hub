@@ -18,7 +18,7 @@ export const getUserIdFromToken = (token: string): string => {
 export const isAdminFromToken = (token: string): boolean => {
   try {
     const decodedToken = jwtDecode<TokenPayload>(token);
-    return decodedToken.scope === 'Admin';
+    return decodedToken.scope === 'ADMIN';
   } catch (error) {
     console.error('Invalid token', error);
     return false;

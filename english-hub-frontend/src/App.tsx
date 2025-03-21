@@ -9,10 +9,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import UserManagement from '@/components/admin/UserManagement';
-import { useAuthStore } from './stores/authStore';
 
 function App() {
-  const { isAuthenticated } = useAuthStore();
   return (
     <Router>
       <Routes>
@@ -25,7 +23,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
           {/* The DashboardLayout will wrap all admin pages */}
-          <Route path="/admin" element={<AdminDashboardLayout key={String(isAuthenticated)}/>}>
+          <Route path="/admin" element={<AdminDashboardLayout/>}>
             {/* Admin specific routes */}
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
