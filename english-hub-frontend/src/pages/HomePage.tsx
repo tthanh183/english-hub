@@ -1,8 +1,9 @@
-import Footer from '@/components/Footer';
-import Header from '../components/Header';
-import CategoryCard from '@/components/CategoryCard';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import CategoryCard from '@/components/CategoryCard';
 
 export default function HomePage() {
   return (

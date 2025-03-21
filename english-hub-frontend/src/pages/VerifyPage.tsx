@@ -7,7 +7,7 @@ import {
   ClipboardEvent,
 } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -15,11 +15,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../components/ui/card';
-import { Input } from '../components/ui/input';
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { isAxiosError } from 'axios';
+
 import { resendVerificationCode, verifyUser } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { isAxiosError } from 'axios';
 
 export default function VerifyPage() {
   const [code, setCode] = useState<string[]>(['', '', '', '', '', '']);

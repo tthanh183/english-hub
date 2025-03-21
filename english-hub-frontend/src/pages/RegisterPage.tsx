@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,13 +8,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { isAxiosError } from 'axios';
 
 import { RegisterRequest, registerUser } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { isAxiosError } from 'axios';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterRequest>({
