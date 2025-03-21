@@ -2,7 +2,6 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 import { showError } from '@/hooks/useToast';
 import { useAuthStore } from '@/stores/authStore';
-import { useEffect } from 'react';
 
 type ProtectedRouteProps = {
   adminRequired: boolean;
@@ -10,10 +9,6 @@ type ProtectedRouteProps = {
 
 export default function ProtectedRoute({ adminRequired }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin } = useAuthStore();
-
-  useEffect(() => {
-    console.log('Auth ssss:', isAdmin);
-  }, [isAdmin]);
 
   if (!isAuthenticated) {
     showError('You need to login first');

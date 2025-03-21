@@ -1,5 +1,6 @@
-import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
+
+import { useAuthStore } from '@/stores/authStore';
 
 const API_URL = 'http://localhost:8080/api'; 
 
