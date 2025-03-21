@@ -1,6 +1,7 @@
+import { Navigate, Outlet } from 'react-router-dom';
+
 import { showError } from '@/hooks/useToast';
 import { useAuthStore } from '@/stores/authStore';
-import { Navigate, Outlet } from 'react-router-dom';
 
 type ProtectedRouteProps = {
   adminRequired: boolean;
