@@ -15,6 +15,7 @@ import { isAxiosError } from 'axios';
 
 import { RegisterRequest, registerUser } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
+import { Spinner } from '@/components/Spinner';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -114,7 +115,7 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              Sign up
+              {loading ? <Spinner /> : 'Sign up'}
             </Button>
             <div className="text-center text-sm">
               Already have an account?{' '}

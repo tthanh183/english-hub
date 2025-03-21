@@ -13,11 +13,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { isAxiosError } from 'axios';
 
-import Spinner from '@/components/Spinner';
 import { useAuthStore } from '@/stores/authStore';
 import { getUserIdFromToken, isAdminFromToken } from '@/utils/jwtUtil';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
+import { Spinner } from '@/components/Spinner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
