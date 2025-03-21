@@ -1,235 +1,60 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  ArrowUpRight,
-  Users,
-  BookOpen,
-  GraduationCap,
-  CheckCircle,
-} from 'lucide-react';
-
-// type AdminSideBarProps = {
-//   active: string;
-// };
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { BarChart, BookOpen, Home, LogOut, Users } from 'lucide-react';
+import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
+import { useMobile } from '@/hooks/useMobile';
 
 export default function AdminSideBar() {
+  const [sidebarOpen] = useState(false);
+  const isMobile = useMobile();
+  const { pathname } = useLocation(); // Sử dụng useLocation hook để lấy pathname
+
+  const navItems = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'User Management', href: '/dashboard/users', icon: Users },
+    { name: 'Content Management', href: '/dashboard/content', icon: BookOpen },
+    { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Learning platform overview and statistics.
-        </p>
+    <div
+      className={cn(
+        'w-64 bg-muted/40 border-r shrink-0 overflow-y-auto h-full flex flex-col',
+        isMobile &&
+          'fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-in-out',
+        isMobile && !sidebarOpen && '-translate-x-full'
+      )}
+    >
+      <div className="p-6">
+        <h1 className="text-xl font-bold">Learning Admin</h1>
       </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Students
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1,248</div>
-                <p className="text-xs text-muted-foreground">
-                  +12% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Course Completion
-                </CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">76%</div>
-                <p className="text-xs text-muted-foreground">
-                  +4% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Active Courses
-                </CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">32</div>
-                <p className="text-xs text-muted-foreground">
-                  +3 new this month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Test Completion
-                </CardTitle>
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">82%</div>
-                <p className="text-xs text-muted-foreground">
-                  +8% from last month
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  Latest student activities across the platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      user: 'Maria Thomas',
-                      action: 'completed Module 3 of Advanced Physics',
-                      time: '2 hours ago',
-                    },
-                    {
-                      user: 'John Smith',
-                      action: 'joined Basic Programming course',
-                      time: '3 hours ago',
-                    },
-                    {
-                      user: 'Sarah Lee',
-                      action: 'passed final exam with 92%',
-                      time: 'yesterday',
-                    },
-                    {
-                      user: 'Robert Garcia',
-                      action: 'submitted assignment for review',
-                      time: 'yesterday',
-                    },
-                    {
-                      user: 'Emily Johnson',
-                      action: 'asked a question in Mathematics forum',
-                      time: '2 days ago',
-                    },
-                  ].map((activity, i) => (
-                    <div key={i} className="flex items-center">
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center mr-3">
-                        <ArrowUpRight className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {activity.user} {activity.action}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {activity.time}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle>Top Performing Courses</CardTitle>
-                <CardDescription>
-                  Courses with highest engagement and completion
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      name: 'Introduction to Data Science',
-                      students: 324,
-                      completion: '93%',
-                    },
-                    {
-                      name: 'Web Development Fundamentals',
-                      students: 287,
-                      completion: '89%',
-                    },
-                    {
-                      name: 'Digital Marketing Essentials',
-                      students: 256,
-                      completion: '87%',
-                    },
-                    {
-                      name: 'Python for Beginners',
-                      students: 231,
-                      completion: '85%',
-                    },
-                    {
-                      name: 'Business Communication',
-                      students: 198,
-                      completion: '82%',
-                    },
-                  ].map((course, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {course.name}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {course.students} students
-                        </p>
-                      </div>
-                      <div className="text-sm font-medium">
-                        {course.completion}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics Overview</CardTitle>
-              <CardDescription>
-                Detailed platform metrics and analytics
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Select the Analytics tab in the sidebar for detailed analytics
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="reports" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Reports</CardTitle>
-              <CardDescription>Generate and view reports</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Report functionality coming soon
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <nav className="flex-1 px-4 py-2 space-y-1">
+        {navItems.map(item => (
+          <Link
+            key={item.href}
+            to={item.href} // Thay 'href' bằng 'to' để phù hợp với Link từ react-router-dom
+            className={cn(
+              'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all', // Đảm bảo có hiệu ứng chuyển tiếp
+              pathname === item.href
+                ? 'bg-primary text-primary-foreground shadow-lg' // Khi tab đang chọn
+                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground' // Khi tab chưa chọn
+            )}
+          >
+            <item.icon className="h-5 w-5 mr-2" />
+            {item.name}
+          </Link>
+        ))}
+      </nav>
+      <div className="p-4 border-t">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-muted-foreground"
+        >
+          <LogOut className="h-5 w-5 mr-2" />
+          Log out
+        </Button>
+      </div>
     </div>
   );
 }

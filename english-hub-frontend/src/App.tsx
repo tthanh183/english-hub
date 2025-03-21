@@ -5,8 +5,9 @@ import VerifyPage from './pages/VerifyPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboardLayout from './layouts/AdminDashboardLayout';
+import AdminDashboard from './components/admin/AdminDashboard';
 import AdminPage from './pages/admin/AdminPage';
-import DashboardLayout from './layout/DashboardLayout';
 
 function App() {
   return (
@@ -20,10 +21,12 @@ function App() {
         {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
-          <Route path="/admin" element={<DashboardLayout />}>
+          {/* The DashboardLayout will wrap all admin pages */}
+          <Route path="/admin" element={<AdminDashboardLayout />}>
             {/* Admin specific routes */}
-            <Route path="dashboard" element={<AdminPage />} />
-            {/* Other admin routes */}
+            <Route index element={<AdminDashboard />} />
+            <Route path="admin-page" element={<AdminPage />} />
+            {/* Add more admin routes here */}
           </Route>
         </Route>
       </Routes>

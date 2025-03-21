@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { BarChart, Users, BookOpen, LogOut, Menu, X, Home } from 'lucide-react';
+import { useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { BarChart, BookOpen, Home, LogOut, Menu, Users, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMobile } from '@/hooks/useMobile';
+import { cn } from '@/lib/utils';
 
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const { pathname } = useLocation();
+export default function DashboardLayout() {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { pathname } = useLocation(); // Sử dụng useLocation hook để lấy pathname
 
   const navItems = [
-    { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
-    { name: 'User Management', href: '/admin/dashboard/users', icon: Users },
-    {
-      name: 'Content Management',
-      href: '/admin/dashboard/content',
-      icon: BookOpen,
-    },
-    { name: 'Analytics', href: '/admin/dashboard/analytics', icon: BarChart },
+    { name: 'Dashboard', href: '/admin', icon: Home },
+    { name: 'User Management', href: '/admin/users', icon: Users },
+    { name: 'Content Management', href: '/admin/content', icon: BookOpen },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 
   return (
@@ -40,10 +37,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
       {/* Sidebar */}
       <div
-        className={`w-64 bg-muted/40 border-r shrink-0 overflow-y-auto h-full flex flex-col ${
+        className={cn(
+          'w-64 bg-muted/40 border-r shrink-0 overflow-y-auto h-full flex flex-col',
           isMobile &&
-          'fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-in-out'
-        } ${isMobile && !sidebarOpen && '-translate-x-full'}`}
+            'fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-in-out',
+          isMobile && !sidebarOpen && '-translate-x-full'
+        )}
       >
         <div className="p-6">
           <h1 className="text-xl font-bold">Learning Admin</h1>
@@ -53,11 +52,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             <Link
               key={item.href}
               to={item.href}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={cn(
+                'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
                 pathname === item.href
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-              }`}
+              )}
             >
               <item.icon className="h-5 w-5 mr-2" />
               {item.name}
@@ -75,11 +75,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
 
+      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-6">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
-};
-
-export default DashboardLayout;
+}

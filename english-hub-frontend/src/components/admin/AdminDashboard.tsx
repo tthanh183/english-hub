@@ -14,7 +14,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-export default function Dashboard() {
+
+export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
@@ -23,7 +24,6 @@ export default function Dashboard() {
           Learning platform overview and statistics.
         </p>
       </div>
-
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
