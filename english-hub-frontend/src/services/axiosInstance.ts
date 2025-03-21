@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/api'; 
@@ -36,17 +37,21 @@ axiosInstance.interceptors.response.use(
             refreshToken,
           });
 
-          const { accessToken } = response.data;
+        const { accessToken, refreshToken: newRefreshToken } = response.data.result;
           localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', newRefreshToken);
+          useAuthStore.getState().setAuth(accessToken, newRefreshToken);
 
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-
-          return axios(originalRequest);
+          return axiosInstance(originalRequest);
         } else {
           window.location.href = '/login'; 
         }
       } catch (err) {
-        window.location.href = '/login'; 
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        useAuthStore.getState().logout();
+        window.location.href = '/login';
         return Promise.reject(err);
       }
     }

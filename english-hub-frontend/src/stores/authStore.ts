@@ -1,19 +1,44 @@
 import { create } from 'zustand';
+import { getUserIdFromToken, isAdminFromToken } from '@/utils/jwtUtil';
 
 type AuthState = {
   isAuthenticated: boolean;
   userId: string | null;
   isAdmin: boolean;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-  setUserId: (userId: string) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
+  setAuth: (accessToken: string | null, refreshToken: string | null) => void;
+  logout: () => void;
 };
 
 export const useAuthStore = create<AuthState>(set => ({
-  isAuthenticated: false,
-  userId: null,
-  isAdmin: false,
-  setIsAuthenticated: isAuthenticated => set({ isAuthenticated }),
-  setUserId: userId => set({ userId }),
-  setIsAdmin: isAdmin => set({ isAdmin }),
+  isAuthenticated: !!localStorage.getItem('accessToken'),
+  userId: localStorage.getItem('userId') || null,
+  isAdmin: localStorage.getItem('isAdmin') === 'true',
+
+  setAuth: (accessToken, refreshToken) => {
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken || '');
+      localStorage.setItem('userId', getUserIdFromToken(accessToken));
+      localStorage.setItem('isAdmin', isAdminFromToken(accessToken).toString());
+
+      set({
+        isAuthenticated: true,
+        userId: getUserIdFromToken(accessToken),
+        isAdmin: isAdminFromToken(accessToken),
+      });
+    }
+  },
+
+  logout: () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('isAdmin');
+
+    set({
+      isAuthenticated: false,
+      userId: null,
+      isAdmin: false,
+    });
+  },
 }));

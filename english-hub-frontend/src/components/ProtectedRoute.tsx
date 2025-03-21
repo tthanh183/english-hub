@@ -2,15 +2,19 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 import { showError } from '@/hooks/useToast';
 import { useAuthStore } from '@/stores/authStore';
+import { useEffect } from 'react';
 
 type ProtectedRouteProps = {
   adminRequired: boolean;
 };
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ adminRequired }) => {
-  let { isAuthenticated, isAdmin } = useAuthStore();
-  isAuthenticated = true;
-  isAdmin = true; 
+export default function ProtectedRoute({ adminRequired }: ProtectedRouteProps) {
+  const { isAuthenticated, isAdmin } = useAuthStore();
+
+  useEffect(() => {
+    console.log('Auth ssss:', isAuthenticated);
+  }, [isAuthenticated]);
+
   if (!isAuthenticated) {
     showError('You need to login first');
     return <Navigate to="/" />;
@@ -22,6 +26,4 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ adminRequired }) => {
   }
 
   return <Outlet />;
-};
-
-export default ProtectedRoute;
+}

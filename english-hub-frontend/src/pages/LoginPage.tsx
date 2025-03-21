@@ -14,7 +14,6 @@ import { Label } from '@/components/ui/label';
 import { isAxiosError } from 'axios';
 
 import { useAuthStore } from '@/stores/authStore';
-import { getUserIdFromToken, isAdminFromToken } from '@/utils/jwtUtil';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
@@ -23,7 +22,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const { setIsAuthenticated, setUserId, setIsAdmin } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,14 +30,9 @@ export default function LoginPage() {
     try {
       setLoading(true);
       const response = await login({ email, password });
-      setIsAuthenticated(response.data.result.isAuthenticated);
-      setIsAdmin(isAdminFromToken(response.data.result.accessToken));
-      setUserId(getUserIdFromToken(response.data.result.accessToken));
-      localStorage.setItem('accessToken', response.data.result.accessToken);
-      localStorage.setItem('refreshToken', response.data.result.refreshToken);
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      const { accessToken, refreshToken } = response.data.result;
+      setAuth(accessToken, refreshToken);
+      navigate('/');
     } catch (error) {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
