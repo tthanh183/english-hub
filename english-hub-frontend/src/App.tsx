@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+
 import HomePage from './pages/HomePage';
 import VerifyPage from './pages/VerifyPage';
 import LoginPage from './pages/LoginPage';
@@ -7,7 +8,6 @@ import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboardLayout from './layouts/AdminDashboardLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
-import AdminPage from './pages/admin/AdminPage';
 import UserManagement from './components/admin/UserManagement';
 
 function App() {
