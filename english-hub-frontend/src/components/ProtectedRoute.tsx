@@ -21,4 +21,5 @@ export default function ProtectedRoute({ adminRequired }: ProtectedRouteProps) {
   }
 
   return <Outlet />;
+  
 }

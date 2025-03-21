@@ -19,6 +19,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify" element={<VerifyPage />} />
 
+        {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
           {/* The DashboardLayout will wrap all admin pages */}
           <Route path="/admin" element={<AdminDashboardLayout/>}>

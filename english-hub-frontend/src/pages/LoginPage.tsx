@@ -64,7 +64,6 @@ export default function LoginPage() {
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
-
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -97,7 +96,6 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          
           <CardFooter className="flex flex-col space-y-4 mt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Spinner /> : 'Sign in'}

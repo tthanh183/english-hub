@@ -42,5 +42,4 @@ export const useAuthStore = create<AuthState>(set => ({
       isAdmin: false,
     });
   },
-  
 }));
