@@ -25,9 +25,11 @@ import {
   UserRole,
   UserUpdateRequest,
 } from '@/types/userType';
-import { getAllUsers } from '@/services/userService';
+import { deactivateUser, getAllUsers } from '@/services/userService';
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
+import { showError } from '@/hooks/useToast';
+import { isAxiosError } from 'axios';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -67,20 +69,20 @@ export default function UserManagement() {
     setUsers(users.filter(user => user.id !== id));
   };
 
-  const handleSuspendUser = (id: string) => {
-    setUsers(
-      users.map(user =>
-        user.id === id
-          ? {
-              ...user,
-              status:
-                user.status === UserStatus.ACTIVE
-                  ? UserStatus.DEACTIVATED
-                  : UserStatus.ACTIVE,
-            }
-          : user
-      )
-    );
+  const handleDeactivateUser = async (id: string) => {
+    try {
+      const response = await deactivateUser(id);
+      const updatedUser = response.data.result;
+      setUsers(
+        users.map(user => (user.id === updatedUser.id ? updatedUser : user))
+      );
+    } catch (error) {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    }
   };
 
   const renderStatusBadge = (status: UserStatus) => {
@@ -182,7 +184,7 @@ export default function UserManagement() {
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleSuspendUser(user.id)}
+                        onClick={() => handleDeactivateUser(user.id)}
                       >
                         {user.status === UserStatus.ACTIVE
                           ? 'Deactivate'

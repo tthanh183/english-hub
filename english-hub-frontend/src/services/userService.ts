@@ -12,3 +12,7 @@ export const createUser = async (user: UserCreateRequest) => {
 export const updateUser = async (user: UserUpdateRequest) => {
   return await axiosInstance.put(`/users/${user.id}`, user);
 };
+
+export const deactivateUser = async (id: string) => {
+  return await axiosInstance.patch(`/users/${id}/deactivate`);
+}
