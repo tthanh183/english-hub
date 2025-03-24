@@ -1,20 +1,9 @@
 import axiosInstance from '@/services/axiosInstance';
-
-export type LoginRequest = {
-  email: string;
-  password: string;
-};
-
-export type RegisterRequest = {
-  email: string;
-  password: string;
-  username: string;
-};
-
-export type VerifyRequest = {
-  email: string;
-  verificationCode: string;
-};
+import {
+  LoginRequest,
+  RegisterRequest,
+  VerifyRequest,
+} from '@/types/authType';
 
 export const registerUser = async (data: RegisterRequest) => {
   return await axiosInstance.post('/auth/register', data);

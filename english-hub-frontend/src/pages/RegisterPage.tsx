@@ -13,7 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { isAxiosError } from 'axios';
 
-import { RegisterRequest, registerUser } from '@/services/authService';
+import { registerUser } from '@/services/authService';
+import { RegisterRequest } from '@/types/authType';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 
