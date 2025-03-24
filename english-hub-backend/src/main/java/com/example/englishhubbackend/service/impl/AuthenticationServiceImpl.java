@@ -5,6 +5,7 @@ import com.example.englishhubbackend.dto.response.AuthenticateResponse;
 import com.example.englishhubbackend.dto.response.IntrospectResponse;
 import com.example.englishhubbackend.dto.response.UserResponse;
 import com.example.englishhubbackend.enums.RoleEnum;
+import com.example.englishhubbackend.enums.UserStatusEnum;
 import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.UserMapper;
@@ -69,6 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setEnabled(false);
         user.setVerificationCode(VerificationCodeUtil.generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(30));
+        user.setStatus(UserStatusEnum.UNVERIFIED);
         Role userRole = roleService.getRole(RoleEnum.USER.name());
         user.setRole(userRole);
         sendVerificationEmail(user);
@@ -85,6 +87,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             if(user.getVerificationCode().equals(verifyRequest.getVerificationCode())) {
                 user.setEnabled(true);
+                user.setStatus(UserStatusEnum.ACTIVE);
                 user.setVerificationCode(null);
                 user.setVerificationCodeExpiresAt(null);
                 userRepository.save(user);
@@ -130,6 +133,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if(!user.isEnabled()) {
             throw new AppException(ErrorCode.ACCOUNT_UNVERIFIED);
+        }
+
+        if(user.getStatus() == UserStatusEnum.DEACTIVATED) {
+            throw new AppException(ErrorCode.ACCOUNT_DEACTIVATED);
         }
 
         if(!passwordEncoder.matches(authenticateRequest.getPassword(), user.getPassword())) {

@@ -1,5 +1,6 @@
 package com.example.englishhubbackend.models;
 
+import com.example.englishhubbackend.enums.UserStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,9 @@ public class User {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    UserStatusEnum status = UserStatusEnum.UNVERIFIED;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     @JsonIgnore
     List<Result> results;
