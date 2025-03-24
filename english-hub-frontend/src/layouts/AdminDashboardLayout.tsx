@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export default function DashboardLayout() {
   const isMobile = useMobile();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const { pathname } = useLocation(); 
 
   const navItems = [

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useMobile } from '@/hooks/useMobile';
 
 export default function AdminSideBar() {
-  const [sidebarOpen] = useState(false);
+  const [sidebarOpen] = useState<boolean>(false);
   const isMobile = useMobile();
   const { pathname } = useLocation(); 
 
