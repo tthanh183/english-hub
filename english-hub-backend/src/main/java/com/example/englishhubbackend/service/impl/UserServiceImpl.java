@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,4 +34,20 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStatusEnum.DEACTIVATED);
     }
 
+    @Override
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> UserResponse.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .enabled(user.isEnabled())
+                        .verificationCode(user.getVerificationCode())
+                        .verificationCodeExpiresAt(user.getVerificationCodeExpiresAt())
+                        .role(user.getRole().getName())
+                        .status(user.getStatus().name())
+                        .joinDate(user.getJoinDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

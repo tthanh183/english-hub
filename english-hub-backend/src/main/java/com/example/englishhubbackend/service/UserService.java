@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface UserService {
     boolean existsByEmail(String email);
     void deactivateUser(UUID userId);
+    List<UserResponse> getAllUsers();
 }
