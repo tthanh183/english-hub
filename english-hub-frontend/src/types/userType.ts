@@ -10,10 +10,16 @@ export enum UserStatus {
 }
 
 export type User = {
-  id: string, 
+  id: string;
   username: string;
   email: string;
   role: UserRole;
   status: UserStatus;
   joinDate: Date;
+};
+
+export type UserCreateRequest = {
+  username: string;
+  email: string;
+  role: UserRole;
 };
