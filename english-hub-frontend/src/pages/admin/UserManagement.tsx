@@ -17,34 +17,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { MoreHorizontal, Search } from 'lucide-react';
 
-import { User, UserStatus, UserRole } from '@/types/userType';
+import { User, UserStatus, UserRole, UserUpdateRequest } from '@/types/userType';
 import { getAllUsers } from '@/services/userService';
 import AddUserDialog from '@/components/admin/AddUserDialog';
+import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(null);
 
   const fetchUsers = async () => {
     const response = await getAllUsers();
@@ -60,16 +45,6 @@ export default function UserManagement() {
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleEditUser = () => {
-    if (selectedUser) {
-      setUsers(
-        users.map(user => (user.id === selectedUser.id ? selectedUser : user))
-      );
-      setIsEditUserOpen(false);
-      setSelectedUser(null);
-    }
-  };
 
   const handleDeleteUser = (id: string) => {
     setUsers(users.filter(user => user.id !== id));
@@ -212,87 +187,13 @@ export default function UserManagement() {
         </Table>
       </div>
 
-      {/* Edit User Dialog */}
-      <Dialog
-        open={isEditUserOpen && selectedUser !== null}
+      <UpdateUserDialog
+        isOpen={isEditUserOpen}
         onOpenChange={setIsEditUserOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Update user information.</DialogDescription>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="edit-name">Full Name</Label>
-                <Input
-                  id="edit-name"
-                  value={selectedUser.username}
-                  onChange={e =>
-                    setSelectedUser({
-                      ...selectedUser,
-                      username: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-email">Email</Label>
-                <Input
-                  id="edit-email"
-                  type="email"
-                  value={selectedUser.email}
-                  onChange={e =>
-                    setSelectedUser({ ...selectedUser, email: e.target.value })
-                  }
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-role">Role</Label>
-                <Select
-                  value={selectedUser.role}
-                  // onValueChange={value =>
-                  //   setSelectedUser({ ...selectedUser, role: value })
-                  // }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Student">Student</SelectItem>
-                    <SelectItem value="Teacher">Teacher</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="edit-status">Status</Label>
-                <Select
-                  value={selectedUser.status}
-                  // onValueChange={value =>
-                  //   setSelectedUser({ ...selectedUser, status: value })
-                  // }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditUserOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditUser}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        onUserUpdated={fetchUsers}
+      />
     </div>
   );
 }

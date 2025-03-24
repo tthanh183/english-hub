@@ -23,3 +23,10 @@ export type UserCreateRequest = {
   email: string;
   role: UserRole;
 };
+
+export type UserUpdateRequest = {
+  id: string;
+  username: string;
+  email: string;
+  role: UserRole;
+};

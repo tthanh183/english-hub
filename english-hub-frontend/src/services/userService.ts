@@ -1,5 +1,5 @@
 import axiosInstance from '@/services/axiosInstance';
-import { UserCreateRequest } from '@/types/userType';
+import { UserCreateRequest, UserUpdateRequest } from '@/types/userType';
 
 export const getAllUsers = async () => {
   return await axiosInstance.get('/users');
@@ -7,4 +7,8 @@ export const getAllUsers = async () => {
 
 export const createUser = async (user: UserCreateRequest) => {
   return await axiosInstance.post('/users', user);
+};
+
+export const updateUser = async (user: UserUpdateRequest) => {
+  return await axiosInstance.put(`/users/${user.id}`, user);
 };
