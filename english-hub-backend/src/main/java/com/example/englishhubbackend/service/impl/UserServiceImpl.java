@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.request.UserCreateRequest;
+import com.example.englishhubbackend.dto.request.UserUpdateRequest;
 import com.example.englishhubbackend.dto.response.UserResponse;
 import com.example.englishhubbackend.enums.UserStatusEnum;
 import com.example.englishhubbackend.exception.AppException;
@@ -56,6 +57,14 @@ public class UserServiceImpl implements UserService {
         user.setStatus(UserStatusEnum.ACTIVE);
         user.setPassword(passwordEncoder.encode("12345678"));
         user.setEnabled(true);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse updateUser(UUID userId, UserUpdateRequest userUpdateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        userMapper.updateUser(userUpdateRequest, user, roleService);
         return userMapper.toUserResponse(userRepository.save(user));
     }
 }

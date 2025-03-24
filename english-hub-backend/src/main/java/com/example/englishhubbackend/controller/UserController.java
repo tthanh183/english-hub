@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.controller;
 
 import com.example.englishhubbackend.dto.request.UserCreateRequest;
+import com.example.englishhubbackend.dto.request.UserUpdateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.UserResponse;
 import com.example.englishhubbackend.service.UserService;
@@ -34,4 +35,10 @@ public class UserController {
     public ApiResponse<UserResponse> createUser(@RequestBody UserCreateRequest userCreateRequest) {
         return ApiResponse.<UserResponse>builder().result(userService.createUser(userCreateRequest)).build();
     }
+
+    @PutMapping("/{userId}")
+    public ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest userUpdateRequest) {
+        return ApiResponse.<UserResponse>builder().result(userService.updateUser(UUID.fromString(userId), userUpdateRequest)).build();
+    }
+
 }
