@@ -21,9 +21,8 @@ public class UserController {
     UserService userService;
 
     @PatchMapping("/{userId}/deactivate")
-    public ApiResponse<Void> deactivateUser(@PathVariable String userId) {
-        userService.deactivateUser(UUID.fromString(userId));
-        return ApiResponse.<Void>builder().message("User deactivated successfully").build();
+    public ApiResponse<UserResponse> deactivateUser(@PathVariable String userId) {
+        return ApiResponse.<UserResponse>builder().result(userService.deactivateUser(UUID.fromString(userId))).build();
     }
 
     @GetMapping("")
@@ -40,5 +39,4 @@ public class UserController {
     public ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest userUpdateRequest) {
         return ApiResponse.<UserResponse>builder().result(userService.updateUser(UUID.fromString(userId), userUpdateRequest)).build();
     }
-
 }

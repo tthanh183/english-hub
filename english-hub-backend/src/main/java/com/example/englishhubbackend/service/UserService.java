@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface UserService {
     boolean existsByEmail(String email);
-    void deactivateUser(UUID userId);
+    UserResponse deactivateUser(UUID userId);
     List<UserResponse> getAllUsers();
     UserResponse createUser(UserCreateRequest userCreateRequest);
     UserResponse updateUser(UUID userId, UserUpdateRequest userUpdateRequest);

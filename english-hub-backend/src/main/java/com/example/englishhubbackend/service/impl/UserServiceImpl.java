@@ -37,10 +37,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deactivateUser(UUID userId) {
+    public UserResponse deactivateUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(UserStatusEnum.DEACTIVATED);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @Override
