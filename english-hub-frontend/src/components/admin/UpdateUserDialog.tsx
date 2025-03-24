@@ -20,6 +20,7 @@ import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
+import { useState } from 'react';
 
 interface EditUserDialogProps {
   isOpen: boolean;
@@ -27,7 +28,6 @@ interface EditUserDialogProps {
   selectedUser: UserUpdateRequest | null;
   setSelectedUser: (user: UserUpdateRequest | null) => void;
   onUserUpdated: (user: UserResponse) => void;
-  //   handleEditUser: () => void;
 }
 
 export default function UpdateUserDialog({
@@ -37,11 +37,11 @@ export default function UpdateUserDialog({
   setSelectedUser,
   onUserUpdated,
 }: EditUserDialogProps) {
+  const [loading, setLoading] = useState<boolean>(false);
   const handleEditUser = async () => {
     if (selectedUser) {
       try {
-        console.log(selectedUser);
-
+        setLoading(true);
         const response = await updateUser(selectedUser);
         showSuccess('User updated successfully');
         onUserUpdated(response.data.result);
@@ -52,6 +52,7 @@ export default function UpdateUserDialog({
       } finally {
         onOpenChange(false);
         setSelectedUser(null);
+        setLoading(false);
       }
     }
   };
@@ -118,7 +119,9 @@ export default function UpdateUserDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleEditUser}>Save Changes</Button>
+          <Button onClick={handleEditUser}>
+            {loading ? 'Updating...' : 'Save Changes'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
