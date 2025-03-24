@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
-import { UserCreateRequest, UserRole } from '@/types/userType';
+import { UserResponse, UserCreateRequest, UserRole } from '@/types/userType';
 import { useState } from 'react';
 import { createUser } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -28,7 +28,7 @@ import { Spinner } from '../Spinner';
 type AddUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onUserAdded: () => void;
+  onUserAdded: (user: UserResponse) => void;
 };
 
 export default function AddUserDialog({
@@ -46,9 +46,9 @@ export default function AddUserDialog({
   const handleAddUser = async () => {
     try {
       setLoading(true);
-      await createUser(newUser);
+      const response = await createUser(newUser);
       showSuccess('User added successfully');
-      onUserAdded();
+      onUserAdded(response.data.result);
     } catch (error) {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);

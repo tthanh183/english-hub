@@ -9,7 +9,7 @@ export enum UserStatus {
   DEACTIVATED = 'DEACTIVATED',
 }
 
-export type User = {
+export type UserResponse = {
   id: string;
   username: string;
   email: string;

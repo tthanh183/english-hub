@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { UserRole, UserUpdateRequest } from '@/types/userType';
+import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
@@ -26,7 +26,7 @@ interface EditUserDialogProps {
   onOpenChange: (isOpen: boolean) => void;
   selectedUser: UserUpdateRequest | null;
   setSelectedUser: (user: UserUpdateRequest | null) => void;
-  onUserUpdated: () => void;
+  onUserUpdated: (user: UserResponse) => void;
   //   handleEditUser: () => void;
 }
 
@@ -42,9 +42,9 @@ export default function UpdateUserDialog({
       try {
         console.log(selectedUser);
 
-        await updateUser(selectedUser);
+        const response = await updateUser(selectedUser);
         showSuccess('User updated successfully');
-        onUserUpdated();
+        onUserUpdated(response.data.result);
       } catch (error) {
         if (isAxiosError(error)) {
           showError(error.response?.data.message);
@@ -92,9 +92,9 @@ export default function UpdateUserDialog({
               <Label htmlFor="edit-role">Role</Label>
               <Select
                 value={selectedUser.role}
-                // onValueChange={value =>
-                //   setSelectedUser({ ...selectedUser, role: value })
-                // }
+                onValueChange={value =>
+                  setSelectedUser({ ...selectedUser, role: value as UserRole })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a role" />

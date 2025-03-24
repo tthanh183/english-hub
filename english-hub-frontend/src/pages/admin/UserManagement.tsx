@@ -19,17 +19,24 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Search } from 'lucide-react';
 
-import { User, UserStatus, UserRole, UserUpdateRequest } from '@/types/userType';
+import {
+  UserResponse,
+  UserStatus,
+  UserRole,
+  UserUpdateRequest,
+} from '@/types/userType';
 import { getAllUsers } from '@/services/userService';
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [isEditUserOpen, setIsEditUserOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(null);
+  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isAddUserOpen, setIsAddUserOpen] = useState<boolean>(false);
+  const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(
+    null
+  );
 
   const fetchUsers = async () => {
     const response = await getAllUsers();
@@ -45,6 +52,16 @@ export default function UserManagement() {
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddUser = (user: UserResponse) => {
+    setUsers([...users, user]);
+  };
+
+  const handleUpdateUser = (updatedUser: UserResponse) => {
+    setUsers(
+      users.map(user => (user.id === updatedUser.id ? updatedUser : user))
+    );
+  };
 
   const handleDeleteUser = (id: string) => {
     setUsers(users.filter(user => user.id !== id));
@@ -108,7 +125,7 @@ export default function UserManagement() {
         <AddUserDialog
           isOpen={isAddUserOpen}
           onOpenChange={setIsAddUserOpen}
-          onUserAdded={fetchUsers}
+          onUserAdded={handleAddUser}
         />
       </div>
 
@@ -192,7 +209,7 @@ export default function UserManagement() {
         onOpenChange={setIsEditUserOpen}
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
-        onUserUpdated={fetchUsers}
+        onUserUpdated={handleUpdateUser}
       />
     </div>
   );
