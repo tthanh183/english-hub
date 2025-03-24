@@ -10,5 +10,6 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
     User toUser(RegisterRequest registerRequest);
     @Mapping(source = "role.name", target = "role")
+    @Mapping(source = "status", target = "status")
     UserResponse toUserResponse(User user);
 }

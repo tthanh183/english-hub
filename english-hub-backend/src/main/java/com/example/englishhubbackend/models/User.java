@@ -36,6 +36,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     UserStatusEnum status = UserStatusEnum.UNVERIFIED;
+    LocalDate joinDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     @JsonIgnore
     List<Result> results;

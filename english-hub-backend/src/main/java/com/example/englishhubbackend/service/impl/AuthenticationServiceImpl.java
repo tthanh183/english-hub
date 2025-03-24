@@ -73,6 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setStatus(UserStatusEnum.UNVERIFIED);
         Role userRole = roleService.getRole(RoleEnum.USER.name());
         user.setRole(userRole);
+        user.setJoinDate(LocalDateTime.now().toLocalDate());
         sendVerificationEmail(user);
         return userMapper.toUserResponse(userRepository.save(user));
     }

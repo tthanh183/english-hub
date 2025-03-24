@@ -3,6 +3,7 @@ package com.example.englishhubbackend.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,4 +20,6 @@ public class UserResponse {
     String verificationCode;
     LocalDateTime verificationCodeExpiresAt;
     String role;
+    String status;
+    LocalDate joinDate;
 }
