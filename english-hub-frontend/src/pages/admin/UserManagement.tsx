@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -37,101 +36,117 @@ import {
 import { Label } from '@/components/ui/label';
 import { MoreHorizontal, Plus, Search } from 'lucide-react';
 
-// Mock data
-const initialUsers = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    role: 'Student',
-    status: 'Active',
-    joinDate: '2023-01-15',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    role: 'Student',
-    status: 'Active',
-    joinDate: '2023-02-20',
-  },
-  {
-    id: 3,
-    name: 'Robert Johnson',
-    email: 'robert.j@example.com',
-    role: 'Teacher',
-    status: 'Active',
-    joinDate: '2022-11-05',
-  },
-  {
-    id: 4,
-    name: 'Emily Davis',
-    email: 'emily.d@example.com',
-    role: 'Student',
-    status: 'Suspended',
-    joinDate: '2023-03-10',
-  },
-  {
-    id: 5,
-    name: 'Michael Brown',
-    email: 'michael.b@example.com',
-    role: 'Student',
-    status: 'Active',
-    joinDate: '2023-01-30',
-  },
-  {
-    id: 6,
-    name: 'Sarah Wilson',
-    email: 'sarah.w@example.com',
-    role: 'Teacher',
-    status: 'Active',
-    joinDate: '2022-09-15',
-  },
-  {
-    id: 7,
-    name: 'David Thompson',
-    email: 'david.t@example.com',
-    role: 'Student',
-    status: 'Active',
-    joinDate: '2023-04-05',
-  },
-  {
-    id: 8,
-    name: 'Jessica Lee',
-    email: 'jessica.l@example.com',
-    role: 'Student',
-    status: 'Suspended',
-    joinDate: '2023-02-12',
-  },
-];
+import { User, UserRole, UserStatus } from '@/types/userType';
+import { getAllUsers } from '@/services/userService';
 
-type User = (typeof initialUsers)[0];
+// // Mock data
+// const initialUsers = [
+//   {
+//     id: 1,
+//     name: 'John Doe',
+//     email: 'john.doe@example.com',
+//     role: 'Student',
+//     status: 'Active',
+//     joinDate: '2023-01-15',
+//   },
+//   {
+//     id: 2,
+//     name: 'Jane Smith',
+//     email: 'jane.smith@example.com',
+//     role: 'Student',
+//     status: 'Active',
+//     joinDate: '2023-02-20',
+//   },
+//   {
+//     id: 3,
+//     name: 'Robert Johnson',
+//     email: 'robert.j@example.com',
+//     role: 'Teacher',
+//     status: 'Active',
+//     joinDate: '2022-11-05',
+//   },
+//   {
+//     id: 4,
+//     name: 'Emily Davis',
+//     email: 'emily.d@example.com',
+//     role: 'Student',
+//     status: 'Suspended',
+//     joinDate: '2023-03-10',
+//   },
+//   {
+//     id: 5,
+//     name: 'Michael Brown',
+//     email: 'michael.b@example.com',
+//     role: 'Student',
+//     status: 'Active',
+//     joinDate: '2023-01-30',
+//   },
+//   {
+//     id: 6,
+//     name: 'Sarah Wilson',
+//     email: 'sarah.w@example.com',
+//     role: 'Teacher',
+//     status: 'Active',
+//     joinDate: '2022-09-15',
+//   },
+//   {
+//     id: 7,
+//     name: 'David Thompson',
+//     email: 'david.t@example.com',
+//     role: 'Student',
+//     status: 'Active',
+//     joinDate: '2023-04-05',
+//   },
+//   {
+//     id: 8,
+//     name: 'Jessica Lee',
+//     email: 'jessica.l@example.com',
+//     role: 'Student',
+//     status: 'Suspended',
+//     joinDate: '2023-02-12',
+//   },
+// ];
+
+// type User = (typeof initialUsers)[0];
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [newUser, setNewUser] = useState({
-    name: '',
+  const [newUser, setNewUser] = useState<User>({
+    id: '',
+    username: '',
     email: '',
-    role: 'Student',
-    status: 'Active',
+    role: UserRole.USER,
+    status: UserStatus.ACTIVE,
+    joinDate: new Date(),
   });
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await getAllUsers();
+      console.log(response.data.result);
+
+      setUsers(response.data.result);
+    };
+
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter(
     user =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAddUser = () => {
-    const id = Math.max(...users.map(user => user.id)) + 1;
-    const today = new Date().toISOString().split('T')[0];
-    setUsers([...users, { ...newUser, id, joinDate: today }]);
-    setNewUser({ name: '', email: '', role: 'Student', status: 'Active' });
-    setIsAddUserOpen(false);
+    // const id = Math.max(...users.map(user => user.id)) + 1;
+    // const today = new Date().toISOString().split('T')[0];
+    // setUsers([...users, { ...newUser, id, joinDate: today }]);
+    // setNewUser({ username: '', email: '', role: 'Student', status: 'Active' });
+    // setIsAddUserOpen(false);
   };
 
   const handleEditUser = () => {
@@ -144,17 +159,20 @@ export default function UserManagement() {
     }
   };
 
-  const handleDeleteUser = (id: number) => {
+  const handleDeleteUser = (id: string) => {
     setUsers(users.filter(user => user.id !== id));
   };
 
-  const handleSuspendUser = (id: number) => {
+  const handleSuspendUser = (id: string) => {
     setUsers(
       users.map(user =>
         user.id === id
           ? {
               ...user,
-              status: user.status === 'Active' ? 'Suspended' : 'Active',
+              status:
+                user.status === UserStatus.ACTIVE
+                  ? UserStatus.DEACTIVATED
+                  : UserStatus.ACTIVE,
             }
           : user
       )
@@ -184,12 +202,12 @@ export default function UserManagement() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="username">Full Name</Label>
                 <Input
-                  id="name"
-                  value={newUser.name}
+                  id="username"
+                  value={newUser.username}
                   onChange={e =>
-                    setNewUser({ ...newUser, name: e.target.value })
+                    setNewUser({ ...newUser, username: e.target.value })
                   }
                 />
               </div>
@@ -208,9 +226,9 @@ export default function UserManagement() {
                 <Label htmlFor="role">Role</Label>
                 <Select
                   value={newUser.role}
-                  onValueChange={value =>
-                    setNewUser({ ...newUser, role: value })
-                  }
+                  // onValueChange={value =>
+                  //   setNewUser({ ...newUser, role: value })
+                  // }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a role" />
@@ -226,9 +244,9 @@ export default function UserManagement() {
                 <Label htmlFor="status">Status</Label>
                 <Select
                   value={newUser.status}
-                  onValueChange={value =>
-                    setNewUser({ ...newUser, status: value })
-                  }
+                  // onValueChange={value =>
+                  //   setNewUser({ ...newUser, status: value })
+                  // }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a status" />
@@ -277,21 +295,36 @@ export default function UserManagement() {
           <TableBody>
             {filteredUsers.map(user => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell className="font-medium">{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.status === 'Active'
+                      user.role === 'ADMIN'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+                </TableCell>
+
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      user.status === UserStatus.ACTIVE
                         ? 'bg-green-100 text-green-800'
+                        : UserStatus.UNVERIFIED
+                        ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-red-100 text-red-800'
                     }`}
                   >
                     {user.status}
                   </span>
                 </TableCell>
-                <TableCell>{user.joinDate}</TableCell>
+                <TableCell>
+                  {new Date(user.joinDate).toISOString().split('T')[0]}
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -313,7 +346,9 @@ export default function UserManagement() {
                       <DropdownMenuItem
                         onClick={() => handleSuspendUser(user.id)}
                       >
-                        {user.status === 'Active' ? 'Suspend' : 'Activate'}
+                        {user.status === UserStatus.ACTIVE
+                          ? 'Deactivate'
+                          : 'Activate'}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -347,9 +382,12 @@ export default function UserManagement() {
                 <Label htmlFor="edit-name">Full Name</Label>
                 <Input
                   id="edit-name"
-                  value={selectedUser.name}
+                  value={selectedUser.username}
                   onChange={e =>
-                    setSelectedUser({ ...selectedUser, name: e.target.value })
+                    setSelectedUser({
+                      ...selectedUser,
+                      username: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -368,9 +406,9 @@ export default function UserManagement() {
                 <Label htmlFor="edit-role">Role</Label>
                 <Select
                   value={selectedUser.role}
-                  onValueChange={value =>
-                    setSelectedUser({ ...selectedUser, role: value })
-                  }
+                  // onValueChange={value =>
+                  //   setSelectedUser({ ...selectedUser, role: value })
+                  // }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a role" />
@@ -386,9 +424,9 @@ export default function UserManagement() {
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
                   value={selectedUser.status}
-                  onValueChange={value =>
-                    setSelectedUser({ ...selectedUser, status: value })
-                  }
+                  // onValueChange={value =>
+                  //   setSelectedUser({ ...selectedUser, status: value })
+                  // }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a status" />
