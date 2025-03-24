@@ -31,4 +31,5 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(UserStatusEnum.DEACTIVATED);
     }
+
 }
