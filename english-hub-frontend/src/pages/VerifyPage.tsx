@@ -101,13 +101,13 @@ export default function VerifyPage() {
 
   const handleResend = async () => {
     try {
-      console.log(email);
-
       const response = await resendVerificationCode(email);
       showSuccess(response.data.message);
     } catch (error) {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
       }
     }
   };
