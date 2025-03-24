@@ -52,8 +52,9 @@ export default function AddUserDialog({
     } catch (error) {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
       }
-      console.error(error);
     } finally {
       setNewUser({ username: '', email: '', role: UserRole.USER });
       setLoading(false);

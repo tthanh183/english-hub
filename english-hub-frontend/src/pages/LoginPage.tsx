@@ -42,6 +42,8 @@ export default function LoginPage() {
           await resendVerificationCode(email);
           navigate('/verify', { state: { email } });
         }
+      } else {
+        showError('Something went wrong');
       }
     } finally {
       setEmail('');

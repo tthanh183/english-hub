@@ -90,6 +90,8 @@ export default function VerifyPage() {
     } catch (error) {
       if (isAxiosError(error)) {
         showError("Verification code doesn't match");
+      } else {
+        showError('Something went wrong');
       }
     } finally {
       setCode(['', '', '', '', '', '']);

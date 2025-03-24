@@ -48,6 +48,8 @@ export default function UpdateUserDialog({
       } catch (error) {
         if (isAxiosError(error)) {
           showError(error.response?.data.message);
+        } else {
+          showError('Something went wrong');
         }
       } finally {
         onOpenChange(false);
