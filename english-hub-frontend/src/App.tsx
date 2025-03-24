@@ -7,8 +7,8 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
-import AdminDashboard from '@/components/admin/AdminDashboard';
-import UserManagement from '@/components/admin/UserManagement';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import UserManagement from '@/pages/admin/UserManagement';
 
 function App() {
   return (
