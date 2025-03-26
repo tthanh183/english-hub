@@ -9,6 +9,7 @@ import com.example.englishhubbackend.service.RoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class RoleServiceImpl implements RoleService {
     RoleMapper roleMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createRole(RoleRequest roleRequest) {
         Role role = roleMapper.toRole(roleRequest);
         roleRepository.save(role);
@@ -28,14 +30,15 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<RoleResponse> getAllRoles() {
         return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).toList();
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Role getRole(String roleName) {
         return roleRepository.findById(roleName).orElse(null);
     }
-
 
 }
