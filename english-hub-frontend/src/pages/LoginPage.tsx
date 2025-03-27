@@ -12,12 +12,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { isAxiosError } from 'axios';
+import { useMutation } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/stores/authStore';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import { useMutation } from '@tanstack/react-query';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
