@@ -18,17 +18,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
-import { UserResponse, UserCreateRequest, UserRole } from '@/types/userType';
+import { UserCreateRequest, UserRole } from '@/types/userType';
 import { useState } from 'react';
 import { createUser } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { Spinner } from '../Spinner';
+import { useMutation } from '@tanstack/react-query';
 
 type AddUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onUserAdded: (user: UserResponse) => void;
+  onUserAdded: () => void;
 };
 
 export default function AddUserDialog({
@@ -41,26 +42,28 @@ export default function AddUserDialog({
     email: '',
     role: UserRole.USER,
   });
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const handleAddUser = async () => {
-    try {
-      setLoading(true);
-      const response = await createUser(newUser);
+  const addMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      onUserAdded();
       showSuccess('User added successfully');
-      onUserAdded(response.data.result);
-    } catch (error) {
+    },
+    onError: error => {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
         showError('Something went wrong');
       }
-    } finally {
-      setNewUser({ username: '', email: '', role: UserRole.USER });
-      setLoading(false);
+    },
+    onSettled: () => {
       onOpenChange(false);
-    }
+    },
+  });
+
+  const handleAddUser = async () => {
+    addMutation.mutate(newUser);
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -126,7 +129,7 @@ export default function AddUserDialog({
             Cancel
           </Button>
           <Button onClick={handleAddUser}>
-            {loading ? <Spinner /> : 'Add User'}
+            {addMutation.isPending ? <Spinner /> : 'Add User'}
           </Button>
         </DialogFooter>
       </DialogContent>
