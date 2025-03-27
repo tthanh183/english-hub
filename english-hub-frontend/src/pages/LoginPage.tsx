@@ -30,6 +30,8 @@ export default function LoginPage() {
       const { accessToken, refreshToken } = response.data.result;
       setAuth(accessToken, refreshToken);
       navigate('/');
+      setEmail('');
+      setPassword('');
     },
     onError: error => {
       if (isAxiosError(error)) {
