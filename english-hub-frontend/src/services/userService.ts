@@ -15,4 +15,8 @@ export const updateUser = async (user: UserUpdateRequest) => {
 
 export const deactivateUser = async (id: string) => {
   return await axiosInstance.patch(`/users/${id}/deactivate`);
-}
+};
+
+export const activateUser = async (id: string) => {
+  return await axiosInstance.patch(`/users/${id}/activate`);
+};

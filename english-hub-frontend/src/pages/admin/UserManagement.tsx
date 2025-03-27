@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -25,14 +25,19 @@ import {
   UserRole,
   UserUpdateRequest,
 } from '@/types/userType';
-import { deactivateUser, getAllUsers } from '@/services/userService';
+import {
+  activateUser,
+  deactivateUser,
+  getAllUsers,
+} from '@/services/userService';
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showError } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
+import { format } from 'date-fns';
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<UserResponse[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserOpen, setIsAddUserOpen] = useState<boolean>(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
@@ -40,49 +45,75 @@ export default function UserManagement() {
     null
   );
 
-  const fetchUsers = async () => {
-    const response = await getAllUsers();
-    setUsers(response.data.result);
-  };
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: getAllUsers,
+    select: data => data.data.result,
+  });
+
+  const deactivateUserMutation = useMutation({
+    mutationFn: deactivateUser,
+    onSuccess: response => {
+      const updatedUser = response.data.result;
+
+      queryClient.setQueryData<UserResponse[]>(['users'], oldUsers => {
+        if (Array.isArray(oldUsers)) {
+          return oldUsers.map(user =>
+            user.id === updatedUser.id ? updatedUser : user
+          );
+        }
+        return [];
+      });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to deactivate user');
+      }
+      console.log(error);
+    },
+  });
+
+  const activateUserMutation = useMutation({
+    mutationFn: activateUser,
+    onSuccess: response => {
+      const updatedUser = response.data.result;
+
+      queryClient.setQueryData<UserResponse[]>(['users'], oldUsers => {
+        if (Array.isArray(oldUsers)) {
+          return oldUsers.map(user =>
+            user.id === updatedUser.id ? updatedUser : user
+          );
+        }
+        return [];
+      });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to activate user');
+      }
+    },
+  });
 
   const filteredUsers = users.filter(
-    user =>
+    (user: UserResponse) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddUser = (user: UserResponse) => {
-    setUsers([...users, user]);
-  };
-
-  const handleUpdateUser = (updatedUser: UserResponse) => {
-    setUsers(
-      users.map(user => (user.id === updatedUser.id ? updatedUser : user))
-    );
-  };
-
-  const handleDeleteUser = (id: string) => {
-    setUsers(users.filter(user => user.id !== id));
-  };
-
-  const handleDeactivateUser = async (id: string) => {
-    try {
-      const response = await deactivateUser(id);
-      const updatedUser = response.data.result;
-      setUsers(
-        users.map(user => (user.id === updatedUser.id ? updatedUser : user))
-      );
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-      } else {
-        showError('Something went wrong');
-      }
-    }
+  const handleToggleUserStatus = (id: string, status: UserStatus) => {
+    const mutation =
+      status === UserStatus.ACTIVE
+        ? deactivateUserMutation
+        : activateUserMutation;
+    mutation.mutate(id);
   };
 
   const renderStatusBadge = (status: UserStatus) => {
@@ -104,7 +135,6 @@ export default function UserManagement() {
   const renderRoleBadge = (role: UserRole) => {
     const roleClasses = {
       [UserRole.ADMIN]: 'bg-blue-100 text-blue-800',
-      // [UserRole.USER]: 'bg-purple-100 text-purple-800',
       [UserRole.USER]: 'bg-gray-100 text-gray-800',
     };
 
@@ -117,6 +147,10 @@ export default function UserManagement() {
     );
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -127,7 +161,9 @@ export default function UserManagement() {
         <AddUserDialog
           isOpen={isAddUserOpen}
           onOpenChange={setIsAddUserOpen}
-          onUserAdded={handleAddUser}
+          onUserAdded={() =>
+            queryClient.invalidateQueries({ queryKey: ['users'] })
+          }
         />
       </div>
 
@@ -156,14 +192,14 @@ export default function UserManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUsers.map(user => (
+            {filteredUsers.map((user: UserResponse) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{renderRoleBadge(user.role)}</TableCell>
                 <TableCell>{renderStatusBadge(user.status)}</TableCell>
                 <TableCell>
-                  {new Date(user.joinDate).toISOString().split('T')[0]}
+                  {format(new Date(user.joinDate), 'yyyy-MM-dd')}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -184,7 +220,9 @@ export default function UserManagement() {
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDeactivateUser(user.id)}
+                        onClick={() =>
+                          handleToggleUserStatus(user.id, user.status)
+                        }
                       >
                         {user.status === UserStatus.ACTIVE
                           ? 'Deactivate'
@@ -193,7 +231,7 @@ export default function UserManagement() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-red-600"
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => console.log('Delete user')}
                       >
                         Delete
                       </DropdownMenuItem>
@@ -211,7 +249,9 @@ export default function UserManagement() {
         onOpenChange={setIsEditUserOpen}
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
-        onUserUpdated={handleUpdateUser}
+        onUserUpdated={() =>
+          queryClient.invalidateQueries({ queryKey: ['users'] })
+        }
       />
     </div>
   );
