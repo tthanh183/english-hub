@@ -17,39 +17,37 @@ import { useAuthStore } from '@/stores/authStore';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
+import { useMutation } from '@tanstack/react-query';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await login({ email, password });
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: response => {
       const { accessToken, refreshToken } = response.data.result;
       setAuth(accessToken, refreshToken);
-
       navigate('/');
-    } catch (error) {
+    },
+    onError: error => {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
         if (error.response?.data.code === 1012) {
           showError('Please visit your email to verify your account.');
-          await resendVerificationCode(email);
+          resendVerificationCode(email);
           navigate('/verify', { state: { email } });
         }
       } else {
         showError('Something went wrong');
       }
-    } finally {
-      setEmail('');
-      setPassword('');
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    mutation.mutate({ email, password });
   };
 
   return (
@@ -99,8 +97,12 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Spinner /> : 'Sign in'}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? <Spinner /> : 'Sign in'}
             </Button>
 
             <div className="text-center text-sm">
