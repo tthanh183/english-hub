@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { isAxiosError } from 'axios';
+import { useMutation } from '@tanstack/react-query';
 
 import { resendVerificationCode, verifyUser } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -28,6 +29,39 @@ export default function VerifyPage() {
   const location = useLocation();
   const email = location.state?.email;
   const navigate = useNavigate();
+
+  const verifyMutation = useMutation({
+    mutationFn: verifyUser,
+    onSuccess: response => {
+      showSuccess(response.data.message);
+      navigate('/login');
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError("Verification code doesn't match");
+      } else {
+        showError('Something went wrong');
+      }
+    },
+    onSettled: () => {
+      setCode(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
+    },
+  });
+
+  const resendMutation = useMutation({
+    mutationFn: resendVerificationCode,
+    onSuccess: response => {
+      showSuccess(response.data.message);
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -73,43 +107,18 @@ export default function VerifyPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const verificationCode = code.join('');
 
     if (!verificationCode || !email) return;
-    try {
-      const response = await verifyUser({
-        email,
-        verificationCode,
-      });
-      console.log(response);
 
-      showSuccess(response.data.message);
-      navigate('/login');
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showError("Verification code doesn't match");
-      } else {
-        showError('Something went wrong');
-      }
-    } finally {
-      setCode(['', '', '', '', '', '']);
-      inputRefs.current[0]?.focus();
-    }
+    verifyMutation.mutate({ email, verificationCode });
   };
 
-  const handleResend = async () => {
-    try {
-      const response = await resendVerificationCode(email);
-      showSuccess(response.data.message);
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-      } else {
-        showError('Something went wrong');
-      }
-    }
+  const handleResend = () => {
+    if (resendMutation.isPending) return;
+    resendMutation.mutate(email);
   };
 
   return (
@@ -167,16 +176,21 @@ export default function VerifyPage() {
                     type="button"
                     className="text-blue-600 hover:text-blue-800"
                     onClick={handleResend}
+                    disabled={resendMutation.isPending}
                   >
-                    Resend
+                    {resendMutation.isPending ? 'Sending...' : 'Resend'}
                   </button>
                 </p>
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full">
-              Verify
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={verifyMutation.isPending}
+            >
+              {verifyMutation.isPending ? 'Verifying...' : 'Verify'}
             </Button>
             <div className="text-center text-sm">
               <Link to="/login" className="text-blue-600 hover:text-blue-800">
