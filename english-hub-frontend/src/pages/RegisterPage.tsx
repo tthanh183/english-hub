@@ -35,11 +35,6 @@ export default function RegisterPage() {
       setTimeout(() => {
         navigate('/verify', { state: { email: response.data.result.email } });
       }, 1000);
-      setFormData({
-        email: '',
-        password: '',
-        username: '',
-      });
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -47,6 +42,13 @@ export default function RegisterPage() {
       } else {
         showError('Something went wrong');
       }
+    },
+    onSettled: () => {
+      setFormData({
+        email: '',
+        password: '',
+        username: '',
+      });
     },
   });
 
