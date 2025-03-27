@@ -17,6 +17,7 @@ import { registerUser } from '@/services/authService';
 import { RegisterRequest } from '@/types/authType';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
+import { useMutation } from '@tanstack/react-query';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -24,8 +25,30 @@ export default function RegisterPage() {
     password: '',
     username: '',
   });
-  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: response => {
+      showSuccess(
+        'User created successfully. Visit your email to verify your account.'
+      );
+      setTimeout(() => {
+        navigate('/verify', { state: { email: response.data.result.email } });
+      }, 1000);
+      setFormData({
+        email: '',
+        password: '',
+        username: '',
+      });
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,29 +60,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await registerUser(formData);
-      showSuccess(
-        'User created successfully. Visit your email to verify your account.'
-      );
-      setTimeout(() => {
-        navigate('/verify', { state: { email: response.data.result.email } });
-      }, 1000);
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-      }else {
-        showError('Something went wrong');
-      }
-    } finally {
-      setFormData({
-        email: '',
-        password: '',
-        username: '',
-      });
-      setLoading(false);
-    }
+    mutation.mutate(formData);
   };
 
   return (
@@ -117,8 +118,12 @@ export default function RegisterPage() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 mt-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Spinner /> : 'Sign up'}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? <Spinner /> : 'Sign up'}
             </Button>
             <div className="text-center text-sm">
               Already have an account?{' '}
