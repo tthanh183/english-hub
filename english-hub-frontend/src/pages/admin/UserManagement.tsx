@@ -82,7 +82,6 @@ export default function UserManagement() {
     mutationFn: activateUser,
     onSuccess: response => {
       const updatedUser = response.data.result;
-
       queryClient.setQueryData<UserResponse[]>(['users'], oldUsers => {
         if (Array.isArray(oldUsers)) {
           return oldUsers.map(user =>

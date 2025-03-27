@@ -16,19 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
+import { UserRole, UserUpdateRequest } from '@/types/userType';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
-interface EditUserDialogProps {
+type EditUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   selectedUser: UserUpdateRequest | null;
   setSelectedUser: (user: UserUpdateRequest | null) => void;
-  onUserUpdated: (user: UserResponse) => void;
-}
+  onUserUpdated: () => void;
+};
 
 export default function UpdateUserDialog({
   isOpen,
@@ -37,25 +37,27 @@ export default function UpdateUserDialog({
   setSelectedUser,
   onUserUpdated,
 }: EditUserDialogProps) {
-  const [loading, setLoading] = useState<boolean>(false);
+  const updateMutation = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      onUserUpdated();
+      showSuccess('User updated successfully');
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+    onSettled: () => {
+      onOpenChange(false);
+      setSelectedUser(null);
+    },
+  });
   const handleEditUser = async () => {
     if (selectedUser) {
-      try {
-        setLoading(true);
-        const response = await updateUser(selectedUser);
-        showSuccess('User updated successfully');
-        onUserUpdated(response.data.result);
-      } catch (error) {
-        if (isAxiosError(error)) {
-          showError(error.response?.data.message);
-        } else {
-          showError('Something went wrong');
-        }
-      } finally {
-        onOpenChange(false);
-        setSelectedUser(null);
-        setLoading(false);
-      }
+      updateMutation.mutate(selectedUser);
     }
   };
   return (
@@ -122,7 +124,7 @@ export default function UpdateUserDialog({
             Cancel
           </Button>
           <Button onClick={handleEditUser}>
-            {loading ? 'Updating...' : 'Save Changes'}
+            {updateMutation.isPending ? 'Updating...' : 'Save Changes'}
           </Button>
         </DialogFooter>
       </DialogContent>
