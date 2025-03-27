@@ -30,8 +30,6 @@ export default function LoginPage() {
       const { accessToken, refreshToken } = response.data.result;
       setAuth(accessToken, refreshToken);
       navigate('/');
-      setEmail('');
-      setPassword('');
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -44,6 +42,10 @@ export default function LoginPage() {
       } else {
         showError('Something went wrong');
       }
+    },
+    onSettled: () => {
+      setEmail('');
+      setPassword('');
     },
   });
 
