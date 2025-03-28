@@ -48,6 +48,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse activateUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setStatus(UserStatusEnum.ACTIVE);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toUserResponse)

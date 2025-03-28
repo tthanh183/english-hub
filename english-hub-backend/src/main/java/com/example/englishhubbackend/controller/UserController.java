@@ -25,6 +25,11 @@ public class UserController {
         return ApiResponse.<UserResponse>builder().result(userService.deactivateUser(UUID.fromString(userId))).build();
     }
 
+    @PatchMapping("/{userId}/activate")
+    public ApiResponse<UserResponse> activateUser(@PathVariable String userId) {
+        return ApiResponse.<UserResponse>builder().result(userService.activateUser(UUID.fromString(userId))).build();
+    }
+
     @GetMapping("")
     public ApiResponse<List<UserResponse>> getAllUsers() {
         return ApiResponse.<List<UserResponse>>builder().result(userService.getAllUsers()).build();
