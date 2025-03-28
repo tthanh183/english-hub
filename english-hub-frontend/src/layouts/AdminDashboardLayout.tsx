@@ -14,7 +14,7 @@ export default function DashboardLayout() {
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: Home },
     { name: 'User Management', href: '/admin/users', icon: Users },
-    { name: 'Content Management', href: '/admin/content', icon: BookOpen },
+    { name: 'Course Management', href: '/admin/courses', icon: BookOpen },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 

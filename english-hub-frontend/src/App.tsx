@@ -9,6 +9,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
+import CourseManagement from './pages/admin/CourseManagement';
+import CourseDetail from './pages/admin/CourseDetail';
 
 function App() {
   return (
@@ -23,10 +25,12 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
           {/* The DashboardLayout will wrap all admin pages */}
-          <Route path="/admin" element={<AdminDashboardLayout/>}>
+          <Route path="/admin" element={<AdminDashboardLayout />}>
             {/* Admin specific routes */}
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<UserManagement />} />
+            <Route path="courses" element={<CourseManagement />} />
+            <Route path="courses/:courseId" element={<CourseDetail />} />
             {/* Add more admin routes here */}
           </Route>
         </Route>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showError } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
+import { useUserStore } from '@/stores/userStore';
 
 export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -44,29 +45,35 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(
     null
   );
+  const { users, setUsers, updateUser } = useUserStore();
 
   const queryClient = useQueryClient();
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: getAllUsers,
     select: data => data.data.result,
   });
+
+  useEffect(() => {
+    if (data.length !== users.length) {
+      setUsers(data);
+    }
+  }, [data, users, setUsers]);
 
   const deactivateUserMutation = useMutation({
     mutationFn: deactivateUser,
     onSuccess: response => {
       const updatedUser = response.data.result;
 
-      queryClient.setQueryData<UserResponse[]>(['users'], oldUsers => {
-        if (Array.isArray(oldUsers)) {
-          return oldUsers.map(user =>
-            user.id === updatedUser.id ? updatedUser : user
-          );
-        }
-        return [];
-      });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
+        Array.isArray(oldUsers)
+          ? oldUsers.map(user =>
+              user.id === updatedUser.id ? updatedUser : user
+            )
+          : []
+      );
+      updateUser(updatedUser);
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -82,15 +89,14 @@ export default function UserManagement() {
     mutationFn: activateUser,
     onSuccess: response => {
       const updatedUser = response.data.result;
-      queryClient.setQueryData<UserResponse[]>(['users'], oldUsers => {
-        if (Array.isArray(oldUsers)) {
-          return oldUsers.map(user =>
-            user.id === updatedUser.id ? updatedUser : user
-          );
-        }
-        return [];
-      });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
+        Array.isArray(oldUsers)
+          ? oldUsers.map(user =>
+              user.id === updatedUser.id ? updatedUser : user
+            )
+          : []
+      );
+      updateUser(updatedUser);
     },
     onError: error => {
       if (isAxiosError(error)) {
