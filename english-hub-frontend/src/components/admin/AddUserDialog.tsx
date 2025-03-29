@@ -18,34 +18,41 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
-import { UserCreateRequest, UserRole } from '@/types/userType';
 import { useState } from 'react';
+
+import { UserCreateRequest, UserResponse, UserRole } from '@/types/userType';
 import { createUser } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { Spinner } from '../Spinner';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUserStore } from '@/stores/userStore';
 
 type AddUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onUserAdded: () => void;
 };
 
 export default function AddUserDialog({
   isOpen,
   onOpenChange,
-  onUserAdded,
 }: AddUserDialogProps) {
   const [newUser, setNewUser] = useState<UserCreateRequest>({
     username: '',
     email: '',
     role: UserRole.USER,
   });
+  const { storeCreateUser } = useUserStore();
+  const queryClient = useQueryClient();
+
   const addMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: () => {
-      onUserAdded();
+    onSuccess: (response: UserResponse) => {
+      storeCreateUser(response);
+      queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) => [
+        ...oldUsers,
+        response,
+      ]);
       showSuccess('User added successfully');
     },
     onError: error => {

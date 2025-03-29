@@ -33,7 +33,7 @@ import {
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { showError } from '@/hooks/useToast';
+import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
 import { useUserStore } from '@/stores/userStore';
@@ -45,14 +45,13 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(
     null
   );
-  const { users, setUsers, updateUser } = useUserStore();
+  const { users, setUsers, storeUpdateUser } = useUserStore();
 
   const queryClient = useQueryClient();
 
   const { data = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: getAllUsers,
-    select: data => data.data.result,
   });
 
   useEffect(() => {
@@ -64,16 +63,12 @@ export default function UserManagement() {
   const deactivateUserMutation = useMutation({
     mutationFn: deactivateUser,
     onSuccess: response => {
-      const updatedUser = response.data.result;
-
+      const updatedUser = response;
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
-        Array.isArray(oldUsers)
-          ? oldUsers.map(user =>
-              user.id === updatedUser.id ? updatedUser : user
-            )
-          : []
+        oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
       );
-      updateUser(updatedUser);
+      storeUpdateUser(updatedUser);
+      showSuccess('User deactivated successfully');
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -88,15 +83,12 @@ export default function UserManagement() {
   const activateUserMutation = useMutation({
     mutationFn: activateUser,
     onSuccess: response => {
-      const updatedUser = response.data.result;
+      const updatedUser = response;
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
-        Array.isArray(oldUsers)
-          ? oldUsers.map(user =>
-              user.id === updatedUser.id ? updatedUser : user
-            )
-          : []
+        oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
       );
-      updateUser(updatedUser);
+      storeUpdateUser(updatedUser);
+      showSuccess('User activated successfully');
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -163,13 +155,7 @@ export default function UserManagement() {
           <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
           <p className="text-muted-foreground">Manage your platform users.</p>
         </div>
-        <AddUserDialog
-          isOpen={isAddUserOpen}
-          onOpenChange={setIsAddUserOpen}
-          onUserAdded={() =>
-            queryClient.invalidateQueries({ queryKey: ['users'] })
-          }
-        />
+        <AddUserDialog isOpen={isAddUserOpen} onOpenChange={setIsAddUserOpen} />
       </div>
 
       <div className="flex items-center justify-between">
@@ -254,9 +240,6 @@ export default function UserManagement() {
         onOpenChange={setIsEditUserOpen}
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
-        onUserUpdated={() =>
-          queryClient.invalidateQueries({ queryKey: ['users'] })
-        }
       />
     </div>
   );

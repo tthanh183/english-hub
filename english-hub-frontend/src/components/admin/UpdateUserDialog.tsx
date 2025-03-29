@@ -16,18 +16,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { UserRole, UserUpdateRequest } from '@/types/userType';
+import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useUserStore } from '@/stores/userStore';
 
 type EditUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   selectedUser: UserUpdateRequest | null;
   setSelectedUser: (user: UserUpdateRequest | null) => void;
-  onUserUpdated: () => void;
 };
 
 export default function UpdateUserDialog({
@@ -35,12 +35,18 @@ export default function UpdateUserDialog({
   onOpenChange,
   selectedUser,
   setSelectedUser,
-  onUserUpdated,
 }: EditUserDialogProps) {
+  const { storeUpdateUser } = useUserStore();
+  const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: () => {
-      onUserUpdated();
+    onSuccess: (response: UserResponse) => {
+      storeUpdateUser(response);
+      queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
+        Array.isArray(oldUsers)
+          ? oldUsers.map(user => (user.id === response.id ? response : user))
+          : [response]
+      );
       showSuccess('User updated successfully');
     },
     onError: error => {

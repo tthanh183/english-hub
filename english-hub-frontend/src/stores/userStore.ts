@@ -4,16 +4,21 @@ import { UserResponse } from '@/types/userType';
 type UserState = {
   users: UserResponse[];
   setUsers: (users: UserResponse[]) => void;
-  updateUser: (updatedUser: UserResponse) => void;
-}
+  storeUpdateUser: (updatedUser: UserResponse) => void;
+  storeCreateUser: (newUser: UserResponse) => void;
+};
 
 export const useUserStore = create<UserState>(set => ({
   users: [],
   setUsers: users => set({ users }),
-  updateUser: updatedUser =>
+  storeUpdateUser: (updatedUser: UserResponse) =>
     set(state => ({
       users: state.users.map(user =>
         user.id === updatedUser.id ? updatedUser : user
       ),
+    })),
+  storeCreateUser: (newUser: UserResponse) =>
+    set(state => ({
+      users: [...state.users, newUser],
     })),
 }));
