@@ -150,7 +150,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return AuthenticateResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .authenticated(true)
                 .build();
     }
 
@@ -177,7 +176,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return AuthenticateResponse.builder()
                     .accessToken(newAccessToken)
                     .refreshToken(refreshRequest.getRefreshToken())
-                    .authenticated(true)
                     .build();
         } catch (Exception e) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
