@@ -18,6 +18,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
+import { LoginResponse } from '@/types/authType';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
@@ -26,8 +27,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const mutation = useMutation({
     mutationFn: login,
-    onSuccess: response => {
-      const { accessToken, refreshToken } = response.data.result;
+    onSuccess: (response: LoginResponse) => {
+      const { accessToken, refreshToken } = response;
       setAuth(accessToken, refreshToken);
       navigate('/');
     },

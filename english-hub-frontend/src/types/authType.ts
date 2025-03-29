@@ -13,3 +13,8 @@ export type VerifyRequest = {
   email: string;
   verificationCode: string;
 };
+
+export type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+};

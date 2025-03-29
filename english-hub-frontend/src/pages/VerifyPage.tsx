@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { isAxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
-import { resendVerificationCode, verifyUser } from '@/services/authService';
+import { resendVerificationCode, verifyEmail } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
 
 export default function VerifyPage() {
@@ -31,9 +31,9 @@ export default function VerifyPage() {
   const navigate = useNavigate();
 
   const verifyMutation = useMutation({
-    mutationFn: verifyUser,
-    onSuccess: response => {
-      showSuccess(response.data.message);
+    mutationFn: verifyEmail,
+    onSuccess: (response: string) => {
+      showSuccess(response);
       navigate('/login');
     },
     onError: error => {
@@ -51,8 +51,8 @@ export default function VerifyPage() {
 
   const resendMutation = useMutation({
     mutationFn: resendVerificationCode,
-    onSuccess: response => {
-      showSuccess(response.data.message);
+    onSuccess: (response: string) => {
+      showSuccess(response);
     },
     onError: error => {
       if (isAxiosError(error)) {

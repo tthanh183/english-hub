@@ -14,10 +14,11 @@ import { Label } from '@/components/ui/label';
 import { isAxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 
-import { registerUser } from '@/services/authService';
+import { register } from '@/services/authService';
 import { RegisterRequest } from '@/types/authType';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
+import { UserResponse } from '@/types/userType';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -27,13 +28,13 @@ export default function RegisterPage() {
   });
   const navigate = useNavigate();
   const mutation = useMutation({
-    mutationFn: registerUser,
-    onSuccess: response => {
+    mutationFn: register,
+    onSuccess: (response: UserResponse) => {
       showSuccess(
         'User created successfully. Visit your email to verify your account.'
       );
       setTimeout(() => {
-        navigate('/verify', { state: { email: response.data.result.email } });
+        navigate('/verify', { state: { email: response.email } });
       }, 1000);
     },
     onError: error => {
