@@ -1,22 +1,35 @@
 import axiosInstance from '@/services/axiosInstance';
-import { UserCreateRequest, UserUpdateRequest } from '@/types/userType';
+import {
+  UserCreateRequest,
+  UserResponse,
+  UserUpdateRequest,
+} from '@/types/userType';
 
-export const getAllUsers = async () => {
-  return await axiosInstance.get('/users');
-};
+export async function getAllUsers(): Promise<UserResponse[]> {
+  const response = await axiosInstance.get('/users');
+  return response.data.result;
+}
 
-export const createUser = async (user: UserCreateRequest) => {
-  return await axiosInstance.post('/users', user);
-};
+export async function createUser(
+  user: UserCreateRequest
+): Promise<UserResponse> {
+  const response = await axiosInstance.post('/users', user);
+  return response.data.result;
+}
 
-export const updateUser = async (user: UserUpdateRequest) => {
-  return await axiosInstance.put(`/users/${user.id}`, user);
-};
+export async function updateUser(
+  user: UserUpdateRequest
+): Promise<UserResponse> {
+  const response = await axiosInstance.put(`/users/${user.id}`, user);
+  return response.data.result;
+}
 
-export const deactivateUser = async (id: string) => {
-  return await axiosInstance.patch(`/users/${id}/deactivate`);
-};
+export async function deactivateUser(id: string): Promise<UserResponse> {
+  const response = await axiosInstance.patch(`/users/${id}/deactivate`);
+  return response.data.result;
+}
 
-export const activateUser = async (id: string) => {
-  return await axiosInstance.patch(`/users/${id}/activate`);
-};
+export async function activateUser(id: string): Promise<UserResponse> {
+  const response = await axiosInstance.patch(`/users/${id}/activate`);
+  return response.data.result;
+}
