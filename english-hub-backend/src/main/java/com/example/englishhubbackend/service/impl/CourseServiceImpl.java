@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +31,11 @@ public class CourseServiceImpl implements CourseService {
         newCourse.setCreatedDate(LocalDate.now());
         newCourse.setUpdatedDate(LocalDate.now());
         return courseMapper.toCourseResponse(courseRepository.save(newCourse));
+    }
+
+    @Override
+    public List<CourseResponse> getAllCourses() {
+        List<Course> courses = courseRepository.findAll();
+        return courses.stream().map(courseMapper::toCourseResponse).collect(Collectors.toList());
     }
 }

@@ -1,17 +1,4 @@
 services:
-  postgres:
-    image: 'postgres:17'
-    environment:
-      - 'POSTGRES_DB=senior_project'
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_PASSWORD=1832003'
-    ports:
-      - '5432:5432'
-    volumes:
-      - 'pg-data:/var/lib/postgresql/data'
-    networks:
-      - 'mynetwork'
-
   redis:
     image: 'redis:latest'
     ports:
@@ -22,5 +9,3 @@ services:
 networks:
   mynetwork:
 
-volumes:
-  pg-data:
