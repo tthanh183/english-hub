@@ -39,13 +39,6 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public byte[] downloadFile(String fileName) throws IOException {
-        S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucketName, fileName));
-        InputStream inputStream = s3Object.getObjectContent();
-        return inputStream.readAllBytes();
-    }
-
-    @Override
     public void deleteFile(String fileName) {
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
     }
