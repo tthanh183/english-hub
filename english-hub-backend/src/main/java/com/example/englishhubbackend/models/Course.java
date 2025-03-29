@@ -20,6 +20,7 @@ public class Course {
     UUID id;
     String title;
     String description;
+    String imageUrl;
     @Column(name = "created_at")
     LocalDate createdDate;
     @Column(name = "updated_at")
