@@ -11,7 +11,7 @@ import {
 } from '../ui/dialog';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '../ui/input';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Textarea } from '../ui/textarea';
 import { isAxiosError } from 'axios';
 import { CourseCreateRequest, CourseResponse } from '@/types/courseType';
@@ -59,11 +59,22 @@ export default function AddCourseDialog({
     },
     onSettled: () => {
       onOpenChange(false);
-      setNewCourse({ title: '', description: '', imageUrl: '' });
-      setImage(null);
-      setPreviewUrl(null);
+      resetDialogState();
     },
   });
+
+  const resetDialogState = () => {
+    setNewCourse({ title: '', description: '', imageUrl: '' });
+    setImage(null);
+    setPreviewUrl(null);
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetDialogState();
+    }
+  }, [isOpen]);
+
   const handleAddCourse = async () => {
     const presignedUrl = await getPresignedUrl(image?.name || '');
     if (!image) {
