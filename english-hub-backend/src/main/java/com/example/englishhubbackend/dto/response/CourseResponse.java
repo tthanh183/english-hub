@@ -15,6 +15,7 @@ public class CourseResponse {
     UUID id;
     String title;
     String description;
+    String imageUrl;
     LocalDate createdDate;
     LocalDate updatedDate;
 }
