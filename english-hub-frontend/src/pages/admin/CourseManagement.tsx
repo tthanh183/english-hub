@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,96 +19,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { BookOpen, FileText, GraduationCap, Plus, Search } from 'lucide-react';
+import { FileText, GraduationCap, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getAllCourses } from '@/services/courseService';
 import AddCourseDialog from '@/components/admin/AddCourseDialog';
-
-// Mock data
-const initialCourses = [
-  {
-    id: 1,
-    title: 'Part 1: Photographs',
-    category: 'Listening',
-    lessons: 12,
-    tests: 3,
-    status: 'Published',
-    lastUpdated: '2023-05-15',
-  },
-  {
-    id: 2,
-    title: 'Part 2: Question-Response',
-    category: 'Listening',
-    lessons: 10,
-    tests: 2,
-    status: 'Published',
-    lastUpdated: '2023-04-20',
-  },
-  {
-    id: 3,
-    title: 'Part 3: Conversations',
-    category: 'Listening',
-    lessons: 15,
-    tests: 4,
-    status: 'Draft',
-    lastUpdated: '2023-06-01',
-  },
-  {
-    id: 4,
-    title: 'Part 4: Talks',
-    category: 'Listening',
-    lessons: 8,
-    tests: 2,
-    status: 'Published',
-    lastUpdated: '2023-03-10',
-  },
-  {
-    id: 5,
-    title: 'Part 5: Incomplete Sentences',
-    category: 'Reading',
-    lessons: 14,
-    tests: 5,
-    status: 'Published',
-    lastUpdated: '2023-05-22',
-  },
-  {
-    id: 6,
-    title: 'Part 6: Text Completion',
-    category: 'Reading',
-    lessons: 14,
-    tests: 5,
-    status: 'Published',
-    lastUpdated: '2023-05-22',
-  },
-  {
-    id: 7,
-    title: 'Part 7: Single Passages',
-    category: 'Reading',
-    lessons: 14,
-    tests: 5,
-    status: 'Published',
-    lastUpdated: '2023-05-22',
-  },
-  {
-    id: 8,
-    title: 'Part 7: Double Passages',
-    category: 'Reading',
-    lessons: 14,
-    tests: 5,
-    status: 'Published',
-    lastUpdated: '2023-05-22',
-  },
-  {
-    id: 9,
-    title: 'Part 7: Triple Passages',
-    category: 'Reading',
-    lessons: 14,
-    tests: 5,
-    status: 'Published',
-    lastUpdated: '2023-05-22',
-  },
-];
+import { useCourseStore } from '@/stores/courseStore';
+import CourseCard from '@/components/admin/CourseCard';
 
 const initialTests = [
   {
@@ -158,21 +75,14 @@ const initialTests = [
   },
 ];
 
-type Course = (typeof initialCourses)[0];
 type Test = (typeof initialTests)[0];
 
 export default function CourseManagement() {
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [tests, setTests] = useState<Test[]>(initialTests);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('courses');
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
   const [isAddTestOpen, setIsAddTestOpen] = useState(false);
-  const [newCourse, setNewCourse] = useState({
-    title: '',
-    category: 'Computer Science',
-    status: 'Draft',
-  });
   const [newTest, setNewTest] = useState({
     title: '',
     courseId: 1,
@@ -181,16 +91,24 @@ export default function CourseManagement() {
     status: 'Draft',
   });
 
-  const courseQuery = useQuery({
+  const { courses, setCourses } = useCourseStore();
+
+  const { data = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,
     select: data => data,
   });
 
-  const filteredCourses = courses.filter(
-    course =>
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.category.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    console.log('Courses:', data);
+
+    if (data.length !== courses.length) {
+      setCourses(data);
+    }
+  }, [data, courses, setCourses]);
+
+  const filteredCourses = courses.filter(course =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredTests = tests.filter(
@@ -200,23 +118,6 @@ export default function CourseManagement() {
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
-
-  const handleAddCourse = () => {
-    const id = Math.max(...courses.map(course => course.id)) + 1;
-    const today = new Date().toISOString().split('T')[0];
-    setCourses([
-      ...courses,
-      {
-        ...newCourse,
-        id,
-        lessons: 0,
-        tests: 0,
-        lastUpdated: today,
-      },
-    ]);
-    setNewCourse({ title: '', category: 'Computer Science', status: 'Draft' });
-    setIsAddCourseOpen(false);
-  };
 
   const handleAddTest = () => {
     const id = Math.max(...tests.map(test => test.id)) + 1;
@@ -239,20 +140,24 @@ export default function CourseManagement() {
     setIsAddTestOpen(false);
   };
 
-  //   const handleDeleteCourse = (id: number) => {
-  //     setCourses(courses.filter(course => course.id !== id));
-  //     // Also delete associated tests
-  //     setTests(tests.filter(test => test.courseId !== id));
-  //   };
+    // const handleDeleteCourse = (id: number) => {
+    //   setCourses(courses.filter(course => course.id !== id));
+    //   // Also delete associated tests
+    //   setTests(tests.filter(test => test.courseId !== id));
+    // };
 
-  //   const handleDeleteTest = (id: number) => {
-  //     setTests(tests.filter(test => test.id !== id));
-  //   };
+    // const handleDeleteTest = (id: number) => {
+    //   setTests(tests.filter(test => test.id !== id));
+    // };
 
   const getCourseTitle = (courseId: number) => {
     const course = courses.find(c => c.id === courseId);
     return course ? course.title : 'Unknown Course';
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -404,48 +309,9 @@ export default function CourseManagement() {
         </div>
 
         <TabsContent value="courses" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredCourses.map(course => (
-              <Link
-                key={course.id}
-                to={`/admin/courses/${course.id}`}
-                className="block"
-              >
-                <div className="h-full">
-                  <div className="h-full border rounded-lg p-6 hover:border-primary hover:shadow-md transition-all">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium text-lg">{course.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {course.category}
-                        </p>
-                      </div>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          course.status === 'Published'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {course.status}
-                      </span>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between text-sm">
-                      <div className="flex items-center">
-                        <BookOpen className="h-4 w-4 mr-1 text-muted-foreground" />
-                        <span>{course.lessons} lessons</span>
-                      </div>
-                      <div className="flex items-center">
-                        <GraduationCap className="h-4 w-4 mr-1 text-muted-foreground" />
-                        <span>{course.tests} tests</span>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-xs text-muted-foreground">
-                      Last updated: {course.lastUpdated}
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <CourseCard key={course.id} course={course} />
             ))}
 
             <div

@@ -3,8 +3,8 @@ export type CourseResponse = {
   title: string;
   description: string;
   imageUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdDate: Date;
+  updatedDate: Date;
 };
 
 export type CourseCreateRequest = {
