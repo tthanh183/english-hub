@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +22,8 @@ import { Label } from '@/components/ui/label';
 import { BookOpen, FileText, GraduationCap, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { getAllCourses } from '@/services/courseService';
+import AddCourseDialog from '@/components/admin/AddCourseDialog';
 
 // Mock data
 const initialCourses = [
@@ -181,11 +181,11 @@ export default function CourseManagement() {
     status: 'Draft',
   });
 
-  // const courseQuery = useQuery({
-  //   queryKey: ['courses'],
-  //   queryFn: getAllCourses,
-  //   select: data => data.data.result,
-  // })
+  const courseQuery = useQuery({
+    queryKey: ['courses'],
+    queryFn: getAllCourses,
+    select: data => data,
+  });
 
   const filteredCourses = courses.filter(
     course =>
@@ -279,82 +279,10 @@ export default function CourseManagement() {
             <TabsTrigger value="tests">Tests</TabsTrigger>
           </TabsList>
           {activeTab === 'courses' ? (
-            <Dialog open={isAddCourseOpen} onOpenChange={setIsAddCourseOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Course
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Course</DialogTitle>
-                  <DialogDescription>
-                    Create a new course for your platform.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="title">Course Title</Label>
-                    <Input
-                      id="title"
-                      value={newCourse.title}
-                      onChange={e =>
-                        setNewCourse({ ...newCourse, title: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select
-                      value={newCourse.category}
-                      onValueChange={value =>
-                        setNewCourse({ ...newCourse, category: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Computer Science">
-                          Computer Science
-                        </SelectItem>
-                        <SelectItem value="Business">Business</SelectItem>
-                        <SelectItem value="Mathematics">Mathematics</SelectItem>
-                        <SelectItem value="Humanities">Humanities</SelectItem>
-                        <SelectItem value="Science">Science</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                      value={newCourse.status}
-                      onValueChange={value =>
-                        setNewCourse({ ...newCourse, status: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Draft">Draft</SelectItem>
-                        <SelectItem value="Published">Published</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsAddCourseOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddCourse}>Add Course</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <AddCourseDialog
+              isOpen={isAddCourseOpen}
+              onOpenChange={setIsAddCourseOpen}
+            />
           ) : (
             <Dialog open={isAddTestOpen} onOpenChange={setIsAddTestOpen}>
               <DialogTrigger asChild>
