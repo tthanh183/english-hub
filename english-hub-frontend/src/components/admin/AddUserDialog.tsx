@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { UserCreateRequest, UserResponse, UserRole } from '@/types/userType';
 import { createUser } from '@/services/userService';
@@ -64,8 +64,19 @@ export default function AddUserDialog({
     },
     onSettled: () => {
       onOpenChange(false);
+      resetDialogState();
     },
   });
+
+  const resetDialogState = () => {
+    setNewUser({ username: '', email: '', role: UserRole.USER });
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetDialogState();
+    }
+  }, [isOpen]);
 
   const handleAddUser = async () => {
     addMutation.mutate(newUser);
