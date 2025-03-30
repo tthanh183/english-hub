@@ -9,8 +9,6 @@ export async function getAllCourses(): Promise<CourseResponse[]> {
 export async function createCourse(
   course: CourseCreateRequest
 ): Promise<CourseResponse> {
-  console.log('Creating course:', course);
-
   const response = await axiosInstance.post('/courses', course);
   return response.data.result;
 }
