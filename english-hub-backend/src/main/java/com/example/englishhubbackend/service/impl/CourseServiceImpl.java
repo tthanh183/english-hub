@@ -2,16 +2,20 @@ package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.request.CourseCreateRequest;
 import com.example.englishhubbackend.dto.response.CourseResponse;
+import com.example.englishhubbackend.exception.AppException;
+import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.CourseMapper;
 import com.example.englishhubbackend.models.Course;
 import com.example.englishhubbackend.repository.CourseRepository;
 import com.example.englishhubbackend.service.CourseService;
+import com.example.englishhubbackend.service.S3Service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +26,7 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
     CourseRepository courseRepository;
     CourseMapper courseMapper;
-
+    S3Service s3Service;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")

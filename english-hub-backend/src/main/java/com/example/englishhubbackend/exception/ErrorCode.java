@@ -19,7 +19,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(1010, "User not found", HttpStatus.NOT_FOUND),
     ACCOUNT_ALREADY_VERIFIED(1011, "Account already verified", HttpStatus.CONFLICT),
     ACCOUNT_UNVERIFIED(1012, "Account unverified", HttpStatus.CONFLICT),
-    ACCOUNT_DEACTIVATED(1013, "Account deactivated", HttpStatus.CONFLICT),;
+    ACCOUNT_DEACTIVATED(1013, "Account deactivated", HttpStatus.CONFLICT),
+    FILE_UPLOAD_FAILED(1014, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),;
     private int code;
     private String message;
     private HttpStatusCode statusCode;

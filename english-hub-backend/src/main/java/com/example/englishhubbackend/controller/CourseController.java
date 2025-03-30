@@ -7,8 +7,11 @@ import com.example.englishhubbackend.service.CourseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,8 +22,8 @@ public class CourseController {
     CourseService courseService;
 
     @PostMapping("")
-    public ApiResponse<CourseResponse> createCourse(@RequestBody CourseCreateRequest courseCreateRequest) {
-        return ApiResponse.<CourseResponse>builder().result(courseService.createCourse(courseCreateRequest)).build();
+    public ApiResponse<CourseResponse> createCourse(@RequestBody CourseCreateRequest request) {
+        return ApiResponse.<CourseResponse>builder().result(courseService.createCourse(request)).build();
     }
 
     @GetMapping("")

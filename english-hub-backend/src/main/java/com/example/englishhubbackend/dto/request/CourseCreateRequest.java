@@ -2,6 +2,9 @@ package com.example.englishhubbackend.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Data
 @Builder
@@ -11,4 +14,5 @@ import lombok.experimental.FieldDefaults;
 public class CourseCreateRequest {
     String title;
     String description;
+    String imageUrl;
 }
