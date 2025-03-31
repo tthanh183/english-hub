@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
+import { useMutation } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,9 +14,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { isAxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
-
 import { useAuthStore } from '@/stores/authStore';
 import { login, resendVerificationCode } from '@/services/authService';
 import { showError } from '@/hooks/useToast';
@@ -23,8 +23,10 @@ import { LoginResponse } from '@/types/authType';
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
+
   const mutation = useMutation({
     mutationFn: login,
     onSuccess: (response: LoginResponse) => {
