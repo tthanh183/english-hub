@@ -1,5 +1,9 @@
-import { Button } from '../ui/button';
+import { isAxiosError } from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,18 +12,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { Label } from '@radix-ui/react-label';
-import { Input } from '../ui/input';
-import { useEffect, useState } from 'react';
-import { Textarea } from '../ui/textarea';
-import { isAxiosError } from 'axios';
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { CourseCreateRequest, CourseResponse } from '@/types/courseType';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createCourse } from '@/services/courseService';
 import { useCourseStore } from '@/stores/courseStore';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { Spinner } from '../Spinner';
+import { Spinner } from '@/components/Spinner';
 import { getPresignedUrl, uploadFileToS3 } from '@/utils/s3UploadUtil';
 
 type AddCourseDialogProps = {
@@ -38,8 +39,10 @@ export default function AddCourseDialog({
   });
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   const { storeCreateCourse } = useCourseStore();
   const queryClient = useQueryClient();
+  
   const courseMutation = useMutation({
     mutationFn: createCourse,
     onSuccess: (response: CourseResponse) => {
