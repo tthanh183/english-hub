@@ -27,6 +27,8 @@ import AddCourseDialog from '@/components/admin/AddCourseDialog';
 import { useCourseStore } from '@/stores/courseStore';
 import CourseCard from '@/components/admin/CourseCard';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
+import { CourseResponse } from '@/types/courseType';
+import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
 
 const initialTests = [
   {
@@ -91,6 +93,10 @@ export default function CourseManagement() {
     duration: '30 minutes',
     status: 'Draft',
   });
+  const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(
+    null
+  );
+  const [isEditCourseOpen, setIsEditCourseOpen] = useState(false);
 
   const { courses, setCourses } = useCourseStore();
 
@@ -111,6 +117,14 @@ export default function CourseManagement() {
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleEditCourse = (id: string) => {
+    const courseToEdit = courses.find(course => course.id === id);
+    if (courseToEdit) {
+      setSelectedCourse(courseToEdit);
+      setIsEditCourseOpen(true);
+    }
+  };
 
   const filteredTests = tests.filter(
     test =>
@@ -141,11 +155,11 @@ export default function CourseManagement() {
     setIsAddTestOpen(false);
   };
 
-  // const handleDeleteCourse = (id: number) => {
-  //   setCourses(courses.filter(course => course.id !== id));
-  //   // Also delete associated tests
-  //   setTests(tests.filter(test => test.courseId !== id));
-  // };
+  const handleDeleteCourse = (id: string) => {
+    setCourses(courses.filter(course => course.id !== id));
+    // Also delete associated tests
+    // setTests(tests.filter(test => test.courseId !== id));
+  };
 
   // const handleDeleteTest = (id: number) => {
   //   setTests(tests.filter(test => test.id !== id));
@@ -312,22 +326,21 @@ export default function CourseManagement() {
         <TabsContent value="courses" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredCourses.map(course => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                onEdit={() => handleEditCourse(course.id)}
+                onDelete={handleDeleteCourse}
+              />
             ))}
-
-            <div
-              className="border rounded-lg p-6 border-dashed flex flex-col items-center justify-center text-center h-full cursor-pointer hover:border-primary hover:bg-muted/50 transition-colors"
-              onClick={() => setIsAddCourseOpen(true)}
-            >
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Plus className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <h3 className="font-medium">Add New Course</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Create a new course for your platform
-              </p>
-            </div>
           </div>
+
+          <UpdateCourseDialog
+            isOpen={isEditCourseOpen}
+            onOpenChange={setIsEditCourseOpen}
+            selectedCourse={selectedCourse}
+            setSelectedCourse={setSelectedCourse}
+          />
         </TabsContent>
 
         <TabsContent value="tests" className="space-y-4">
