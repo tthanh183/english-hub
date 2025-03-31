@@ -1,4 +1,8 @@
-import { Button } from '../ui/button';
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6,18 +10,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Label } from '@radix-ui/react-label';
-import { Input } from '../ui/input';
-import { useEffect, useState } from 'react';
-import { Textarea } from '../ui/textarea';
-import { isAxiosError } from 'axios';
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { CourseResponse, CourseUpdateRequest } from '@/types/courseType';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateCourse } from '@/services/courseService';
 import { useCourseStore } from '@/stores/courseStore';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { Spinner } from '../Spinner';
+import { Spinner } from '@/components/Spinner';
 import { getPresignedUrl, uploadFileToS3 } from '@/utils/s3UploadUtil';
 
 type UpdateCourseDialogProps = {

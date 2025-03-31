@@ -25,7 +25,7 @@ import { updateUser } from '@/services/userService';
 import { useUserStore } from '@/stores/userStore';
 import { Spinner } from '@/components/Spinner';
 
-type EditUserDialogProps = {
+type UpdateUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   selectedUser: UserUpdateRequest | null;
@@ -37,7 +37,7 @@ export default function UpdateUserDialog({
   onOpenChange,
   selectedUser,
   setSelectedUser,
-}: EditUserDialogProps) {
+}: UpdateUserDialogProps) {
   const { storeUpdateUser } = useUserStore();
 
   const queryClient = useQueryClient();
