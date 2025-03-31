@@ -41,7 +41,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseResponse> getAllCourses() {
-        List<Course> courses = courseRepository.findAll();
+        List<Course> courses = courseRepository.findAllByOrderByCreatedDateAsc();
         return courses.stream().map(courseMapper::toCourseResponse).collect(Collectors.toList());
     }
 
