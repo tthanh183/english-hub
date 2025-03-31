@@ -8,7 +8,7 @@ type TokenPayload = {
 export const getUserIdFromToken = (token: string): string => {
   try {
     const decodedToken = jwtDecode<TokenPayload>(token);
-    return decodedToken.sub || '';
+    return decodedToken.sub;
   } catch (error) {
     console.error('Invalid token', error);
     return '';
