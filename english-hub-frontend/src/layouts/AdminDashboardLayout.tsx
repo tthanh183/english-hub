@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { BarChart, BookOpen, Home, LogOut, Menu, Users, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
+import { Button } from '@/components/ui/button';
 import { useMobile } from '@/hooks/useMobile';
 import { cn } from '@/lib/utils';
 
