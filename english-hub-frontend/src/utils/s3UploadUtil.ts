@@ -30,3 +30,12 @@ export async function uploadFileToS3(
     throw new Error('Failed to upload file to S3');
   }
 }
+
+export async function deleteFileFromS3(fileUrl: string): Promise<void> {
+  try {
+    await axios.delete(fileUrl);
+  } catch (error) {
+    console.error('Error deleting file from S3:', error);
+    throw new Error('Failed to delete file from S3');
+  }
+}

@@ -76,7 +76,7 @@ export default function CourseCard({
             className="flex items-center space-x-1"
           >
             <Edit className="h-4 w-4" />
-            <span>Edit</span>
+            <span>Update</span>
           </Button>
           <Button
             variant="destructive"

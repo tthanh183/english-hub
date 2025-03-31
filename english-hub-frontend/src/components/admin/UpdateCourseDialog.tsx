@@ -19,7 +19,11 @@ import { updateCourse } from '@/services/courseService';
 import { useCourseStore } from '@/stores/courseStore';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import { getPresignedUrl, uploadFileToS3 } from '@/utils/s3UploadUtil';
+import {
+  deleteFileFromS3,
+  getPresignedUrl,
+  uploadFileToS3,
+} from '@/utils/s3UploadUtil';
 
 type UpdateCourseDialogProps = {
   isOpen: boolean;
@@ -50,9 +54,14 @@ export default function UpdateCourseDialog({
       storeUpdateCourse(response);
       queryClient.setQueryData<CourseResponse[]>(
         ['courses'],
-        (oldCourses = []) => [...oldCourses, response]
+        (oldCourses = []) =>
+          Array.isArray(oldCourses)
+            ? oldCourses.map(course =>
+                course.id === response.id ? response : course
+              )
+            : [response]
       );
-      showSuccess('Course added successfully');
+      showSuccess('Course updated successfully');
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -77,7 +86,10 @@ export default function UpdateCourseDialog({
     if (!isOpen) {
       resetDialogState();
     }
-  }, [isOpen]);
+    if (selectedCourse) {
+      setPreviewUrl(selectedCourse.imageUrl);
+    }
+  }, [isOpen, selectedCourse]);
 
   const handleUpdateCourse = async () => {
     if (!selectedCourse) {
@@ -85,14 +97,13 @@ export default function UpdateCourseDialog({
       return;
     }
 
-    if (!image) {
-      showError('Please select an image file');
-      return;
-    }
-
     try {
-      const presignedUrl = await getPresignedUrl(image.name);
-      const imageUrl = await uploadFileToS3(image, presignedUrl);
+      let imageUrl = selectedCourse.imageUrl;
+      if (image) {
+        await deleteFileFromS3(imageUrl);
+        const presignedUrl = await getPresignedUrl(image.name);
+        imageUrl = await uploadFileToS3(image, presignedUrl);
+      }
       const { id, ...courseData } = selectedCourse;
       updateMutation.mutate({
         courseId: id,
