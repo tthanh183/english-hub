@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import { FileText, GraduationCap, Plus, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,9 +23,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { FileText, GraduationCap, Plus, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { getAllCourses } from '@/services/courseService';
 import AddCourseDialog from '@/components/admin/AddCourseDialog';
 import { useCourseStore } from '@/stores/courseStore';
@@ -82,10 +83,10 @@ type Test = (typeof initialTests)[0];
 
 export default function CourseManagement() {
   const [tests, setTests] = useState<Test[]>(initialTests);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('courses');
-  const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
-  const [isAddTestOpen, setIsAddTestOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('courses');
+  const [isAddCourseOpen, setIsAddCourseOpen] = useState<boolean>(false);
+  const [isAddTestOpen, setIsAddTestOpen] = useState<boolean>(false);
   const [newTest, setNewTest] = useState({
     title: '',
     courseId: 1,
@@ -96,19 +97,16 @@ export default function CourseManagement() {
   const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(
     null
   );
-  const [isEditCourseOpen, setIsEditCourseOpen] = useState(false);
+  const [isEditCourseOpen, setIsEditCourseOpen] = useState<boolean>(false);
 
   const { courses, setCourses } = useCourseStore();
 
   const { data = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,
-    select: data => data,
   });
 
   useEffect(() => {
-    console.log('Courses:', data);
-
     if (data.length !== courses.length) {
       setCourses(data);
     }
