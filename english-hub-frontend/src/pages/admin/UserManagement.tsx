@@ -37,6 +37,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
 import { useUserStore } from '@/stores/userStore';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
 
 export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -145,7 +146,7 @@ export default function UserManagement() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <GlobalSkeleton />;
   }
 
   return (

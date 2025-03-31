@@ -26,6 +26,7 @@ import { getAllCourses } from '@/services/courseService';
 import AddCourseDialog from '@/components/admin/AddCourseDialog';
 import { useCourseStore } from '@/stores/courseStore';
 import CourseCard from '@/components/admin/CourseCard';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
 
 const initialTests = [
   {
@@ -140,15 +141,15 @@ export default function CourseManagement() {
     setIsAddTestOpen(false);
   };
 
-    // const handleDeleteCourse = (id: number) => {
-    //   setCourses(courses.filter(course => course.id !== id));
-    //   // Also delete associated tests
-    //   setTests(tests.filter(test => test.courseId !== id));
-    // };
+  // const handleDeleteCourse = (id: number) => {
+  //   setCourses(courses.filter(course => course.id !== id));
+  //   // Also delete associated tests
+  //   setTests(tests.filter(test => test.courseId !== id));
+  // };
 
-    // const handleDeleteTest = (id: number) => {
-    //   setTests(tests.filter(test => test.id !== id));
-    // };
+  // const handleDeleteTest = (id: number) => {
+  //   setTests(tests.filter(test => test.id !== id));
+  // };
 
   const getCourseTitle = (courseId: number) => {
     const course = courses.find(c => c.id === courseId);
@@ -156,7 +157,7 @@ export default function CourseManagement() {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <GlobalSkeleton />;
   }
 
   return (
