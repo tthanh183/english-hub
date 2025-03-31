@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
+import { useMutation } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,9 +14,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { isAxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
-
 import { register } from '@/services/authService';
 import { RegisterRequest } from '@/types/authType';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -26,7 +26,9 @@ export default function RegisterPage() {
     password: '',
     username: '',
   });
+
   const navigate = useNavigate();
+
   const mutation = useMutation({
     mutationFn: register,
     onSuccess: (response: UserResponse) => {
@@ -72,14 +74,14 @@ export default function RegisterPage() {
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <Link to="/" className="text-2xl font-bold text-blue-600">
-              EnglishMaster
+              EnglishHub
             </Link>
           </div>
           <CardTitle className="text-2xl text-center">
             Create an account
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your information to get started with EnglishMaster
+            Enter your information to get started with EnglishHub
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
