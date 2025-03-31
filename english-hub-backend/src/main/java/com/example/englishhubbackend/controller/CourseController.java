@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.controller;
 
 import com.example.englishhubbackend.dto.request.CourseCreateRequest;
+import com.example.englishhubbackend.dto.request.CourseUpdateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.CourseResponse;
 import com.example.englishhubbackend.service.CourseService;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -29,5 +31,10 @@ public class CourseController {
     @GetMapping("")
     public ApiResponse<List<CourseResponse>> getAllCourses() {
         return ApiResponse.<List<CourseResponse>>builder().result(courseService.getAllCourses()).build();
+    }
+
+    @PutMapping("/{courseId}")
+    public ApiResponse<CourseResponse> updateCourse(@PathVariable String courseId, @RequestBody CourseUpdateRequest courseUpdateRequest) {
+        return ApiResponse.<CourseResponse>builder().result(courseService.updateCourse(UUID.fromString(courseId), courseUpdateRequest)).build();
     }
 }
