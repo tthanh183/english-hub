@@ -2,10 +2,15 @@ import axiosInstance from '@/services/axiosInstance';
 import axios from 'axios';
 
 export async function getPresignedUrl(fileName: string): Promise<string> {
-  const response = await axiosInstance.get('/s3/presigned-url', {
-    params: { fileName },
-  });
-  return response.data.result;
+  try {
+    const response = await axiosInstance.get('/s3/presigned-url', {
+      params: { fileName },
+    });
+    return response.data.result;
+  } catch (error) {
+    console.error('Error fetching presigned URL:', error);
+    throw new Error('Failed to fetch presigned URL');
+  }
 }
 
 export async function uploadFileToS3(
