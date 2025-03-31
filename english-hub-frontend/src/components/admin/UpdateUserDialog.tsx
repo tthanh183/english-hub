@@ -28,8 +28,8 @@ import { Spinner } from '@/components/Spinner';
 type UpdateUserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  selectedUser: UserUpdateRequest | null;
-  setSelectedUser: (user: UserUpdateRequest | null) => void;
+  selectedUser: UserResponse | null;
+  setSelectedUser: (user: UserResponse | null) => void;
 };
 
 export default function UpdateUserDialog({
@@ -42,7 +42,8 @@ export default function UpdateUserDialog({
 
   const queryClient = useQueryClient();
   const updateUserMutation = useMutation({
-    mutationFn: updateUser,
+    mutationFn: ({ id, user }: { id: string; user: UserUpdateRequest }) =>
+      updateUser(id, user),
     onSuccess: (response: UserResponse) => {
       storeUpdateUser(response);
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
@@ -66,7 +67,11 @@ export default function UpdateUserDialog({
   });
   const handleEditUser = async () => {
     if (selectedUser) {
-      updateUserMutation.mutate(selectedUser);
+      const { id, ...userData } = selectedUser;
+      await updateUserMutation.mutateAsync({
+        id,
+        user: userData as UserUpdateRequest,
+      });
     }
   };
   return (

@@ -18,9 +18,10 @@ export async function createUser(
 }
 
 export async function updateUser(
+  id: string,
   user: UserUpdateRequest
 ): Promise<UserResponse> {
-  const response = await axiosInstance.put(`/users/${user.id}`, user);
+  const response = await axiosInstance.put(`/users/${id}`, user);
   return response.data.result;
 }
 
