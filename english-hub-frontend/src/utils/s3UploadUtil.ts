@@ -1,5 +1,6 @@
-import axiosInstance from '@/services/axiosInstance';
 import axios from 'axios';
+
+import axiosInstance from '@/services/axiosInstance';
 
 export async function getPresignedUrl(fileName: string): Promise<string> {
   try {
