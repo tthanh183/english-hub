@@ -1,3 +1,6 @@
+import { isAxiosError } from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import {
   Dialog,
   DialogContent,
@@ -17,11 +20,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
-import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserStore } from '@/stores/userStore';
+import { Spinner } from '@/components/Spinner';
 
 type EditUserDialogProps = {
   isOpen: boolean;
@@ -37,8 +39,9 @@ export default function UpdateUserDialog({
   setSelectedUser,
 }: EditUserDialogProps) {
   const { storeUpdateUser } = useUserStore();
+
   const queryClient = useQueryClient();
-  const updateMutation = useMutation({
+  const updateUserMutation = useMutation({
     mutationFn: updateUser,
     onSuccess: (response: UserResponse) => {
       storeUpdateUser(response);
@@ -63,7 +66,7 @@ export default function UpdateUserDialog({
   });
   const handleEditUser = async () => {
     if (selectedUser) {
-      updateMutation.mutate(selectedUser);
+      updateUserMutation.mutate(selectedUser);
     }
   };
   return (
@@ -130,7 +133,7 @@ export default function UpdateUserDialog({
             Cancel
           </Button>
           <Button onClick={handleEditUser}>
-            {updateMutation.isPending ? 'Updating...' : 'Save Changes'}
+            {updateUserMutation.isPending ? <Spinner /> : 'Save Changes'}
           </Button>
         </DialogFooter>
       </DialogContent>

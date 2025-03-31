@@ -1,3 +1,8 @@
+import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import {
   Dialog,
   DialogContent,
@@ -17,15 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
 import { UserCreateRequest, UserResponse, UserRole } from '@/types/userType';
 import { createUser } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { isAxiosError } from 'axios';
-import { Spinner } from '../Spinner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Spinner } from '@/components/Spinner';
 import { useUserStore } from '@/stores/userStore';
 
 type AddUserDialogProps = {
@@ -45,7 +45,7 @@ export default function AddUserDialog({
   const { storeCreateUser } = useUserStore();
   const queryClient = useQueryClient();
 
-  const addMutation = useMutation({
+  const addUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: (response: UserResponse) => {
       storeCreateUser(response);
@@ -79,7 +79,7 @@ export default function AddUserDialog({
   }, [isOpen]);
 
   const handleAddUser = async () => {
-    addMutation.mutate(newUser);
+    addUserMutation.mutate(newUser);
   };
 
   return (
@@ -147,7 +147,7 @@ export default function AddUserDialog({
             Cancel
           </Button>
           <Button onClick={handleAddUser}>
-            {addMutation.isPending ? <Spinner /> : 'Add User'}
+            {addUserMutation.isPending ? <Spinner /> : 'Add User'}
           </Button>
         </DialogFooter>
       </DialogContent>

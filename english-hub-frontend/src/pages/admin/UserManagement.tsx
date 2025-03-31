@@ -1,4 +1,9 @@
 import { useEffect, useState } from 'react';
+import { MoreHorizontal, Search } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
+import { format } from 'date-fns';
+
 import {
   Table,
   TableBody,
@@ -17,8 +22,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Search } from 'lucide-react';
-
 import {
   UserResponse,
   UserStatus,
@@ -32,10 +35,7 @@ import {
 } from '@/services/userService';
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { isAxiosError } from 'axios';
-import { format } from 'date-fns';
 import { useUserStore } from '@/stores/userStore';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 
@@ -46,6 +46,7 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(
     null
   );
+
   const { users, setUsers, storeUpdateUser } = useUserStore();
 
   const queryClient = useQueryClient();
@@ -63,7 +64,7 @@ export default function UserManagement() {
 
   const deactivateUserMutation = useMutation({
     mutationFn: deactivateUser,
-    onSuccess: response => {
+    onSuccess: (response: UserResponse) => {
       const updatedUser = response;
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
         oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
@@ -83,7 +84,7 @@ export default function UserManagement() {
 
   const activateUserMutation = useMutation({
     mutationFn: activateUser,
-    onSuccess: response => {
+    onSuccess: (response: UserResponse) => {
       const updatedUser = response;
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
         oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
