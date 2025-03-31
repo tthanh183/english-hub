@@ -7,6 +7,9 @@ import {
   ClipboardEvent,
 } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
+import { useMutation } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,14 +20,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { isAxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
-
 import { resendVerificationCode, verifyEmail } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
 
 export default function VerifyPage() {
   const [code, setCode] = useState<string[]>(['', '', '', '', '', '']);
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const location = useLocation();
   const email = location.state?.email;
