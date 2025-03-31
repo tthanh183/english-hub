@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 
@@ -76,20 +76,23 @@ export default function UpdateCourseDialog({
     },
   });
 
-  const resetDialogState = () => {
+  const resetDialogState = useCallback(() => {
     setImage(null);
     setPreviewUrl(null);
     setSelectedCourse(null);
-  };
+  }, [setSelectedCourse]);
 
   useEffect(() => {
     if (!isOpen) {
       resetDialogState();
     }
+  }, [isOpen, resetDialogState]);
+
+  useEffect(() => {
     if (selectedCourse) {
       setPreviewUrl(selectedCourse.imageUrl);
     }
-  }, [isOpen, selectedCourse]);
+  }, [selectedCourse]);
 
   const handleUpdateCourse = async () => {
     if (!selectedCourse) {
