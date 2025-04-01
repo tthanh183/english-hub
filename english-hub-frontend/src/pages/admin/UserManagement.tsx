@@ -22,12 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  UserResponse,
-  UserStatus,
-  UserRole,
-  UserUpdateRequest,
-} from '@/types/userType';
+import { UserResponse, UserStatus, UserRole } from '@/types/userType';
 import {
   activateUser,
   deactivateUser,
@@ -43,9 +38,7 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserOpen, setIsAddUserOpen] = useState<boolean>(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<UserUpdateRequest | null>(
-    null
-  );
+  const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
 
   const { users, setUsers, storeUpdateUser } = useUserStore();
 
