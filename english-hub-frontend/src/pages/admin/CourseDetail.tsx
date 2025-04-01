@@ -39,8 +39,6 @@ import {
 import {
   ArrowLeft,
   BookOpen,
-  ChevronDown,
-  ChevronUp,
   Clock,
   Copy,
   Edit,
@@ -52,9 +50,50 @@ import {
   Save,
   Trash,
 } from 'lucide-react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import LessonItem from '@/components/admin/LessonItem';
+import { LessonResponse } from '@/types/lessonType';
+import { set } from 'date-fns';
 
 // Mock data
+
+const lessons: LessonResponse[] = [
+  {
+    id: '1',
+    title: 'What is Programming?',
+    duration: '20 minutes',
+    content:
+      'Programming is the process of creating a set of instructions that tell a computer how to perform a task...',
+  },
+  {
+    id: '2',
+    title: 'Setting Up Your Development Environment',
+    duration: '30 minutes',
+    content:
+      "In this lesson, we'll set up the tools you need to start programming...",
+  },
+  {
+    id: '3',
+    title: 'Introduction to Variables',
+    duration: '25 minutes',
+    content:
+      'Variables are used to store information to be referenced and manipulated in a computer program...',
+  },
+  {
+    id: '4',
+    title: 'Working with Data Types',
+    duration: '35 minutes',
+    content:
+      'Data types are classifications of data that tell the compiler or interpreter how the programmer intends to use the data...',
+  },
+  {
+    id: '5',
+    title: 'Variable Practice',
+    duration: '45 minutes',
+    content: 'Practice creating and using variables with these exercises...',
+  },
+];
+
 const initialCourse = {
   id: 1,
   title: 'Introduction to Programming',
@@ -67,61 +106,13 @@ const initialCourse = {
       id: 1,
       title: 'Getting Started with Programming',
       description: 'An introduction to programming concepts and tools.',
-      lessons: [
-        {
-          id: 1,
-          title: 'What is Programming?',
-          type: 'Theory',
-          duration: '20 minutes',
-          content:
-            'Programming is the process of creating a set of instructions that tell a computer how to perform a task...',
-          order: 1,
-        },
-        {
-          id: 2,
-          title: 'Setting Up Your Development Environment',
-          type: 'Theory',
-          duration: '30 minutes',
-          content:
-            "In this lesson, we'll set up the tools you need to start programming...",
-          order: 2,
-        },
-      ],
+      lessons: [],
     },
     {
       id: 2,
       title: 'Variables and Data Types',
       description:
         'Understanding how to store and manipulate data in programming.',
-      lessons: [
-        {
-          id: 3,
-          title: 'Introduction to Variables',
-          type: 'Theory',
-          duration: '25 minutes',
-          content:
-            'Variables are used to store information to be referenced and manipulated in a computer program...',
-          order: 1,
-        },
-        {
-          id: 4,
-          title: 'Working with Data Types',
-          type: 'Theory',
-          duration: '35 minutes',
-          content:
-            'Data types are classifications of data that tell the compiler or interpreter how the programmer intends to use the data...',
-          order: 2,
-        },
-        {
-          id: 5,
-          title: 'Variable Practice',
-          type: 'Exercise',
-          duration: '45 minutes',
-          content:
-            'Practice creating and using variables with these exercises...',
-          order: 3,
-        },
-      ],
     },
   ],
 };
@@ -189,7 +180,7 @@ const initialTests = [
 ];
 
 export default function CourseBuilderPage() {
-//   const router = useRouter();
+  //   const router = useRouter();
   const [course, setCourse] = useState(initialCourse);
   const [exercises, setExercises] = useState(initialExercises);
   const [tests, setTests] = useState(initialTests);
@@ -230,6 +221,10 @@ export default function CourseBuilderPage() {
     description: course.description,
     category: course.category,
   });
+  const [isEditingLesson, setIsEditingLesson] = useState<boolean>(false);
+  const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
+    null
+  );
 
   const handleAddModule = () => {
     if (!newModule.title) return;
@@ -347,40 +342,38 @@ export default function CourseBuilderPage() {
     setIsAddTestOpen(false);
   };
 
-  const handleDeleteModule = (moduleIndex: number) => {
-    const updatedModules = [...course.modules];
-    updatedModules.splice(moduleIndex, 1);
-    setCourse({
-      ...course,
-      modules: updatedModules,
-    });
-
-    if (activeModule >= moduleIndex) {
-      setActiveModule(Math.max(0, activeModule - 1));
+  const handleSelectLesson = (id: string) => {
+    if (!isEditingLesson) {
+      setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
+      setIsEditingLesson(true);
+    } else {
+      if (selectedLesson?.id !== id) {
+        setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
+        setIsEditingLesson(true);
+      } else {
+        setSelectedLesson(null);
+        setIsEditingLesson(false);
+      }
     }
   };
 
-  const handleDeleteLesson = (moduleIndex: number, lessonIndex: number) => {
-    const updatedModules = [...course.modules];
-    const updatedLessons = [...updatedModules[moduleIndex].lessons];
-    updatedLessons.splice(lessonIndex, 1);
-
-    // Update order for remaining lessons
-    updatedLessons.forEach((lesson, idx) => {
-      lesson.order = idx + 1;
-    });
-
-    updatedModules[moduleIndex] = {
-      ...updatedModules[moduleIndex],
-      lessons: updatedLessons,
-    };
-
-    setCourse({
-      ...course,
-      modules: updatedModules,
-    });
-
-    setActiveLesson(null);
+  const handleDeleteLesson = () => {
+    // const updatedModules = [...course.modules];
+    // const updatedLessons = [...updatedModules[moduleIndex].lessons];
+    // updatedLessons.splice(lessonIndex, 1);
+    // // Update order for remaining lessons
+    // updatedLessons.forEach((lesson, idx) => {
+    //   lesson.order = idx + 1;
+    // });
+    // updatedModules[moduleIndex] = {
+    //   ...updatedModules[moduleIndex],
+    //   lessons: updatedLessons,
+    // };
+    // setCourse({
+    //   ...course,
+    //   modules: updatedModules,
+    // });
+    // setActiveLesson(null);
   };
 
   const handleMoveLesson = (
@@ -453,82 +446,9 @@ export default function CourseBuilderPage() {
             <span className="sr-only">Back</span>
           </Link>
         </Button>
-        <div className="flex-1">
-          {!editingCourse ? (
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">
-                  {course.title}
-                </h1>
-                <p className="text-muted-foreground">{course.description}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setEditingCourse(true)}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Details
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="course-title">Course Title</Label>
-                <Input
-                  id="course-title"
-                  value={editedCourse.title}
-                  onChange={e =>
-                    setEditedCourse({ ...editedCourse, title: e.target.value })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="course-description">Description</Label>
-                <Textarea
-                  id="course-description"
-                  value={editedCourse.description}
-                  onChange={e =>
-                    setEditedCourse({
-                      ...editedCourse,
-                      description: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="course-category">Category</Label>
-                <Select
-                  value={editedCourse.category}
-                  onValueChange={value =>
-                    setEditedCourse({ ...editedCourse, category: value })
-                  }
-                >
-                  <SelectTrigger id="course-category">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Computer Science">
-                      Computer Science
-                    </SelectItem>
-                    <SelectItem value="Business">Business</SelectItem>
-                    <SelectItem value="Mathematics">Mathematics</SelectItem>
-                    <SelectItem value="Humanities">Humanities</SelectItem>
-                    <SelectItem value="Science">Science</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setEditingCourse(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveCourseDetails}>Save Changes</Button>
-              </div>
-            </div>
-          )}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{course.title}</h1>
+          <p className="text-muted-foreground">{course.description}</p>
         </div>
       </div>
 
@@ -537,7 +457,7 @@ export default function CourseBuilderPage() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="structure">
             <BookOpen className="h-4 w-4 mr-2" />
             Course Structure
@@ -545,10 +465,6 @@ export default function CourseBuilderPage() {
           <TabsTrigger value="exercises">
             <FileText className="h-4 w-4 mr-2" />
             Exercise Bank
-          </TabsTrigger>
-          <TabsTrigger value="tests">
-            <GraduationCap className="h-4 w-4 mr-2" />
-            Mock Tests
           </TabsTrigger>
         </TabsList>
 
@@ -650,66 +566,16 @@ export default function CourseBuilderPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {course.modules
-                    .flatMap(module => module.lessons)
-                    .map((lesson, lessonIndex) => (
-                      <div
-                        key={lesson.id}
-                        className={`flex items-center p-3 rounded-md border ${
-                          activeLesson === lessonIndex
-                            ? 'border-primary bg-muted/50'
-                            : ''
-                        }`}
-                      >
-                        <div className="flex items-center mr-2">
-                          <Grip className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center">
-                            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">
-                              {lesson.order}
-                            </div>
-                            <div>
-                              <div className="font-medium truncate">
-                                {lesson.title}
-                              </div>
-                              <div className="flex items-center text-xs text-muted-foreground">
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted">
-                                  {lesson.type}
-                                </span>
-                                <span className="mx-2">•</span>
-                                <Clock className="h-3 w-3 mr-1" />
-                                {lesson.duration}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() =>
-                              setActiveLesson(
-                                lessonIndex === activeLesson
-                                  ? null
-                                  : lessonIndex
-                              )
-                            }
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-red-500"
-                            onClick={() => handleDeleteLesson(0, lessonIndex)}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                  {lessons.map((lesson, idx) => (
+                    <LessonItem
+                      key={lesson.id}
+                      lesson={lesson}
+                      isSelected={selectedLesson?.id === lesson.id}
+                      order={idx + 1}
+                      onSelect={() => handleSelectLesson(lesson.id)}
+                      onDelete={handleDeleteLesson}
+                    />
+                  ))}
 
                   {course.modules.flatMap(module => module.lessons).length ===
                     0 && (
@@ -730,95 +596,58 @@ export default function CourseBuilderPage() {
               </CardContent>
             </Card>
 
-            {activeLesson !== null &&
-              course.modules.flatMap(module => module.lessons)[
-                activeLesson
-              ] && (
-                <Card className="mt-4">
-                  <CardHeader>
-                    <CardTitle>
-                      Edit Lesson:{' '}
-                      {
-                        course.modules.flatMap(module => module.lessons)[
-                          activeLesson
-                        ].title
-                      }
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="edit-lesson-title">Lesson Title</Label>
-                        <Input
-                          id="edit-lesson-title"
-                          value={
-                            course.modules.flatMap(module => module.lessons)[
-                              activeLesson
-                            ].title
-                          }
-                          onChange={e => {
-                            const updatedLessons = course.modules.flatMap(
-                              module => module.lessons
-                            );
-                            updatedLessons[activeLesson].title = e.target.value;
-                            setCourse({
-                              ...course,
-                              modules: [
-                                {
-                                  ...course.modules[0],
-                                  lessons: updatedLessons,
-                                },
-                              ],
-                            });
-                          }}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="edit-lesson-content">
-                          Lesson Content
-                        </Label>
-                        <Textarea
-                          id="edit-lesson-content"
-                          rows={8}
-                          value={
-                            course.modules.flatMap(module => module.lessons)[
-                              activeLesson
-                            ].content
-                          }
-                          onChange={e => {
-                            const updatedLessons = course.modules.flatMap(
-                              module => module.lessons
-                            );
-                            updatedLessons[activeLesson].content =
-                              e.target.value;
-                            setCourse({
-                              ...course,
-                              modules: [
-                                {
-                                  ...course.modules[0],
-                                  lessons: updatedLessons,
-                                },
-                              ],
-                            });
-                          }}
-                        />
-                      </div>
+            {selectedLesson && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Edit Lesson: {selectedLesson.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-lesson-title">Lesson Title</Label>
+                      <Input
+                        id="edit-lesson-title"
+                        value={selectedLesson.title}
+                        onChange={e =>
+                          setSelectedLesson({
+                            ...selectedLesson,
+                            title: e.target.value,
+                          })
+                        }
+                      />
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button
-                      variant="outline"
-                      onClick={() => setActiveLesson(null)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={() => setActiveLesson(null)}>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Changes
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )}
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-lesson-content">
+                        Lesson Content
+                      </Label>
+                      <Textarea
+                        id="edit-lesson-content"
+                        rows={8}
+                        value={selectedLesson.content}
+                        onChange={e =>
+                          setSelectedLesson({
+                            ...selectedLesson,
+                            content: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveLesson(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={() => setActiveLesson(null)}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Changes
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
@@ -1029,149 +858,6 @@ export default function CourseBuilderPage() {
                 <Button onClick={() => setIsAddExerciseOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add First Exercise
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="tests" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Mock Tests</h2>
-            <Dialog open={isAddTestOpen} onOpenChange={setIsAddTestOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create Test
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create New Mock Test</DialogTitle>
-                  <DialogDescription>
-                    Create a new test for your course.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="test-title">Test Title</Label>
-                    <Input
-                      id="test-title"
-                      value={newTest.title}
-                      onChange={e =>
-                        setNewTest({ ...newTest, title: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="test-description">Description</Label>
-                    <Textarea
-                      id="test-description"
-                      value={newTest.description}
-                      onChange={e =>
-                        setNewTest({ ...newTest, description: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="test-duration">Duration</Label>
-                    <Input
-                      id="test-duration"
-                      value={newTest.duration}
-                      onChange={e =>
-                        setNewTest({ ...newTest, duration: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="test-status">Status</Label>
-                    <Select
-                      value={newTest.status}
-                      onValueChange={value =>
-                        setNewTest({ ...newTest, status: value })
-                      }
-                    >
-                      <SelectTrigger id="test-status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Draft">Draft</SelectItem>
-                        <SelectItem value="Published">Published</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsAddTestOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddTest}>Create Test</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {tests.map((test, index) => (
-              <Card key={test.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle>{test.title}</CardTitle>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        test.status === 'Published'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {test.status}
-                    </span>
-                  </div>
-                  <CardDescription>{test.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1 text-muted-foreground" />
-                      <span>{test.duration}</span>
-                    </div>
-                    <div>
-                      <span>{test.questions} questions</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button variant="outline" size="sm">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Test
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500"
-                    onClick={() => handleDeleteTest(index)}
-                  >
-                    <Trash className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-
-            {tests.length === 0 && (
-              <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-                <GraduationCap className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium">No tests yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  You haven't created any mock tests yet. Create your first test
-                  to get started.
-                </p>
-                <Button onClick={() => setIsAddTestOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create First Test
                 </Button>
               </div>
             )}
