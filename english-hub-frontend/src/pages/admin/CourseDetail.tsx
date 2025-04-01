@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -45,49 +45,16 @@ import {
   Plus,
   Save,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import AddLessonDialog from '@/components/admin/AddLessonDialog';
+import { useLessonStore } from '@/stores/lessonStore';
+import { useQuery } from '@tanstack/react-query';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
+import { getAllLessons } from '@/services/lessonService';
 
 // Mock data
-
-const lessons: LessonResponse[] = [
-  {
-    id: '1',
-    title: 'What is Programming?',
-    duration: '20 minutes',
-    content:
-      'Programming is the process of creating a set of instructions that tell a computer how to perform a task...',
-  },
-  {
-    id: '2',
-    title: 'Setting Up Your Development Environment',
-    duration: '30 minutes',
-    content:
-      "In this lesson, we'll set up the tools you need to start programming...",
-  },
-  {
-    id: '3',
-    title: 'Introduction to Variables',
-    duration: '25 minutes',
-    content:
-      'Variables are used to store information to be referenced and manipulated in a computer program...',
-  },
-  {
-    id: '4',
-    title: 'Working with Data Types',
-    duration: '35 minutes',
-    content:
-      'Data types are classifications of data that tell the compiler or interpreter how the programmer intends to use the data...',
-  },
-  {
-    id: '5',
-    title: 'Variable Practice',
-    duration: '45 minutes',
-    content: 'Practice creating and using variables with these exercises...',
-  },
-];
 
 const initialCourse = {
   id: 1,
@@ -216,26 +183,18 @@ export default function CourseBuilderPage() {
     null
   );
 
-  const handleAddModule = () => {
-    if (!newModule.title) return;
+  const { courseId } = useParams();
+  const { lessons, setLessons } = useLessonStore();
+  const { data = [], isLoading } = useQuery({
+    queryKey: ['lessons'],
+    queryFn: () => (courseId ? getAllLessons(courseId) : Promise.resolve([])),
+  });
 
-    const id = Math.max(...course.modules.map(m => m.id), 0) + 1;
-    setCourse({
-      ...course,
-      modules: [
-        ...course.modules,
-        {
-          id,
-          title: newModule.title,
-          description: newModule.description,
-          lessons: [],
-        },
-      ],
-    });
-    setNewModule({ title: '', description: '' });
-    setIsAddModuleOpen(false);
-    setActiveModule(course.modules.length);
-  };
+  useEffect(() => {
+    if (data.length !== lessons.length) {
+      setLessons(data);
+    }
+  }, [data, lessons, setLessons]);
 
   const handleAddLesson = () => {
     // if (!newLesson.title || activeModule === null) return;
@@ -421,6 +380,10 @@ export default function CourseBuilderPage() {
     updatedTests.splice(testIndex, 1);
     setTests(updatedTests);
   };
+
+  if (isLoading) {
+    return <GlobalSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
