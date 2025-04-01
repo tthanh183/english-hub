@@ -17,6 +17,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
     String title;
+    @Column(length = 5000)
     String content;
     Long duration;
     @ManyToOne(fetch = FetchType.LAZY)

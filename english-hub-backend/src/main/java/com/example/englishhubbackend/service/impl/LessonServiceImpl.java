@@ -1,4 +1,48 @@
 package com.example.englishhubbackend.service.impl;
 
-public class LessonServiceImpl {
+import com.example.englishhubbackend.dto.request.LessonCreateRequest;
+import com.example.englishhubbackend.dto.response.CourseResponse;
+import com.example.englishhubbackend.dto.response.LessonResponse;
+import com.example.englishhubbackend.exception.AppException;
+import com.example.englishhubbackend.exception.ErrorCode;
+import com.example.englishhubbackend.mapper.LessonMapper;
+import com.example.englishhubbackend.models.Course;
+import com.example.englishhubbackend.models.Lesson;
+import com.example.englishhubbackend.repository.LessonRepository;
+import com.example.englishhubbackend.service.CourseService;
+import com.example.englishhubbackend.service.LessonService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class LessonServiceImpl implements LessonService {
+    LessonRepository lessonRepository;
+    LessonMapper lessonMapper;
+    CourseService courseService;
+
+    @Override
+    public List<LessonResponse> getAllLessonsFromCourse(UUID courseId) {
+        return lessonRepository.findAllByCourseId(courseId).stream()
+                .map(lessonMapper::toLessonResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
+        Course course = courseService.getCourseEntityById(courseId);
+        if (course == null) {
+            throw new AppException(ErrorCode.COURSE_NOT_FOUD);
+        }
+        Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
+        lesson.setCourse(course);
+        return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
+    }
 }

@@ -60,4 +60,9 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
         courseRepository.delete(course);
     }
+
+    @Override
+    public Course getCourseEntityById(UUID courseId) {
+        return courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
+    }
 }
