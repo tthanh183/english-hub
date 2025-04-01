@@ -39,8 +39,8 @@ export default function UpdateUserDialog({
   setSelectedUser,
 }: UpdateUserDialogProps) {
   const { storeUpdateUser } = useUserStore();
-
   const queryClient = useQueryClient();
+
   const updateUserMutation = useMutation({
     mutationFn: ({ id, user }: { id: string; user: UserUpdateRequest }) =>
       updateUser(id, user),
@@ -65,6 +65,17 @@ export default function UpdateUserDialog({
       setSelectedUser(null);
     },
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (selectedUser) {
+      setSelectedUser({
+        ...selectedUser,
+        [name]: value,
+      });
+    }
+  };
+
   const handleEditUser = async () => {
     if (selectedUser) {
       const { id, ...userData } = selectedUser;
@@ -74,6 +85,7 @@ export default function UpdateUserDialog({
       });
     }
   };
+
   return (
     <Dialog open={isOpen && selectedUser !== null} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -87,26 +99,23 @@ export default function UpdateUserDialog({
               <Label htmlFor="edit-name">Full Name</Label>
               <Input
                 id="edit-name"
+                name="username" 
                 value={selectedUser.username}
-                onChange={e =>
-                  setSelectedUser({
-                    ...selectedUser,
-                    username: e.target.value,
-                  })
-                }
+                onChange={handleChange}
               />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="edit-email">Email</Label>
               <Input
                 id="edit-email"
+                name="email" 
                 type="email"
                 value={selectedUser.email}
-                onChange={e =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
-                }
+                onChange={handleChange}
               />
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="edit-role">Role</Label>
               <Select
@@ -120,11 +129,7 @@ export default function UpdateUserDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(UserRole).map(role => (
-                    <SelectItem
-                      key={role}
-                      value={role}
-                      defaultValue={UserRole.USER}
-                    >
+                    <SelectItem key={role} value={role}>
                       {role}
                     </SelectItem>
                   ))}
@@ -137,7 +142,11 @@ export default function UpdateUserDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleEditUser}>
+          <Button
+            onClick={handleEditUser}
+            disabled={updateUserMutation.isPending} 
+            className='min-w-[120px]'
+          >
             {updateUserMutation.isPending ? <Spinner /> : 'Save Changes'}
           </Button>
         </DialogFooter>
