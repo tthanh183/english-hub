@@ -23,9 +23,18 @@ import { LoginResponse } from '@/types/authType';
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  
+
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === 'email') {
+      setEmail(value);
+    } else if (name === 'password') {
+      setPassword(value);
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: login,
@@ -80,7 +89,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={handleOnChange}
                 required
               />
             </div>
@@ -98,7 +107,8 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={handleOnChange}
+                placeholder="********"
                 required
               />
             </div>
