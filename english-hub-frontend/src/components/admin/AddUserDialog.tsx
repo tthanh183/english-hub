@@ -146,7 +146,11 @@ export default function AddUserDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleAddUser}>
+          <Button
+            onClick={handleAddUser}
+            disabled={addUserMutation.isPending}
+            className="min-w-[120px]"
+          >
             {addUserMutation.isPending ? <Spinner /> : 'Add User'}
           </Button>
         </DialogFooter>
