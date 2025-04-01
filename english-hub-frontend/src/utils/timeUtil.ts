@@ -9,5 +9,5 @@ export function longToString(long: number): string {
     ? `${minutes} minutes`
     : hours > 0
     ? `${hours} hours`
-    : '0 giây';
+    : '0 seconds';
 }
