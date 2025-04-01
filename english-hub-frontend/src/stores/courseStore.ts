@@ -6,6 +6,7 @@ type CourseState = {
   setCourses: (courses: CourseResponse[]) => void;
   storeUpdateCourse: (updatedCourse: CourseResponse) => void;
   storeCreateCourse: (newCourse: CourseResponse) => void;
+  storeDeleteCourse: (courseId: string) => void;
 };
 
 export const useCourseStore = create<CourseState>(set => ({
@@ -20,5 +21,9 @@ export const useCourseStore = create<CourseState>(set => ({
   storeCreateCourse: (newCourse: CourseResponse) =>
     set(state => ({
       courses: [...state.courses, newCourse],
+    })),
+  storeDeleteCourse: (courseId: string) =>
+    set(state => ({
+      courses: state.courses.filter(course => course.id !== courseId),
     })),
 }));

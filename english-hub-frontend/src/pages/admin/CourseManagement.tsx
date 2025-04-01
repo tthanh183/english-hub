@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FileText, GraduationCap, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,7 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
 import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
 import { showSuccess } from '@/hooks/useToast';
+import { deleteFileFromS3 } from '@/utils/s3UploadUtil';
 
 const initialTests = [
   {
@@ -100,8 +101,9 @@ export default function CourseManagement() {
   );
   const [isEditCourseOpen, setIsEditCourseOpen] = useState<boolean>(false);
 
-  const { courses, setCourses } = useCourseStore();
+  const { courses, setCourses, storeDeleteCourse } = useCourseStore();
 
+  const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,
@@ -155,9 +157,30 @@ export default function CourseManagement() {
   };
 
   const handleDeleteCourse = async (id: string) => {
-    setCourses(courses.filter(course => course.id !== id));
-    const response = await deleteCourse(id);
-    showSuccess(response);
+    const course = courses.find(c => c.id === id);
+    if (!course) {
+      console.log('Course not found with id:', id);
+      return;
+    }
+
+    console.log('Deleting course:', course);
+    storeDeleteCourse(course.id);
+
+    try {
+      const imageUrl = course.imageUrl;
+      await deleteFileFromS3(imageUrl);
+      const response = await deleteCourse(id);
+      showSuccess(response);
+      queryClient.setQueryData<CourseResponse[]>(
+        ['courses'],
+        (oldCourses = []) =>
+          Array.isArray(oldCourses)
+            ? oldCourses.filter(course => course.id !== id)
+            : []
+      );
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
   };
 
   // const handleDeleteTest = (id: number) => {

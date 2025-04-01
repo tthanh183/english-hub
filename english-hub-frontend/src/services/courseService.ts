@@ -27,5 +27,5 @@ export async function updateCourse(
 
 export async function deleteCourse(courseId: string): Promise<string> {
   const response = await axiosInstance.delete(`/courses/${courseId}`);
-  return response.data.result;
+  return response.data.message;
 }
