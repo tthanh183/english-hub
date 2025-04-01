@@ -1,6 +1,7 @@
 import { LessonResponse } from '@/types/lessonType';
 import { Clock, Edit, Grip, Trash } from 'lucide-react';
 import { Button } from '../ui/button';
+import { longToString } from '@/utils/timeUtil';
 
 type LessonItemProps = {
   lesson: LessonResponse;
@@ -40,7 +41,7 @@ export default function LessonItem({
               </span>
               <span className="mx-2">•</span>
               <Clock className="h-3 w-3 mr-1" />
-              {lesson.duration}
+              {longToString(lesson.duration)}
             </div>
           </div>
         </div>
