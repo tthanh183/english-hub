@@ -1,6 +1,7 @@
 import { LessonResponse } from '@/types/lessonType';
 import { Clock, Edit, Grip, Trash } from 'lucide-react';
-import { Button } from '../ui/button';
+
+import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
 
 type LessonItemProps = {

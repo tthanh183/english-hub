@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import { BookOpen, GraduationCap, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '../ui/button';
+
+import { Button } from '@/components/ui/button';
 
 type CourseCardProps = {
   course: {
