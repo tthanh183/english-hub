@@ -4,3 +4,9 @@ export type LessonResponse = {
   content: string;
   duration: string;
 };
+
+export type LessonCreateRequest = {
+  title: string;
+  content: string;
+  duration: number;
+};

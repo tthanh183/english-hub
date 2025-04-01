@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -41,19 +40,15 @@ import {
   BookOpen,
   Clock,
   Copy,
-  Edit,
   FileText,
-  GraduationCap,
-  Grip,
   MoreHorizontal,
   Plus,
   Save,
-  Trash,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
-import { set } from 'date-fns';
+import AddLessonDialog from '@/components/admin/AddLessonDialog';
 
 // Mock data
 
@@ -195,12 +190,7 @@ export default function CourseBuilderPage() {
     title: '',
     description: '',
   });
-  const [newLesson, setNewLesson] = useState({
-    title: '',
-    type: 'Theory',
-    duration: '30 minutes',
-    content: '',
-  });
+
   const [newExercise, setNewExercise] = useState({
     title: '',
     type: 'Coding',
@@ -248,43 +238,38 @@ export default function CourseBuilderPage() {
   };
 
   const handleAddLesson = () => {
-    if (!newLesson.title || activeModule === null) return;
-
-    const moduleIndex = activeModule;
-    const module = course.modules[moduleIndex];
-    const id =
-      Math.max(...course.modules.flatMap(m => m.lessons.map(l => l.id)), 0) + 1;
-    const order = module.lessons.length + 1;
-
-    const updatedModules = [...course.modules];
-    updatedModules[moduleIndex] = {
-      ...module,
-      lessons: [
-        ...module.lessons,
-        {
-          id,
-          title: newLesson.title,
-          type: newLesson.type,
-          duration: newLesson.duration,
-          content: newLesson.content,
-          order,
-        },
-      ],
-    };
-
-    setCourse({
-      ...course,
-      modules: updatedModules,
-    });
-
-    setNewLesson({
-      title: '',
-      type: 'Theory',
-      duration: '30 minutes',
-      content: '',
-    });
-
-    setIsAddLessonOpen(false);
+    // if (!newLesson.title || activeModule === null) return;
+    // const moduleIndex = activeModule;
+    // const module = course.modules[moduleIndex];
+    // const id =
+    //   Math.max(...course.modules.flatMap(m => m.lessons.map(l => l.id)), 0) + 1;
+    // const order = module.lessons.length + 1;
+    // const updatedModules = [...course.modules];
+    // updatedModules[moduleIndex] = {
+    //   ...module,
+    //   lessons: [
+    //     ...module.lessons,
+    //     {
+    //       id,
+    //       title: newLesson.title,
+    //       type: newLesson.type,
+    //       duration: newLesson.duration,
+    //       content: newLesson.content,
+    //       order,
+    //     },
+    //   ],
+    // };
+    // setCourse({
+    //   ...course,
+    //   modules: updatedModules,
+    // });
+    // setNewLesson({
+    //   title: '',
+    //   type: 'Theory',
+    //   duration: '30 minutes',
+    //   content: '',
+    // });
+    // setIsAddLessonOpen(false);
   };
 
   const handleAddExercise = () => {
@@ -474,94 +459,10 @@ export default function CourseBuilderPage() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Lessons</CardTitle>
-                  <Dialog
-                    open={isAddLessonOpen}
+                  <AddLessonDialog
+                    isOpen={isAddLessonOpen}
                     onOpenChange={setIsAddLessonOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button size="sm">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Lesson
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add New Lesson</DialogTitle>
-                        <DialogDescription>
-                          Create a new lesson for the course.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="lesson-title">Lesson Title</Label>
-                          <Input
-                            id="lesson-title"
-                            value={newLesson.title}
-                            onChange={e =>
-                              setNewLesson({
-                                ...newLesson,
-                                title: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="lesson-type">Lesson Type</Label>
-                          <Select
-                            value={newLesson.type}
-                            onValueChange={value =>
-                              setNewLesson({ ...newLesson, type: value })
-                            }
-                          >
-                            <SelectTrigger id="lesson-type">
-                              <SelectValue placeholder="Select a type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Theory">Theory</SelectItem>
-                              <SelectItem value="Exercise">Exercise</SelectItem>
-                              <SelectItem value="Video">Video</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="lesson-duration">Duration</Label>
-                          <Input
-                            id="lesson-duration"
-                            value={newLesson.duration}
-                            onChange={e =>
-                              setNewLesson({
-                                ...newLesson,
-                                duration: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="lesson-content">Content</Label>
-                          <Textarea
-                            id="lesson-content"
-                            rows={5}
-                            value={newLesson.content}
-                            onChange={e =>
-                              setNewLesson({
-                                ...newLesson,
-                                content: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter>
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsAddLessonOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button onClick={handleAddLesson}>Add Lesson</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
+                  />
                 </div>
               </CardHeader>
               <CardContent>
