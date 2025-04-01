@@ -25,8 +25,8 @@ public abstract class Question {
     @Column(name = "created_at")
     LocalDate completedAt;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "practice_id", nullable = true)
-    Practice practice;
+    @JoinColumn(name = "exercise_id", nullable = true)
+    Exercise exercise;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exam_id", nullable = true)
     Exam exam;

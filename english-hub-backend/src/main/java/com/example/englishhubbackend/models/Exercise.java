@@ -13,13 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Practice {
+public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "practice")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise")
     List<Question> questions;
 }

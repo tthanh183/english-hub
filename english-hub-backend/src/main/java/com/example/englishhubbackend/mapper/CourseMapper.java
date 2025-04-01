@@ -17,6 +17,6 @@ public interface CourseMapper {
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
     @Mapping(target = "lessons", ignore = true)
-    @Mapping(target = "practices", ignore = true)
+    @Mapping(target = "exercises", ignore = true)
     void toCourse(CourseUpdateRequest courseUpdateRequest, @MappingTarget Course course);
 }

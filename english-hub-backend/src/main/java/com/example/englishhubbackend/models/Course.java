@@ -28,5 +28,5 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
     List<Lesson> lessons;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
-    List<Practice> practices;
+    List<Exercise> exercises;
 }
