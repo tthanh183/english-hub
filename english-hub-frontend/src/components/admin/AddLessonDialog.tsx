@@ -1,3 +1,11 @@
+import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+import { useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import {
   Dialog,
   DialogContent,
@@ -6,21 +14,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { DialogFooter, DialogHeader } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
 import { LessonCreateRequest, LessonResponse } from '@/types/lessonType';
 import { useLessonStore } from '@/stores/lessonStore';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { isAxiosError } from 'axios';
-import { Spinner } from '../Spinner';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
-import { useParams } from 'react-router-dom';
+import { Spinner } from '@/components/Spinner';
 
 type AddLessonDialogProps = {
   isOpen: boolean;
