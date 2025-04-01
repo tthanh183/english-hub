@@ -83,13 +83,21 @@ export default function AddLessonDialog({
     }
   }, [isOpen]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewLesson({
+      ...newLesson,
+      [name]: value,
+    });
+  };
+
   const handleAddLesson = () => {
     if (!courseId) {
       showError('Course ID is missing');
       return;
     }
     console.log('Adding lesson:', newLesson);
-    
+
     addLessonMutation.mutate({
       courseId,
       lesson: newLesson,
@@ -117,25 +125,15 @@ export default function AddLessonDialog({
             <Input
               id="lesson-title"
               value={newLesson.title}
-              onChange={e =>
-                setNewLesson({
-                  ...newLesson,
-                  title: e.target.value,
-                })
-              }
+              onChange={handleChange}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="lesson-duration">Duration</Label>
             <Input
               id="lesson-duration"
-              placeholder='Enter duration in milliseconds'
-              onChange={e =>
-                setNewLesson({
-                  ...newLesson,
-                  duration: Number(e.target.value),
-                })
-              }
+              placeholder="Enter duration in milliseconds"
+              onChange={handleChange}
             />
           </div>
           <div className="grid gap-2">
@@ -144,7 +142,7 @@ export default function AddLessonDialog({
               theme="snow"
               value={newLesson.content}
               onChange={content => setNewLesson({ ...newLesson, content })}
-              style={{ height: '300px' }} // Tăng chiều cao lên 300px
+              style={{ height: '300px' }}
             />
           </div>
         </div>
