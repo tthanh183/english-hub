@@ -53,4 +53,11 @@ public class CourseServiceImpl implements CourseService {
         course.setUpdatedDate(LocalDate.now());
         return courseMapper.toCourseResponse(courseRepository.save(course));
     }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteCourse(UUID courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
+        courseRepository.delete(course);
+    }
 }

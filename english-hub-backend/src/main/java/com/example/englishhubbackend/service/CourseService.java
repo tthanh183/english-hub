@@ -12,4 +12,6 @@ public interface CourseService {
     CourseResponse createCourse(CourseCreateRequest courseCreateRequest);
     List<CourseResponse> getAllCourses();
     CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest);
+
+    void deleteCourse(UUID uuid);
 }

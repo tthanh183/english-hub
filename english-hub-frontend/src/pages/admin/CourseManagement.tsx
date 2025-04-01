@@ -23,13 +23,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { getAllCourses } from '@/services/courseService';
+import { deleteCourse, getAllCourses } from '@/services/courseService';
 import AddCourseDialog from '@/components/admin/AddCourseDialog';
 import { useCourseStore } from '@/stores/courseStore';
 import CourseCard from '@/components/admin/CourseCard';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
 import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
+import { showSuccess } from '@/hooks/useToast';
 
 const initialTests = [
   {
@@ -153,10 +154,10 @@ export default function CourseManagement() {
     setIsAddTestOpen(false);
   };
 
-  const handleDeleteCourse = (id: string) => {
+  const handleDeleteCourse = async (id: string) => {
     setCourses(courses.filter(course => course.id !== id));
-    // Also delete associated tests
-    // setTests(tests.filter(test => test.courseId !== id));
+    const response = await deleteCourse(id);
+    showSuccess(response);
   };
 
   // const handleDeleteTest = (id: number) => {
@@ -328,7 +329,7 @@ export default function CourseManagement() {
                 key={course.id}
                 course={course}
                 onEdit={() => handleEditCourse(course.id)}
-                onDelete={handleDeleteCourse}
+                onDelete={() => handleDeleteCourse(course.id)}
               />
             ))}
           </div>

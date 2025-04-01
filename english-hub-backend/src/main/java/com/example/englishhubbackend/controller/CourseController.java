@@ -37,4 +37,11 @@ public class CourseController {
     public ApiResponse<CourseResponse> updateCourse(@PathVariable String courseId, @RequestBody CourseUpdateRequest courseUpdateRequest) {
         return ApiResponse.<CourseResponse>builder().result(courseService.updateCourse(UUID.fromString(courseId), courseUpdateRequest)).build();
     }
+
+    @DeleteMapping("/{courseId}")
+    public ApiResponse<Void> deleteCourse(@PathVariable String courseId) {
+        courseService.deleteCourse(UUID.fromString(courseId));
+        return ApiResponse.<Void>builder().message("Course deleted successfully").build();
+    }
+
 }
