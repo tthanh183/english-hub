@@ -27,7 +27,7 @@ export default function LoginPage() {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === 'email') {
       setEmail(value);
@@ -89,7 +89,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 value={email}
-                onChange={handleOnChange}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={handleOnChange}
+                onChange={handleChange}
                 placeholder="********"
                 required
               />
