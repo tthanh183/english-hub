@@ -53,6 +53,7 @@ import { useLessonStore } from '@/stores/lessonStore';
 import { useQuery } from '@tanstack/react-query';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
+import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
 
 // Mock data
 
@@ -147,16 +148,9 @@ export default function CourseBuilderPage() {
   const [exercises, setExercises] = useState(initialExercises);
   const [tests, setTests] = useState(initialTests);
   const [activeTab, setActiveTab] = useState('structure');
-  const [activeModule, setActiveModule] = useState(0);
-  const [activeLesson, setActiveLesson] = useState<number | null>(null);
-  const [isAddModuleOpen, setIsAddModuleOpen] = useState(false);
   const [isAddLessonOpen, setIsAddLessonOpen] = useState(false);
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false);
   const [isAddTestOpen, setIsAddTestOpen] = useState(false);
-  const [newModule, setNewModule] = useState({
-    title: '',
-    description: '',
-  });
 
   const [newExercise, setNewExercise] = useState({
     title: '',
@@ -195,41 +189,6 @@ export default function CourseBuilderPage() {
       setLessons(data);
     }
   }, [data, lessons, setLessons]);
-
-  const handleAddLesson = () => {
-    // if (!newLesson.title || activeModule === null) return;
-    // const moduleIndex = activeModule;
-    // const module = course.modules[moduleIndex];
-    // const id =
-    //   Math.max(...course.modules.flatMap(m => m.lessons.map(l => l.id)), 0) + 1;
-    // const order = module.lessons.length + 1;
-    // const updatedModules = [...course.modules];
-    // updatedModules[moduleIndex] = {
-    //   ...module,
-    //   lessons: [
-    //     ...module.lessons,
-    //     {
-    //       id,
-    //       title: newLesson.title,
-    //       type: newLesson.type,
-    //       duration: newLesson.duration,
-    //       content: newLesson.content,
-    //       order,
-    //     },
-    //   ],
-    // };
-    // setCourse({
-    //   ...course,
-    //   modules: updatedModules,
-    // });
-    // setNewLesson({
-    //   title: '',
-    //   type: 'Theory',
-    //   duration: '30 minutes',
-    //   content: '',
-    // });
-    // setIsAddLessonOpen(false);
-  };
 
   const handleAddExercise = () => {
     if (!newExercise.title) return;
@@ -461,56 +420,10 @@ export default function CourseBuilderPage() {
             </Card>
 
             {selectedLesson && (
-              <Card className="mt-4">
-                <CardHeader>
-                  <CardTitle>Edit Lesson: {selectedLesson.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-lesson-title">Lesson Title</Label>
-                      <Input
-                        id="edit-lesson-title"
-                        value={selectedLesson.title}
-                        onChange={e =>
-                          setSelectedLesson({
-                            ...selectedLesson,
-                            title: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-lesson-content">
-                        Lesson Content
-                      </Label>
-                      <Textarea
-                        id="edit-lesson-content"
-                        rows={8}
-                        value={selectedLesson.content}
-                        onChange={e =>
-                          setSelectedLesson({
-                            ...selectedLesson,
-                            content: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveLesson(null)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={() => setActiveLesson(null)}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </Button>
-                </CardFooter>
-              </Card>
+              <UpdateLessonCard
+                selectedLesson={selectedLesson}
+                setSelectedLesson={setSelectedLesson}
+              />
             )}
           </div>
         </TabsContent>
