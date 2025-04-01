@@ -16,9 +16,10 @@ public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
+    String title;
+    String content;
+    Long duration;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
-    String title;
-    String content;
 }
