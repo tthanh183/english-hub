@@ -91,6 +91,22 @@ export default function UpdateLessonCard({
             <Input
               id="edit-lesson-title"
               value={selectedLesson.title}
+              name="title"
+              onChange={e =>
+                setSelectedLesson({
+                  ...selectedLesson,
+                  title: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="edit-lesson-title">Duration</Label>
+            <Input
+              id="edit-lesson-duration"
+              value={selectedLesson.duration}
+              name="duration"
+              type="number"
               onChange={e =>
                 setSelectedLesson({
                   ...selectedLesson,
