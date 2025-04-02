@@ -10,3 +10,9 @@ export type LessonCreateRequest = {
   content: string;
   duration: number;
 };
+
+export type LessonUpdateRequest = {
+  title?: string;
+  content?: string;
+  duration?: number;
+};

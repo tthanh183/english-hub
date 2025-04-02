@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { LessonCreateRequest, LessonResponse } from '@/types/lessonType';
+import { LessonCreateRequest, LessonResponse, LessonUpdateRequest } from '@/types/lessonType';
 
 export async function getAllLessons(
   courseId: string
@@ -14,6 +14,18 @@ export async function createLesson(
 ): Promise<LessonResponse> {
   const response = await axiosInstance.post(
     `/courses/${courseId}/lessons`,
+    lesson
+  );
+  return response.data.result;
+}
+
+export async function updateLesson(
+  courseId: string,
+  lessonId: string,
+  lesson: LessonUpdateRequest
+): Promise<LessonResponse> {
+  const response = await axiosInstance.put(
+    `/courses/${courseId}/lessons/${lessonId}`,
     lesson
   );
   return response.data.result;

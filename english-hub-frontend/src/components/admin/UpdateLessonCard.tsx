@@ -1,4 +1,9 @@
 import { Save } from 'lucide-react';
+import ReactQuill from 'react-quill-new';
+import { isAxiosError } from 'axios';
+import { useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,8 +14,10 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LessonResponse } from '@/types/lessonType';
-import ReactQuill from 'react-quill-new';
+import { LessonResponse, LessonUpdateRequest } from '@/types/lessonType';
+import { useLessonStore } from '@/stores/lessonStore';
+import { updateLesson } from '@/services/lessonService';
+import { showError, showSuccess } from '@/hooks/useToast';
 
 type UpdateLessonCardProps = {
   selectedLesson: LessonResponse;
@@ -21,8 +28,56 @@ export default function UpdateLessonCard({
   selectedLesson,
   setSelectedLesson,
 }: UpdateLessonCardProps) {
+  const { courseId } = useParams();
+  const { storeUpdateLesson } = useLessonStore();
+  const queryClient = useQueryClient();
+  const updateLessonMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      lessonId,
+      lesson,
+    }: {
+      courseId: string;
+      lessonId: string;
+      lesson: LessonUpdateRequest;
+    }) => updateLesson(courseId, lessonId, lesson),
+    onSuccess: (response: LessonResponse) => {
+      storeUpdateLesson(response);
+      queryClient.setQueryData<LessonResponse[]>(
+        ['lessons'],
+        (oldLessons = []) =>
+          Array.isArray(oldLessons)
+            ? oldLessons.map(lesson =>
+                lesson.id === response.id ? response : lesson
+              )
+            : [response]
+      );
+      showSuccess('Lesson updated successfully!');
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+    onSettled: () => {
+      setSelectedLesson(null);
+    },
+  });
   const handleUpdateLesson = () => {
-    // Logic to update the lesson
+    if (!courseId) {
+      console.error('Course ID is missing');
+      return;
+    }
+    if (selectedLesson) {
+      const { id, ...lessonData } = selectedLesson;
+      updateLessonMutation.mutate({
+        courseId,
+        lessonId: id,
+        lesson: lessonData,
+      });
+    }
   };
   return (
     <Card className="mt-4">
