@@ -18,6 +18,7 @@ import { LessonResponse, LessonUpdateRequest } from '@/types/lessonType';
 import { useLessonStore } from '@/stores/lessonStore';
 import { updateLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
+import { Spinner } from '../Spinner';
 
 type UpdateLessonCardProps = {
   selectedLesson: LessonResponse;
@@ -110,7 +111,7 @@ export default function UpdateLessonCard({
               onChange={e =>
                 setSelectedLesson({
                   ...selectedLesson,
-                  title: e.target.value,
+                  duration: Number(e.target.value),
                 })
               }
             />
@@ -132,9 +133,13 @@ export default function UpdateLessonCard({
         <Button variant="outline" onClick={() => setSelectedLesson(null)}>
           Cancel
         </Button>
-        <Button onClick={handleUpdateLesson}>
+        <Button
+          onClick={handleUpdateLesson}
+          disabled={updateLessonMutation.isPending}
+          className="max-w-[140px]"
+        >
           <Save className="h-4 w-4 mr-2" />
-          Save Changes
+          {updateLessonMutation.isPending ? <Spinner /> : 'Save Changes'}
         </Button>
       </CardFooter>
     </Card>
