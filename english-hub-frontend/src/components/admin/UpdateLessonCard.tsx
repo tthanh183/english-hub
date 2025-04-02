@@ -19,6 +19,7 @@ import { useLessonStore } from '@/stores/lessonStore';
 import { updateLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '../Spinner';
+import { useEffect } from 'react';
 
 type UpdateLessonCardProps = {
   selectedLesson: LessonResponse;
@@ -29,6 +30,12 @@ export default function UpdateLessonCard({
   selectedLesson,
   setSelectedLesson,
 }: UpdateLessonCardProps) {
+  useEffect(() => {
+    if (selectedLesson) {
+      setSelectedLesson(selectedLesson);
+    }
+  }, [selectedLesson, setSelectedLesson]);
+
   const { courseId } = useParams();
   const { storeUpdateLesson } = useLessonStore();
   const queryClient = useQueryClient();

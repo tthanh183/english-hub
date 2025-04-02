@@ -246,13 +246,14 @@ export default function CourseBuilderPage() {
   };
 
   const handleSelectLesson = (id: string) => {
+    const lesson = lessons.find(lesson => lesson.id === id) || null;
+
     if (!isEditingLesson) {
-      setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
+      setSelectedLesson(lesson);
       setIsEditingLesson(true);
     } else {
       if (selectedLesson?.id !== id) {
-        setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
-        setIsEditingLesson(true);
+        setSelectedLesson(lesson); // Cập nhật lesson ngay cả khi đang mở
       } else {
         setSelectedLesson(null);
         setIsEditingLesson(false);
