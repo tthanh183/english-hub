@@ -1,7 +1,7 @@
 package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.request.LessonCreateRequest;
-import com.example.englishhubbackend.dto.response.CourseResponse;
+import com.example.englishhubbackend.dto.request.LessonUpdateRequest;
 import com.example.englishhubbackend.dto.response.LessonResponse;
 import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
@@ -43,6 +43,14 @@ public class LessonServiceImpl implements LessonService {
         }
         Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
         lesson.setCourse(course);
+        return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
+    }
+
+    @Override
+    public LessonResponse updateLesson(UUID lessonId, LessonUpdateRequest lessonUpdateRequest) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        lessonMapper.toLesson(lessonUpdateRequest, lesson);
         return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
     }
 }

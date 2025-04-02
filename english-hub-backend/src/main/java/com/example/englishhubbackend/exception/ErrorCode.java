@@ -21,7 +21,8 @@ public enum ErrorCode {
     ACCOUNT_UNVERIFIED(1012, "Account unverified", HttpStatus.CONFLICT),
     ACCOUNT_DEACTIVATED(1013, "Account deactivated", HttpStatus.CONFLICT),
     FILE_UPLOAD_FAILED(1014, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
-    COURSE_NOT_FOUD(1015, "Course not found", HttpStatus.NOT_FOUND ),;
+    COURSE_NOT_FOUD(1015, "Course not found", HttpStatus.NOT_FOUND ),
+    LESSON_NOT_FOUND(1016, "Lesson not found", HttpStatus.NOT_FOUND),;
     private int code;
     private String message;
     private HttpStatusCode statusCode;
