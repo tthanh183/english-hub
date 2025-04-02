@@ -88,6 +88,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
+                name='email'
                 value={email}
                 onChange={handleChange}
                 required
@@ -107,6 +108,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
+                name='password'
                 onChange={handleChange}
                 placeholder="********"
                 required
