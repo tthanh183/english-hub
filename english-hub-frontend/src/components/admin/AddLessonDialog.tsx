@@ -126,6 +126,8 @@ export default function AddLessonDialog({
             <Input
               id="lesson-title"
               value={newLesson.title}
+              name='title'
+              placeholder="Enter lesson title"
               onChange={handleChange}
             />
           </div>
@@ -134,6 +136,8 @@ export default function AddLessonDialog({
             <Input
               id="lesson-duration"
               placeholder="Enter duration in milliseconds"
+              name='duration'
+              type="number"
               onChange={handleChange}
             />
           </div>
