@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Input } from '@/components/ui/input';
 import { deleteCourse, getAllCourses } from '@/services/courseService';
 import AddCourseDialog from '@/components/admin/AddCourseDialog';
-import { useCourseStore } from '@/stores/courseStore';
 import CourseCard from '@/components/admin/CourseCard';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
 import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
-import { showSuccess } from '@/hooks/useToast';
+import { showError, showSuccess } from '@/hooks/useToast';
 import { deleteFileFromS3 } from '@/utils/s3UploadUtil';
 
 export default function CourseManagement() {
@@ -21,19 +20,11 @@ export default function CourseManagement() {
   );
   const [isEditCourseOpen, setIsEditCourseOpen] = useState<boolean>(false);
 
-  const { courses, setCourses, storeDeleteCourse } = useCourseStore();
-
   const queryClient = useQueryClient();
-  const { data = [], isLoading } = useQuery({
+  const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,
   });
-
-  useEffect(() => {
-    if (data.length !== courses.length) {
-      setCourses(data);
-    }
-  }, [data, courses, setCourses]);
 
   const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -50,12 +41,9 @@ export default function CourseManagement() {
   const handleDeleteCourse = async (id: string) => {
     const course = courses.find(c => c.id === id);
     if (!course) {
-      console.log('Course not found with id:', id);
+      showError('Course not found');
       return;
     }
-
-    console.log('Deleting course:', course);
-    storeDeleteCourse(course.id);
 
     try {
       const imageUrl = course.imageUrl;
