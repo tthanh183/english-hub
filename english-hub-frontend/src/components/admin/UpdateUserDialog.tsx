@@ -22,7 +22,6 @@ import {
 import { UserResponse, UserRole, UserUpdateRequest } from '@/types/userType';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { updateUser } from '@/services/userService';
-import { useUserStore } from '@/stores/userStore';
 import { Spinner } from '@/components/Spinner';
 
 type UpdateUserDialogProps = {
@@ -38,14 +37,12 @@ export default function UpdateUserDialog({
   selectedUser,
   setSelectedUser,
 }: UpdateUserDialogProps) {
-  const { storeUpdateUser } = useUserStore();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const updateUserMutation = useMutation({
     mutationFn: ({ id, user }: { id: string; user: UserUpdateRequest }) =>
       updateUser(id, user),
     onSuccess: (response: UserResponse) => {
-      storeUpdateUser(response);
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
         Array.isArray(oldUsers)
           ? oldUsers.map(user => (user.id === response.id ? response : user))
