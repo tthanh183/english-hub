@@ -26,7 +26,6 @@ import { UserCreateRequest, UserResponse, UserRole } from '@/types/userType';
 import { createUser } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import { useUserStore } from '@/stores/userStore';
 
 type AddUserDialogProps = {
   isOpen: boolean;
@@ -42,13 +41,11 @@ export default function AddUserDialog({
     email: '',
     role: UserRole.USER,
   });
-  const { storeCreateUser } = useUserStore();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const addUserMutation = useMutation({
     mutationFn: createUser,
     onSuccess: (response: UserResponse) => {
-      storeCreateUser(response);
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) => [
         ...oldUsers,
         response,
