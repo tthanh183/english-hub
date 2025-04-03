@@ -43,18 +43,15 @@ import {
   FileText,
   MoreHorizontal,
   Plus,
-  Save,
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import AddLessonDialog from '@/components/admin/AddLessonDialog';
-import { useLessonStore } from '@/stores/lessonStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { deleteLesson, getAllLessons } from '@/services/lessonService';
 import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
-import { on } from 'events';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
 
@@ -181,18 +178,11 @@ export default function CourseBuilderPage() {
   );
 
   const { courseId } = useParams();
-  const { lessons, setLessons, storeDeleteLesson } = useLessonStore();
   const queryClient = useQueryClient();
-  const { data = [], isLoading } = useQuery({
+  const { data: lessons = [], isLoading } = useQuery({
     queryKey: ['lessons'],
     queryFn: () => (courseId ? getAllLessons(courseId) : Promise.resolve([])),
   });
-
-  useEffect(() => {
-    if (data.length !== lessons.length) {
-      setLessons(data);
-    }
-  }, [data, lessons, setLessons]);
 
   const deleteLessonMutation = useMutation({
     mutationFn: ({
@@ -203,7 +193,6 @@ export default function CourseBuilderPage() {
       lessonId: string;
     }) => deleteLesson(courseId, lessonId),
     onSuccess: (response: string, { lessonId }) => {
-      storeDeleteLesson(lessonId);
       queryClient.setQueryData<LessonResponse[]>(
         ['lessons'],
         (oldLessons = []) =>

@@ -15,7 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LessonResponse, LessonUpdateRequest } from '@/types/lessonType';
-import { useLessonStore } from '@/stores/lessonStore';
 import { updateLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '../Spinner';
@@ -37,7 +36,6 @@ export default function UpdateLessonCard({
   }, [selectedLesson, setSelectedLesson]);
 
   const { courseId } = useParams();
-  const { storeUpdateLesson } = useLessonStore();
   const queryClient = useQueryClient();
   const updateLessonMutation = useMutation({
     mutationFn: ({
@@ -50,7 +48,6 @@ export default function UpdateLessonCard({
       lesson: LessonUpdateRequest;
     }) => updateLesson(courseId, lessonId, lesson),
     onSuccess: (response: LessonResponse) => {
-      storeUpdateLesson(response);
       queryClient.setQueryData<LessonResponse[]>(
         ['lessons'],
         (oldLessons = []) =>

@@ -18,7 +18,6 @@ import { DialogFooter, DialogHeader } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { LessonCreateRequest, LessonResponse } from '@/types/lessonType';
-import { useLessonStore } from '@/stores/lessonStore';
 import { createLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
@@ -37,10 +36,9 @@ export default function AddLessonDialog({
     duration: 600000,
     content: '',
   });
-  const { courseId } = useParams();
-  const { storeCreateLesson } = useLessonStore();
-  const queryClient = useQueryClient();
 
+  const { courseId } = useParams();
+  const queryClient = useQueryClient();
   const addLessonMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -50,7 +48,6 @@ export default function AddLessonDialog({
       lesson: LessonCreateRequest;
     }) => createLesson(courseId, lesson),
     onSuccess: (response: LessonResponse) => {
-      storeCreateLesson(response);
       queryClient.setQueryData<LessonResponse[]>(
         ['lessons'],
         (oldLessons = []) => [...oldLessons, response]
