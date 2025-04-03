@@ -18,7 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CourseCreateRequest, CourseResponse } from '@/types/courseType';
 import { createCourse } from '@/services/courseService';
-import { useCourseStore } from '@/stores/courseStore';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import { getPresignedUrl, uploadFileToS3 } from '@/utils/s3UploadUtil';
@@ -40,13 +39,11 @@ export default function AddCourseDialog({
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { storeCreateCourse } = useCourseStore();
   const queryClient = useQueryClient();
   
   const courseMutation = useMutation({
     mutationFn: createCourse,
     onSuccess: (response: CourseResponse) => {
-      storeCreateCourse(response);
       queryClient.setQueryData<CourseResponse[]>(
         ['courses'],
         (oldCourses = []) => [...oldCourses, response]
