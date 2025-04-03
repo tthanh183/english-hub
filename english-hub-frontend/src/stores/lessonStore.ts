@@ -6,7 +6,7 @@ type LessonState = {
   setLessons: (lessons: LessonResponse[]) => void;
   storeUpdateLesson: (updatedLesson: LessonResponse) => void;
   storeCreateLesson: (newLesson: LessonResponse) => void;
-  storeDeleteLesson: (deletedLesson: LessonResponse) => void;
+  storeDeleteLesson: (id: string) => void;
 };
 
 export const useLessonStore = create<LessonState>(set => ({
@@ -22,8 +22,8 @@ export const useLessonStore = create<LessonState>(set => ({
     set(state => ({
       lessons: [...state.lessons, newLesson],
     })),
-  storeDeleteLesson: (deletedLesson: LessonResponse) =>
+  storeDeleteLesson: (id: string) =>
     set(state => ({
-      lessons: state.lessons.filter(lesson => lesson.id !== deletedLesson.id),
+      lessons: state.lessons.filter(lesson => lesson.id !== id),
     })),
 }));

@@ -1,5 +1,9 @@
 import axiosInstance from './axiosInstance';
-import { LessonCreateRequest, LessonResponse, LessonUpdateRequest } from '@/types/lessonType';
+import {
+  LessonCreateRequest,
+  LessonResponse,
+  LessonUpdateRequest,
+} from '@/types/lessonType';
 
 export async function getAllLessons(
   courseId: string
@@ -29,4 +33,14 @@ export async function updateLesson(
     lesson
   );
   return response.data.result;
+}
+
+export async function deleteLesson(
+  courseId: string,
+  lessonId: string
+): Promise<string> {
+  const response = await axiosInstance.delete(
+    `/courses/${courseId}/lessons/${lessonId}`
+  );
+  return response.data.message;
 }

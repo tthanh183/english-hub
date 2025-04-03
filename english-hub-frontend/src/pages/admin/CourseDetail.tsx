@@ -50,10 +50,13 @@ import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import AddLessonDialog from '@/components/admin/AddLessonDialog';
 import { useLessonStore } from '@/stores/lessonStore';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import { getAllLessons } from '@/services/lessonService';
+import { deleteLesson, getAllLessons } from '@/services/lessonService';
 import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
+import { on } from 'events';
+import { isAxiosError } from 'axios';
+import { showError, showSuccess } from '@/hooks/useToast';
 
 // Mock data
 
@@ -178,7 +181,8 @@ export default function CourseBuilderPage() {
   );
 
   const { courseId } = useParams();
-  const { lessons, setLessons } = useLessonStore();
+  const { lessons, setLessons, storeDeleteLesson } = useLessonStore();
+  const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({
     queryKey: ['lessons'],
     queryFn: () => (courseId ? getAllLessons(courseId) : Promise.resolve([])),
@@ -189,6 +193,34 @@ export default function CourseBuilderPage() {
       setLessons(data);
     }
   }, [data, lessons, setLessons]);
+
+  const deleteLessonMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      lessonId,
+    }: {
+      courseId: string;
+      lessonId: string;
+    }) => deleteLesson(courseId, lessonId),
+    onSuccess: (response: string, { lessonId }) => {
+      storeDeleteLesson(lessonId);
+      queryClient.setQueryData<LessonResponse[]>(
+        ['lessons'],
+        (oldLessons = []) =>
+          Array.isArray(oldLessons)
+            ? oldLessons.filter(lesson => lesson.id !== lessonId)
+            : []
+      );
+      showSuccess(response);
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
 
   const handleAddExercise = () => {
     if (!newExercise.title) return;
@@ -253,7 +285,7 @@ export default function CourseBuilderPage() {
       setIsEditingLesson(true);
     } else {
       if (selectedLesson?.id !== id) {
-        setSelectedLesson(lesson); // Cập nhật lesson ngay cả khi đang mở
+        setSelectedLesson(lesson);
       } else {
         setSelectedLesson(null);
         setIsEditingLesson(false);
@@ -261,23 +293,11 @@ export default function CourseBuilderPage() {
     }
   };
 
-  const handleDeleteLesson = () => {
-    // const updatedModules = [...course.modules];
-    // const updatedLessons = [...updatedModules[moduleIndex].lessons];
-    // updatedLessons.splice(lessonIndex, 1);
-    // // Update order for remaining lessons
-    // updatedLessons.forEach((lesson, idx) => {
-    //   lesson.order = idx + 1;
-    // });
-    // updatedModules[moduleIndex] = {
-    //   ...updatedModules[moduleIndex],
-    //   lessons: updatedLessons,
-    // };
-    // setCourse({
-    //   ...course,
-    //   modules: updatedModules,
-    // });
-    // setActiveLesson(null);
+  const handleDeleteLesson = (id: string) => {
+    deleteLessonMutation.mutate({
+      courseId: courseId || '',
+      lessonId: id,
+    });
   };
 
   const handleMoveLesson = (
@@ -397,7 +417,7 @@ export default function CourseBuilderPage() {
                       isSelected={selectedLesson?.id === lesson.id}
                       order={idx + 1}
                       onSelect={() => handleSelectLesson(lesson.id)}
-                      onDelete={handleDeleteLesson}
+                      onDelete={() => handleDeleteLesson(lesson.id)}
                     />
                   ))}
 
