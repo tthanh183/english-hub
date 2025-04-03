@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { MoreHorizontal, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
@@ -31,7 +31,6 @@ import {
 import AddUserDialog from '@/components/admin/AddUserDialog';
 import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { useUserStore } from '@/stores/userStore';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 
 export default function UserManagement() {
@@ -40,20 +39,11 @@ export default function UserManagement() {
   const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
 
-  const { users, setUsers, storeUpdateUser } = useUserStore();
-
   const queryClient = useQueryClient();
-
-  const { data = [], isLoading } = useQuery({
+  const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: getAllUsers,
   });
-
-  useEffect(() => {
-    if (data.length !== users.length) {
-      setUsers(data);
-    }
-  }, [data, users, setUsers]);
 
   const deactivateUserMutation = useMutation({
     mutationFn: deactivateUser,
@@ -62,7 +52,6 @@ export default function UserManagement() {
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
         oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
       );
-      storeUpdateUser(updatedUser);
       showSuccess('User deactivated successfully');
     },
     onError: error => {
@@ -82,7 +71,6 @@ export default function UserManagement() {
       queryClient.setQueryData<UserResponse[]>(['users'], (oldUsers = []) =>
         oldUsers.map(user => (user.id === updatedUser.id ? updatedUser : user))
       );
-      storeUpdateUser(updatedUser);
       showSuccess('User activated successfully');
     },
     onError: error => {
