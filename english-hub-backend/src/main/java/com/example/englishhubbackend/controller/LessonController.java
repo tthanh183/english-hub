@@ -35,4 +35,10 @@ public class LessonController {
          return ApiResponse.<LessonResponse>builder()
                  .result(lessonService.updateLesson(UUID.fromString(lessonId), lessonUpdateRequest)).build();
      }
+
+    @DeleteMapping("/{lessonId}")
+    public ApiResponse<String> deleteLesson(@PathVariable String lessonId) {
+        lessonService.deleteLesson(UUID.fromString(lessonId));
+        return ApiResponse.<String>builder().message("Lesson deleted successfully").build();
+    }
 }

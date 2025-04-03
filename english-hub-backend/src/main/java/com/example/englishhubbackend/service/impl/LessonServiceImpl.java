@@ -53,4 +53,11 @@ public class LessonServiceImpl implements LessonService {
         lessonMapper.toLesson(lessonUpdateRequest, lesson);
         return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
     }
+
+    @Override
+    public void deleteLesson(UUID lessonId) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        lessonRepository.delete(lesson);
+    }
 }
