@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CourseResponse, CourseUpdateRequest } from '@/types/courseType';
 import { updateCourse } from '@/services/courseService';
-import { useCourseStore } from '@/stores/courseStore';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import {
@@ -40,7 +39,7 @@ export default function UpdateCourseDialog({
 }: UpdateCourseDialogProps) {
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const { storeUpdateCourse } = useCourseStore();
+  
   const queryClient = useQueryClient();
   const updateMutation = useMutation({
     mutationFn: ({
@@ -51,7 +50,6 @@ export default function UpdateCourseDialog({
       course: CourseUpdateRequest;
     }) => updateCourse(courseId, course),
     onSuccess: (response: CourseResponse) => {
-      storeUpdateCourse(response);
       queryClient.setQueryData<CourseResponse[]>(
         ['courses'],
         (oldCourses = []) =>
