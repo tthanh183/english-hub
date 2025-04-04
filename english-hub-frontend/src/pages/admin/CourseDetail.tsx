@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -116,11 +116,10 @@ export default function CourseDetail() {
 
   const { courseId } = useParams();
 
-  // useEffect(() => {
-  //   if(courseId) {
+  useEffect(() => {
+    setSelectedLesson(null);
+  }, [activeTab]);
 
-  //   }
-  // },)
   const queryClient = useQueryClient();
 
   const { data: lessons = [], isLoading: isLessonsLoading } = useQuery({
