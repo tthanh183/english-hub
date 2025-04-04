@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -27,27 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  ArrowLeft,
-  BookOpen,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  Copy,
-  FileText,
-  Maximize2,
-  MoreHorizontal,
-  Plus,
-  X,
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, FileText, Plus, X } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
@@ -112,27 +86,29 @@ type ToeicExercise = {
   images?: string[];
   additionalPassages?: string[];
   questions: Question[];
-  questionGroups?: QuestionGroup[]; // Thêm trường này cho Part 1, 3, 4
+  questionGroups?: QuestionGroup[];
 };
 
 const CourseInitial = {
-  title: "abc",
-  description: "abc",
-  imageUrl: "abc",
+  title: 'abc',
+  description: 'abc',
+  imageUrl: 'abc',
   createdDate: new Date(),
   updatedDate: new Date(),
-}
+};
 
 export default function CourseDetail() {
   const [course, setCourse] = useState<CourseResponse | null>(CourseInitial);
   const [activeTab, setActiveTab] = useState('lessons');
-  const [isAddLessonOpen, setIsAddLessonOpen] = useState(false);
-  const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false);
+  const [isAddLessonOpen, setIsAddLessonOpen] = useState<boolean>(false);
+  const [isAddExerciseOpen, setIsAddExerciseOpen] = useState<boolean>(false);
+
   const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
     null
   );
   const [selectedExercise, setSelectedExercise] =
     useState<ExerciseResponse | null>(null);
+
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
   const [expandedQuestionGroup, setExpandedQuestionGroup] = useState<
     string | null
@@ -142,17 +118,17 @@ export default function CourseDetail() {
 
   // useEffect(() => {
   //   if(courseId) {
-      
+
   //   }
-  // },) 
+  // },)
   const queryClient = useQueryClient();
 
-  const { data: lessons = [], isLessonsLoading } = useQuery({
+  const { data: lessons = [], isLoading: isLessonsLoading } = useQuery({
     queryKey: ['lessons'],
     queryFn: () => getAllLessons(courseId || ''),
   });
 
-  const { data: exercises = [], isExercisesLoading } = useQuery({
+  const { data: exercises = [], isLoading: isExercisesLoading } = useQuery({
     queryKey: ['exercises'],
     queryFn: () => getAllExercises(courseId || ''),
   });
@@ -195,13 +171,15 @@ export default function CourseDetail() {
     }
   };
 
-  const handleSelectedExercise = (id: string) => {
+  const handleSelectExercise = (id: string) => {
     if (selectedExercise?.id !== id) {
       setSelectedExercise(
         exercises.find(exercise => exercise.id === id) || null
       );
+      setIsAddExerciseOpen(true);
     } else {
       setSelectedExercise(null);
+      setIsAddExerciseOpen(false);
     }
   };
 
@@ -2525,7 +2503,7 @@ export default function CourseDetail() {
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Lessons</CardTitle>
+                  <CardTitle>Lesson Structure</CardTitle>
                   <AddLessonDialog
                     isOpen={isAddLessonOpen}
                     onOpenChange={setIsAddLessonOpen}
@@ -2573,759 +2551,822 @@ export default function CourseDetail() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">TOEIC Exercise Bank</h2>
-            <Dialog
-              open={isAddExerciseOpen}
-              onOpenChange={setIsAddExerciseOpen}
-            >
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add TOEIC Exercise
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Create New TOEIC Exercise</DialogTitle>
-                  <DialogDescription>
-                    Create a comprehensive exercise following TOEIC test format
-                  </DialogDescription>
-                </DialogHeader>
-
-                {/* Exercise Basic Info */}
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="exercise-title">Exercise Title</Label>
-                    <Input
-                      id="exercise-title"
-                      placeholder="e.g., TOEIC Reading - Incomplete Sentences Practice 1"
-                      value={newExercise.title}
-                      onChange={e =>
-                        setNewExercise({
-                          ...newExercise,
-                          title: e.target.value,
-                        })
+          <div className="grid md:grid-cols-1 gap-6">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Exercise Bank</CardTitle>
+                  <Button size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Exercise
+                  </Button>
+                  <Dialog
+                    open={isAddExerciseOpen}
+                    onOpenChange={open => {
+                      setIsAddExerciseOpen(open);
+                      if (!open) {
+                        setSelectedExercise(null);
                       }
-                    />
-                  </div>
+                    }}
+                  >
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Create New TOEIC Exercise</DialogTitle>
+                        <DialogDescription>
+                          Create a comprehensive exercise following TOEIC test
+                          format
+                        </DialogDescription>
+                      </DialogHeader>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="exercise-section">TOEIC Section</Label>
-                      <Select
-                        value={newExercise.section}
-                        onValueChange={value =>
-                          setNewExercise({
-                            ...newExercise,
-                            section: value as 'listening' | 'reading',
-                            type: '',
-                          })
-                        }
-                      >
-                        <SelectTrigger id="exercise-section">
-                          <SelectValue placeholder="Select section" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="listening">Listening</SelectItem>
-                          <SelectItem value="reading">Reading</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                      {/* Exercise Basic Info */}
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="exercise-title">Exercise Title</Label>
+                          <Input
+                            id="exercise-title"
+                            placeholder="e.g., TOEIC Reading - Incomplete Sentences Practice 1"
+                            value={newExercise.title}
+                            onChange={e =>
+                              setNewExercise({
+                                ...newExercise,
+                                title: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="exercise-type">Exercise Type</Label>
-                      <Select
-                        value={newExercise.type}
-                        onValueChange={value =>
-                          setNewExercise({ ...newExercise, type: value })
-                        }
-                      >
-                        <SelectTrigger id="exercise-type">
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {newExercise.section === 'listening' ? (
-                            <>
-                              <SelectItem value="photographs">
-                                Part 1: Photographs
-                              </SelectItem>
-                              <SelectItem value="question_response">
-                                Part 2: Question-Response
-                              </SelectItem>
-                              <SelectItem value="conversations">
-                                Part 3: Conversations
-                              </SelectItem>
-                              <SelectItem value="short_talks">
-                                Part 4: Short Talks
-                              </SelectItem>
-                            </>
-                          ) : (
-                            <>
-                              <SelectItem value="incomplete_sentences">
-                                Part 5: Incomplete Sentences
-                              </SelectItem>
-                              <SelectItem value="text_completion">
-                                Part 6: Text Completion
-                              </SelectItem>
-                              <SelectItem value="reading_comprehension">
-                                Part 7: Single Passages
-                              </SelectItem>
-                              <SelectItem value="multiple_passages">
-                                Part 7: Multiple Passages
-                              </SelectItem>
-                            </>
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="exercise-difficulty">
-                        Difficulty Level
-                      </Label>
-                      <Select
-                        value={newExercise.difficulty}
-                        onValueChange={value =>
-                          setNewExercise({ ...newExercise, difficulty: value })
-                        }
-                      >
-                        <SelectTrigger id="exercise-difficulty">
-                          <SelectValue placeholder="Select difficulty" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="easy">Easy (400-600)</SelectItem>
-                          <SelectItem value="medium">
-                            Medium (600-800)
-                          </SelectItem>
-                          <SelectItem value="hard">Hard (800-990)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="exercise-time">Estimated Time</Label>
-                      <Input
-                        id="exercise-time"
-                        placeholder="e.g., 15 minutes"
-                        value={newExercise.estimatedTime}
-                        onChange={e =>
-                          setNewExercise({
-                            ...newExercise,
-                            estimatedTime: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="exercise-instructions">
-                      General Instructions
-                    </Label>
-                    <Textarea
-                      id="exercise-instructions"
-                      placeholder="Provide general instructions for this exercise"
-                      rows={3}
-                      value={newExercise.instructions}
-                      onChange={e =>
-                        setNewExercise({
-                          ...newExercise,
-                          instructions: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  {/* Render fields specific to the exercise type */}
-                  {renderExerciseTypeSpecificFields()}
-                </div>
-
-                {/* Questions Section */}
-                <div className="border-t pt-4 mt-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <Label>Questions</Label>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={addNewQuestion}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Question
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          for (let i = 0; i < 3; i++) {
-                            addNewQuestion();
-                          }
-                        }}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add 3 Questions
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Questions List - Accordion style */}
-                  <div className="space-y-4">
-                    {newExercise.questions?.map((question, index) => (
-                      <Card key={question.id}>
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <CardTitle className="text-base">
-                                Question {index + 1}:{' '}
-                                {question.title || 'Untitled'}
-                              </CardTitle>
-                              <p className="text-xs text-muted-foreground">
-                                {question.type} • {question.points} points
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => expandQuestion(question.id)}
-                              >
-                                {expandedQuestion === question.id
-                                  ? 'Collapse'
-                                  : 'Edit'}
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500"
-                                onClick={() => removeQuestion(question.id)}
-                              >
-                                Remove
-                              </Button>
-                            </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="exercise-section">
+                              TOEIC Section
+                            </Label>
+                            <Select
+                              value={newExercise.section}
+                              onValueChange={value =>
+                                setNewExercise({
+                                  ...newExercise,
+                                  section: value as 'listening' | 'reading',
+                                  type: '',
+                                })
+                              }
+                            >
+                              <SelectTrigger id="exercise-section">
+                                <SelectValue placeholder="Select section" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="listening">
+                                  Listening
+                                </SelectItem>
+                                <SelectItem value="reading">Reading</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
-                        </CardHeader>
 
-                        {/* Expanded Question Editor */}
-                        {expandedQuestion === question.id && (
-                          <CardContent>
-                            <div className="grid gap-4 py-2">
-                              <div className="grid gap-2">
-                                <Label
-                                  htmlFor={`question-${question.id}-title`}
-                                >
-                                  Question Title
-                                </Label>
-                                <Input
-                                  id={`question-${question.id}-title`}
-                                  placeholder="Enter question title"
-                                  value={question.title}
-                                  onChange={e =>
-                                    updateQuestion(
-                                      question.id,
-                                      'title',
-                                      e.target.value
-                                    )
-                                  }
-                                />
-                              </div>
-
-                              <div className="grid gap-2">
-                                <Label htmlFor={`question-${question.id}-type`}>
-                                  Question Type
-                                </Label>
-                                <Select
-                                  value={question.type}
-                                  onValueChange={value =>
-                                    updateQuestion(question.id, 'type', value)
-                                  }
-                                >
-                                  <SelectTrigger
-                                    id={`question-${question.id}-type`}
-                                  >
-                                    <SelectValue placeholder="Select question type" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="multiple_choice">
-                                      Multiple Choice
+                          <div className="space-y-2">
+                            <Label htmlFor="exercise-type">Exercise Type</Label>
+                            <Select
+                              value={newExercise.type}
+                              onValueChange={value =>
+                                setNewExercise({ ...newExercise, type: value })
+                              }
+                            >
+                              <SelectTrigger id="exercise-type">
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {newExercise.section === 'listening' ? (
+                                  <>
+                                    <SelectItem value="photographs">
+                                      Part 1: Photographs
                                     </SelectItem>
-                                    <SelectItem value="fill_blank">
-                                      Fill in the Blank
+                                    <SelectItem value="question_response">
+                                      Part 2: Question-Response
                                     </SelectItem>
-                                    <SelectItem value="matching">
-                                      Matching
+                                    <SelectItem value="conversations">
+                                      Part 3: Conversations
                                     </SelectItem>
-                                    <SelectItem value="true_false">
-                                      True/False
+                                    <SelectItem value="short_talks">
+                                      Part 4: Short Talks
                                     </SelectItem>
-                                    <SelectItem value="short_answer">
-                                      Short Answer
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-
-                              <div className="grid gap-2">
-                                <Label
-                                  htmlFor={`question-${question.id}-instructions`}
-                                >
-                                  Instructions
-                                </Label>
-                                <Textarea
-                                  id={`question-${question.id}-instructions`}
-                                  placeholder="Enter specific instructions for this question"
-                                  value={question.instructions || ''}
-                                  onChange={e =>
-                                    updateQuestion(
-                                      question.id,
-                                      'instructions',
-                                      e.target.value
-                                    )
-                                  }
-                                  rows={2}
-                                />
-                              </div>
-
-                              <div className="grid gap-2">
-                                <Label
-                                  htmlFor={`question-${question.id}-points`}
-                                >
-                                  Points
-                                </Label>
-                                <Input
-                                  id={`question-${question.id}-points`}
-                                  type="number"
-                                  placeholder="Points value"
-                                  value={question.points}
-                                  onChange={e =>
-                                    updateQuestion(
-                                      question.id,
-                                      'points',
-                                      parseInt(e.target.value) || 0
-                                    )
-                                  }
-                                />
-                              </div>
-
-                              {/* Media Attachments */}
-                              <div className="grid gap-2">
-                                <div className="flex justify-between items-center">
-                                  <Label>Media Attachments</Label>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => addMedia(question.id)}
-                                  >
-                                    Add Media
-                                  </Button>
-                                </div>
-
-                                {question.media && question.media.length > 0 ? (
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {question.media?.map(
-                                      (media, mediaIndex) => (
-                                        <div
-                                          key={mediaIndex}
-                                          className="border rounded-md p-2"
-                                        >
-                                          <div className="flex justify-between items-center mb-2">
-                                            <Select
-                                              value={media.type}
-                                              onValueChange={value =>
-                                                updateMedia(
-                                                  question.id,
-                                                  mediaIndex,
-                                                  'type',
-                                                  value
-                                                )
-                                              }
-                                            >
-                                              <SelectTrigger className="w-28">
-                                                <SelectValue placeholder="Type" />
-                                              </SelectTrigger>
-                                              <SelectContent>
-                                                <SelectItem value="image">
-                                                  Image
-                                                </SelectItem>
-                                                <SelectItem value="audio">
-                                                  Audio
-                                                </SelectItem>
-                                              </SelectContent>
-                                            </Select>
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              className="text-red-500 h-8 w-8 p-0"
-                                              onClick={() =>
-                                                removeMedia(
-                                                  question.id,
-                                                  mediaIndex
-                                                )
-                                              }
-                                            >
-                                              <X className="h-4 w-4" />
-                                            </Button>
-                                          </div>
-
-                                          <div className="flex gap-2 mt-2">
-                                            <Input
-                                              placeholder="URL"
-                                              value={media.url}
-                                              onChange={e =>
-                                                updateMedia(
-                                                  question.id,
-                                                  mediaIndex,
-                                                  'url',
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="flex-1"
-                                            />
-                                            <Button
-                                              variant="secondary"
-                                              className="shrink-0 h-9"
-                                            >
-                                              Upload
-                                            </Button>
-                                          </div>
-
-                                          {/* Preview Media */}
-                                          {media.url && (
-                                            <div className="mt-2">
-                                              {media.type === 'image' && (
-                                                <img
-                                                  src={media.url}
-                                                  alt="Preview"
-                                                  className="max-h-32 object-contain mx-auto"
-                                                />
-                                              )}
-                                              {media.type === 'audio' && (
-                                                <audio
-                                                  controls
-                                                  src={media.url}
-                                                  className="w-full"
-                                                />
-                                              )}
-                                            </div>
-                                          )}
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
+                                  </>
                                 ) : (
-                                  <p className="text-sm text-muted-foreground">
-                                    No media attachments
-                                  </p>
+                                  <>
+                                    <SelectItem value="incomplete_sentences">
+                                      Part 5: Incomplete Sentences
+                                    </SelectItem>
+                                    <SelectItem value="text_completion">
+                                      Part 6: Text Completion
+                                    </SelectItem>
+                                    <SelectItem value="reading_comprehension">
+                                      Part 7: Single Passages
+                                    </SelectItem>
+                                    <SelectItem value="multiple_passages">
+                                      Part 7: Multiple Passages
+                                    </SelectItem>
+                                  </>
                                 )}
-                              </div>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
 
-                              {/* Conditional UI based on question type */}
-                              {question.type === 'multiple_choice' && (
-                                <div className="grid gap-2">
-                                  <div className="flex justify-between items-center">
-                                    <Label>Answer Options</Label>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => addOption(question.id)}
-                                    >
-                                      Add Option
-                                    </Button>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="exercise-difficulty">
+                              Difficulty Level
+                            </Label>
+                            <Select
+                              value={newExercise.difficulty}
+                              onValueChange={value =>
+                                setNewExercise({
+                                  ...newExercise,
+                                  difficulty: value,
+                                })
+                              }
+                            >
+                              <SelectTrigger id="exercise-difficulty">
+                                <SelectValue placeholder="Select difficulty" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="easy">
+                                  Easy (400-600)
+                                </SelectItem>
+                                <SelectItem value="medium">
+                                  Medium (600-800)
+                                </SelectItem>
+                                <SelectItem value="hard">
+                                  Hard (800-990)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="exercise-time">
+                              Estimated Time
+                            </Label>
+                            <Input
+                              id="exercise-time"
+                              placeholder="e.g., 15 minutes"
+                              value={newExercise.estimatedTime}
+                              onChange={e =>
+                                setNewExercise({
+                                  ...newExercise,
+                                  estimatedTime: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="exercise-instructions">
+                            General Instructions
+                          </Label>
+                          <Textarea
+                            id="exercise-instructions"
+                            placeholder="Provide general instructions for this exercise"
+                            rows={3}
+                            value={newExercise.instructions}
+                            onChange={e =>
+                              setNewExercise({
+                                ...newExercise,
+                                instructions: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* Render fields specific to the exercise type */}
+                        {renderExerciseTypeSpecificFields()}
+                      </div>
+
+                      {/* Questions Section */}
+                      <div className="border-t pt-4 mt-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <Label>Questions</Label>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={addNewQuestion}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Question
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                for (let i = 0; i < 3; i++) {
+                                  addNewQuestion();
+                                }
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add 3 Questions
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Questions List - Accordion style */}
+                        <div className="space-y-4">
+                          {newExercise.questions?.map((question, index) => (
+                            <Card key={question.id}>
+                              <CardHeader className="pb-2">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <CardTitle className="text-base">
+                                      Question {index + 1}:{' '}
+                                      {question.title || 'Untitled'}
+                                    </CardTitle>
+                                    <p className="text-xs text-muted-foreground">
+                                      {question.type} • {question.points} points
+                                    </p>
                                   </div>
-
-                                  {question.options &&
-                                  question.options.length > 0 ? (
-                                    <div className="space-y-2">
-                                      {question.options?.map(
-                                        (option, optionIndex) => (
-                                          <div
-                                            key={option.id}
-                                            className="flex items-center gap-2 border rounded-md p-2"
-                                          >
-                                            <div className="flex items-center space-x-2">
-                                              <Checkbox
-                                                id={`option-${option.id}-correct`}
-                                                checked={option.isCorrect}
-                                                onCheckedChange={checked =>
-                                                  updateOption(
-                                                    question.id,
-                                                    optionIndex,
-                                                    'isCorrect',
-                                                    Boolean(checked)
-                                                  )
-                                                }
-                                              />
-                                              <Label
-                                                htmlFor={`option-${option.id}-correct`}
-                                                className="text-sm font-normal"
-                                              >
-                                                Correct
-                                              </Label>
-                                            </div>
-                                            <Input
-                                              placeholder={`Option ${
-                                                optionIndex + 1
-                                              }`}
-                                              value={option.text}
-                                              onChange={e =>
-                                                updateOption(
-                                                  question.id,
-                                                  optionIndex,
-                                                  'text',
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="flex-1"
-                                            />
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              className="text-red-500 h-8 w-8 p-0"
-                                              onClick={() =>
-                                                removeOption(
-                                                  question.id,
-                                                  optionIndex
-                                                )
-                                              }
-                                            >
-                                              <X className="h-4 w-4" />
-                                            </Button>
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-muted-foreground">
-                                      No options added
-                                    </p>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* Fill in the Blanks, Short Answer */}
-                              {(question.type === 'fill_blank' ||
-                                question.type === 'short_answer') && (
-                                <div className="grid gap-2">
-                                  <Label
-                                    htmlFor={`question-${question.id}-answer`}
-                                  >
-                                    Correct Answer(s)
-                                  </Label>
-                                  <Textarea
-                                    id={`question-${question.id}-answer`}
-                                    placeholder="Enter correct answer(s), separate multiple answers with commas"
-                                    value={
-                                      Array.isArray(question.correctAnswer)
-                                        ? question.correctAnswer.join(', ')
-                                        : question.correctAnswer || ''
-                                    }
-                                    onChange={e => {
-                                      const value = e.target.value;
-                                      updateQuestion(
-                                        question.id,
-                                        'correctAnswer',
-                                        question.type === 'fill_blank'
-                                          ? value.split(',').map(v => v.trim())
-                                          : value
-                                      );
-                                    }}
-                                    rows={2}
-                                  />
-                                </div>
-                              )}
-
-                              {/* True/False specific */}
-                              {question.type === 'true_false' && (
-                                <div className="grid gap-2">
-                                  <Label>Correct Answer</Label>
-                                  <RadioGroup
-                                    value={
-                                      (question.correctAnswer as string) ||
-                                      'true'
-                                    }
-                                    onValueChange={value =>
-                                      updateQuestion(
-                                        question.id,
-                                        'correctAnswer',
-                                        value
-                                      )
-                                    }
-                                  >
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem
-                                        value="true"
-                                        id={`true-${question.id}`}
-                                      />
-                                      <Label htmlFor={`true-${question.id}`}>
-                                        True
-                                      </Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem
-                                        value="false"
-                                        id={`false-${question.id}`}
-                                      />
-                                      <Label htmlFor={`false-${question.id}`}>
-                                        False
-                                      </Label>
-                                    </div>
-                                  </RadioGroup>
-                                </div>
-                              )}
-
-                              {/* Matching Questions */}
-                              {question.type === 'matching' && (
-                                <div className="grid gap-2">
-                                  <Label>Matching Pairs</Label>
-                                  <div className="border rounded-md p-3">
-                                    <p className="text-sm text-muted-foreground mb-2">
-                                      For matching questions, add options with
-                                      format "Left|Right" to create matching
-                                      pairs
-                                    </p>
+                                  <div className="flex items-center gap-1">
                                     <Button
-                                      variant="outline"
+                                      variant="ghost"
                                       size="sm"
                                       onClick={() =>
-                                        addOption(question.id, 'Left|Right')
+                                        expandQuestion(question.id)
                                       }
-                                      className="mb-2"
                                     >
-                                      Add Matching Pair
+                                      {expandedQuestion === question.id
+                                        ? 'Collapse'
+                                        : 'Edit'}
                                     </Button>
-
-                                    {question.options &&
-                                    question.options.length > 0 ? (
-                                      <div className="space-y-2">
-                                        {question.options?.map(
-                                          (option, optionIndex) => {
-                                            const [left, right] =
-                                              option.text.split('|');
-                                            return (
-                                              <div
-                                                key={option.id}
-                                                className="flex items-center gap-2 border rounded-md p-2"
-                                              >
-                                                <Input
-                                                  placeholder="Left item"
-                                                  value={left || ''}
-                                                  onChange={e => {
-                                                    const newLeft =
-                                                      e.target.value;
-                                                    updateOption(
-                                                      question.id,
-                                                      optionIndex,
-                                                      'text',
-                                                      `${newLeft}|${
-                                                        right || ''
-                                                      }`
-                                                    );
-                                                  }}
-                                                  className="flex-1"
-                                                />
-                                                <span className="text-muted-foreground">
-                                                  |
-                                                </span>
-                                                <Input
-                                                  placeholder="Right item"
-                                                  value={right || ''}
-                                                  onChange={e => {
-                                                    const newRight =
-                                                      e.target.value;
-                                                    updateOption(
-                                                      question.id,
-                                                      optionIndex,
-                                                      'text',
-                                                      `${
-                                                        left || ''
-                                                      }|${newRight}`
-                                                    );
-                                                  }}
-                                                  className="flex-1"
-                                                />
-                                                <Button
-                                                  variant="ghost"
-                                                  size="sm"
-                                                  className="text-red-500 h-8 w-8 p-0"
-                                                  onClick={() =>
-                                                    removeOption(
-                                                      question.id,
-                                                      optionIndex
-                                                    )
-                                                  }
-                                                >
-                                                  <X className="h-4 w-4" />
-                                                </Button>
-                                              </div>
-                                            );
-                                          }
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <p className="text-sm text-muted-foreground">
-                                        No matching pairs added
-                                      </p>
-                                    )}
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-red-500"
+                                      onClick={() =>
+                                        removeQuestion(question.id)
+                                      }
+                                    >
+                                      Remove
+                                    </Button>
                                   </div>
                                 </div>
+                              </CardHeader>
+
+                              {/* Expanded Question Editor */}
+                              {expandedQuestion === question.id && (
+                                <CardContent>
+                                  <div className="grid gap-4 py-2">
+                                    <div className="grid gap-2">
+                                      <Label
+                                        htmlFor={`question-${question.id}-title`}
+                                      >
+                                        Question Title
+                                      </Label>
+                                      <Input
+                                        id={`question-${question.id}-title`}
+                                        placeholder="Enter question title"
+                                        value={question.title}
+                                        onChange={e =>
+                                          updateQuestion(
+                                            question.id,
+                                            'title',
+                                            e.target.value
+                                          )
+                                        }
+                                      />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                      <Label
+                                        htmlFor={`question-${question.id}-type`}
+                                      >
+                                        Question Type
+                                      </Label>
+                                      <Select
+                                        value={question.type}
+                                        onValueChange={value =>
+                                          updateQuestion(
+                                            question.id,
+                                            'type',
+                                            value
+                                          )
+                                        }
+                                      >
+                                        <SelectTrigger
+                                          id={`question-${question.id}-type`}
+                                        >
+                                          <SelectValue placeholder="Select question type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="multiple_choice">
+                                            Multiple Choice
+                                          </SelectItem>
+                                          <SelectItem value="fill_blank">
+                                            Fill in the Blank
+                                          </SelectItem>
+                                          <SelectItem value="matching">
+                                            Matching
+                                          </SelectItem>
+                                          <SelectItem value="true_false">
+                                            True/False
+                                          </SelectItem>
+                                          <SelectItem value="short_answer">
+                                            Short Answer
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                      <Label
+                                        htmlFor={`question-${question.id}-instructions`}
+                                      >
+                                        Instructions
+                                      </Label>
+                                      <Textarea
+                                        id={`question-${question.id}-instructions`}
+                                        placeholder="Enter specific instructions for this question"
+                                        value={question.instructions || ''}
+                                        onChange={e =>
+                                          updateQuestion(
+                                            question.id,
+                                            'instructions',
+                                            e.target.value
+                                          )
+                                        }
+                                        rows={2}
+                                      />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                      <Label
+                                        htmlFor={`question-${question.id}-points`}
+                                      >
+                                        Points
+                                      </Label>
+                                      <Input
+                                        id={`question-${question.id}-points`}
+                                        type="number"
+                                        placeholder="Points value"
+                                        value={question.points}
+                                        onChange={e =>
+                                          updateQuestion(
+                                            question.id,
+                                            'points',
+                                            parseInt(e.target.value) || 0
+                                          )
+                                        }
+                                      />
+                                    </div>
+
+                                    {/* Media Attachments */}
+                                    <div className="grid gap-2">
+                                      <div className="flex justify-between items-center">
+                                        <Label>Media Attachments</Label>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => addMedia(question.id)}
+                                        >
+                                          Add Media
+                                        </Button>
+                                      </div>
+
+                                      {question.media &&
+                                      question.media.length > 0 ? (
+                                        <div className="grid grid-cols-2 gap-2">
+                                          {question.media?.map(
+                                            (media, mediaIndex) => (
+                                              <div
+                                                key={mediaIndex}
+                                                className="border rounded-md p-2"
+                                              >
+                                                <div className="flex justify-between items-center mb-2">
+                                                  <Select
+                                                    value={media.type}
+                                                    onValueChange={value =>
+                                                      updateMedia(
+                                                        question.id,
+                                                        mediaIndex,
+                                                        'type',
+                                                        value
+                                                      )
+                                                    }
+                                                  >
+                                                    <SelectTrigger className="w-28">
+                                                      <SelectValue placeholder="Type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                      <SelectItem value="image">
+                                                        Image
+                                                      </SelectItem>
+                                                      <SelectItem value="audio">
+                                                        Audio
+                                                      </SelectItem>
+                                                    </SelectContent>
+                                                  </Select>
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-red-500 h-8 w-8 p-0"
+                                                    onClick={() =>
+                                                      removeMedia(
+                                                        question.id,
+                                                        mediaIndex
+                                                      )
+                                                    }
+                                                  >
+                                                    <X className="h-4 w-4" />
+                                                  </Button>
+                                                </div>
+
+                                                <div className="flex gap-2 mt-2">
+                                                  <Input
+                                                    placeholder="URL"
+                                                    value={media.url}
+                                                    onChange={e =>
+                                                      updateMedia(
+                                                        question.id,
+                                                        mediaIndex,
+                                                        'url',
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                    className="flex-1"
+                                                  />
+                                                  <Button
+                                                    variant="secondary"
+                                                    className="shrink-0 h-9"
+                                                  >
+                                                    Upload
+                                                  </Button>
+                                                </div>
+
+                                                {/* Preview Media */}
+                                                {media.url && (
+                                                  <div className="mt-2">
+                                                    {media.type === 'image' && (
+                                                      <img
+                                                        src={media.url}
+                                                        alt="Preview"
+                                                        className="max-h-32 object-contain mx-auto"
+                                                      />
+                                                    )}
+                                                    {media.type === 'audio' && (
+                                                      <audio
+                                                        controls
+                                                        src={media.url}
+                                                        className="w-full"
+                                                      />
+                                                    )}
+                                                  </div>
+                                                )}
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm text-muted-foreground">
+                                          No media attachments
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Conditional UI based on question type */}
+                                    {question.type === 'multiple_choice' && (
+                                      <div className="grid gap-2">
+                                        <div className="flex justify-between items-center">
+                                          <Label>Answer Options</Label>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                              addOption(question.id)
+                                            }
+                                          >
+                                            Add Option
+                                          </Button>
+                                        </div>
+
+                                        {question.options &&
+                                        question.options.length > 0 ? (
+                                          <div className="space-y-2">
+                                            {question.options?.map(
+                                              (option, optionIndex) => (
+                                                <div
+                                                  key={option.id}
+                                                  className="flex items-center gap-2 border rounded-md p-2"
+                                                >
+                                                  <div className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                      id={`option-${option.id}-correct`}
+                                                      checked={option.isCorrect}
+                                                      onCheckedChange={checked =>
+                                                        updateOption(
+                                                          question.id,
+                                                          optionIndex,
+                                                          'isCorrect',
+                                                          Boolean(checked)
+                                                        )
+                                                      }
+                                                    />
+                                                    <Label
+                                                      htmlFor={`option-${option.id}-correct`}
+                                                      className="text-sm font-normal"
+                                                    >
+                                                      Correct
+                                                    </Label>
+                                                  </div>
+                                                  <Input
+                                                    placeholder={`Option ${
+                                                      optionIndex + 1
+                                                    }`}
+                                                    value={option.text}
+                                                    onChange={e =>
+                                                      updateOption(
+                                                        question.id,
+                                                        optionIndex,
+                                                        'text',
+                                                        e.target.value
+                                                      )
+                                                    }
+                                                    className="flex-1"
+                                                  />
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-red-500 h-8 w-8 p-0"
+                                                    onClick={() =>
+                                                      removeOption(
+                                                        question.id,
+                                                        optionIndex
+                                                      )
+                                                    }
+                                                  >
+                                                    <X className="h-4 w-4" />
+                                                  </Button>
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <p className="text-sm text-muted-foreground">
+                                            No options added
+                                          </p>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Fill in the Blanks, Short Answer */}
+                                    {(question.type === 'fill_blank' ||
+                                      question.type === 'short_answer') && (
+                                      <div className="grid gap-2">
+                                        <Label
+                                          htmlFor={`question-${question.id}-answer`}
+                                        >
+                                          Correct Answer(s)
+                                        </Label>
+                                        <Textarea
+                                          id={`question-${question.id}-answer`}
+                                          placeholder="Enter correct answer(s), separate multiple answers with commas"
+                                          value={
+                                            Array.isArray(
+                                              question.correctAnswer
+                                            )
+                                              ? question.correctAnswer.join(
+                                                  ', '
+                                                )
+                                              : question.correctAnswer || ''
+                                          }
+                                          onChange={e => {
+                                            const value = e.target.value;
+                                            updateQuestion(
+                                              question.id,
+                                              'correctAnswer',
+                                              question.type === 'fill_blank'
+                                                ? value
+                                                    .split(',')
+                                                    .map(v => v.trim())
+                                                : value
+                                            );
+                                          }}
+                                          rows={2}
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* True/False specific */}
+                                    {question.type === 'true_false' && (
+                                      <div className="grid gap-2">
+                                        <Label>Correct Answer</Label>
+                                        <RadioGroup
+                                          value={
+                                            (question.correctAnswer as string) ||
+                                            'true'
+                                          }
+                                          onValueChange={value =>
+                                            updateQuestion(
+                                              question.id,
+                                              'correctAnswer',
+                                              value
+                                            )
+                                          }
+                                        >
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem
+                                              value="true"
+                                              id={`true-${question.id}`}
+                                            />
+                                            <Label
+                                              htmlFor={`true-${question.id}`}
+                                            >
+                                              True
+                                            </Label>
+                                          </div>
+                                          <div className="flex items-center space-x-2">
+                                            <RadioGroupItem
+                                              value="false"
+                                              id={`false-${question.id}`}
+                                            />
+                                            <Label
+                                              htmlFor={`false-${question.id}`}
+                                            >
+                                              False
+                                            </Label>
+                                          </div>
+                                        </RadioGroup>
+                                      </div>
+                                    )}
+
+                                    {/* Matching Questions */}
+                                    {question.type === 'matching' && (
+                                      <div className="grid gap-2">
+                                        <Label>Matching Pairs</Label>
+                                        <div className="border rounded-md p-3">
+                                          <p className="text-sm text-muted-foreground mb-2">
+                                            For matching questions, add options
+                                            with format "Left|Right" to create
+                                            matching pairs
+                                          </p>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                              addOption(
+                                                question.id,
+                                                'Left|Right'
+                                              )
+                                            }
+                                            className="mb-2"
+                                          >
+                                            Add Matching Pair
+                                          </Button>
+
+                                          {question.options &&
+                                          question.options.length > 0 ? (
+                                            <div className="space-y-2">
+                                              {question.options?.map(
+                                                (option, optionIndex) => {
+                                                  const [left, right] =
+                                                    option.text.split('|');
+                                                  return (
+                                                    <div
+                                                      key={option.id}
+                                                      className="flex items-center gap-2 border rounded-md p-2"
+                                                    >
+                                                      <Input
+                                                        placeholder="Left item"
+                                                        value={left || ''}
+                                                        onChange={e => {
+                                                          const newLeft =
+                                                            e.target.value;
+                                                          updateOption(
+                                                            question.id,
+                                                            optionIndex,
+                                                            'text',
+                                                            `${newLeft}|${
+                                                              right || ''
+                                                            }`
+                                                          );
+                                                        }}
+                                                        className="flex-1"
+                                                      />
+                                                      <span className="text-muted-foreground">
+                                                        |
+                                                      </span>
+                                                      <Input
+                                                        placeholder="Right item"
+                                                        value={right || ''}
+                                                        onChange={e => {
+                                                          const newRight =
+                                                            e.target.value;
+                                                          updateOption(
+                                                            question.id,
+                                                            optionIndex,
+                                                            'text',
+                                                            `${
+                                                              left || ''
+                                                            }|${newRight}`
+                                                          );
+                                                        }}
+                                                        className="flex-1"
+                                                      />
+                                                      <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-red-500 h-8 w-8 p-0"
+                                                        onClick={() =>
+                                                          removeOption(
+                                                            question.id,
+                                                            optionIndex
+                                                          )
+                                                        }
+                                                      >
+                                                        <X className="h-4 w-4" />
+                                                      </Button>
+                                                    </div>
+                                                  );
+                                                }
+                                              )}
+                                            </div>
+                                          ) : (
+                                            <p className="text-sm text-muted-foreground">
+                                              No matching pairs added
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </CardContent>
                               )}
+                            </Card>
+                          ))}
+
+                          {(!newExercise.questions ||
+                            newExercise.questions.length === 0) && (
+                            <div className="text-center p-8 border rounded-md bg-muted/30">
+                              <p className="text-muted-foreground">
+                                No questions added yet. Click "Add Question" to
+                                begin.
+                              </p>
                             </div>
-                          </CardContent>
-                        )}
-                      </Card>
-                    ))}
-
-                    {(!newExercise.questions ||
-                      newExercise.questions.length === 0) && (
-                      <div className="text-center p-8 border rounded-md bg-muted/30">
-                        <p className="text-muted-foreground">
-                          No questions added yet. Click "Add Question" to begin.
-                        </p>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </div>
+
+                      <DialogFooter className="mt-6">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setIsAddExerciseOpen(false);
+                            setSelectedExercise(null);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button onClick={handleAddExercise}>
+                          Create Exercise
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {exercises.map((exercise, idx) => (
+                    <ExerciseItem
+                      key={exercise.id}
+                      exercise={exercise}
+                      isSelected={selectedExercise?.id === exercise.id}
+                      order={idx + 1}
+                      onSelect={() => handleSelectExercise(exercise.id)}
+                      onDelete={() => handleDeleteExercise(exercise.id)}
+                    />
+                  ))}
 
-                <DialogFooter className="mt-6">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsAddExerciseOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddExercise}>Create Exercise</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                  {lessons.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium">No lessons yet</h3>
+                      <p className="text-muted-foreground mb-4">
+                        This course doesn't have any lessons. Add your first
+                        lesson to get started.
+                      </p>
+                      <Button onClick={() => setIsAddLessonOpen(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add First Lesson
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {exercises && exercises.length > 0 ? (
-              exercises.map((exercise, idx) => (
-                <ExerciseItem
-                  key={exercise.id}
-                  exercise={exercise}
-                  isSelected={selectedExercise?.id === exercise.id}
-                  order={idx + 1}
-                  onSelect={() => handleSelectedExercise(exercise.id)}
-                  onDelete={() => handleDeleteExercise(exercise.id)}
-                />
-              ))
-            ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-                <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium">No TOEIC exercises yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  You haven't created any exercises yet. Add your first TOEIC
-                  exercise to get started.
-                </p>
-                <Button onClick={() => setIsAddExerciseOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add First Exercise
-                </Button>
-              </div>
+            {selectedLesson && (
+              <UpdateLessonCard
+                selectedLesson={selectedLesson}
+                setSelectedLesson={setSelectedLesson}
+              />
             )}
           </div>
         </TabsContent>
