@@ -233,17 +233,17 @@ export default function CourseDetail() {
                     />
                   ))}
 
-                  {lessons.length === 0 && (
+                  {exercises.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium">No lessons yet</h3>
+                      <h3 className="text-lg font-medium">No exercises yet</h3>
                       <p className="text-muted-foreground mb-4">
-                        This course doesn't have any lessons. Add your first
-                        lesson to get started.
+                        This course doesn't have any exercises. Add your first
+                        exercise to get started.
                       </p>
                       <Button onClick={() => setIsAddLessonOpen(true)}>
                         <Plus className="h-4 w-4 mr-2" />
-                        Add First Lesson
+                        Add First Exercise
                       </Button>
                     </div>
                   )}
