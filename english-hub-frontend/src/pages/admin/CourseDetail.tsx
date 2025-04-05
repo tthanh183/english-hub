@@ -17,6 +17,7 @@ import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
 import { getAllExercises } from '@/services/exerciseService';
 import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
+import { ExerciseDetailCard } from '@/components/admin/ExerciseDetailCard';
 
 // Type definitions for exercise structures
 type MediaType = {
@@ -231,10 +232,10 @@ export default function CourseDetail() {
               </CardHeader>
               <CardContent>
                 {/* Your UpdateExerciseCard component will go here */}
-                {/* <UpdateExerciseCard
+                <ExerciseDetailCard
                   selectedExercise={selectedExercise}
                   setSelectedExercise={setSelectedExercise}
-                /> */}
+                />
               </CardContent>
             </Card>
           ) : (
