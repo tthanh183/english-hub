@@ -7,12 +7,10 @@ import { Link, useParams } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import AddLessonDialog from '@/components/admin/AddLessonDialog';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import { deleteLesson, getAllLessons } from '@/services/lessonService';
+import { getAllLessons } from '@/services/lessonService';
 import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
-import { isAxiosError } from 'axios';
-import { showError, showSuccess } from '@/hooks/useToast';
 import ExerciseItem from '@/components/admin/ExceriseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
@@ -95,8 +93,6 @@ export default function CourseDetail() {
     setSelectedLesson(null);
   }, [activeTab]);
 
-  const queryClient = useQueryClient();
-
   const { data: lessons = [], isLoading: isLessonsLoading } = useQuery({
     queryKey: ['lessons'],
     queryFn: () => getAllLessons(courseId || ''),
@@ -105,33 +101,6 @@ export default function CourseDetail() {
   const { data: exercises = [], isLoading: isExercisesLoading } = useQuery({
     queryKey: ['exercises'],
     queryFn: () => getAllExercises(courseId || ''),
-  });
-
-  const deleteLessonMutation = useMutation({
-    mutationFn: ({
-      courseId,
-      lessonId,
-    }: {
-      courseId: string;
-      lessonId: string;
-    }) => deleteLesson(courseId, lessonId),
-    onSuccess: (response: string, { lessonId }) => {
-      queryClient.setQueryData<LessonResponse[]>(
-        ['lessons'],
-        (oldLessons = []) =>
-          Array.isArray(oldLessons)
-            ? oldLessons.filter(lesson => lesson.id !== lessonId)
-            : []
-      );
-      showSuccess(response);
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-      } else {
-        showError('Something went wrong');
-      }
-    },
   });
 
   const handleSelectLesson = (id: string) => {
@@ -152,13 +121,6 @@ export default function CourseDetail() {
       setSelectedExercise(null);
       setIsAddExerciseOpen(false);
     }
-  };
-
-  const handleDeleteLesson = (id: string) => {
-    deleteLessonMutation.mutate({
-      courseId: courseId || '',
-      lessonId: id,
-    });
   };
 
   if (isLessonsLoading || isExercisesLoading) {
@@ -217,7 +179,6 @@ export default function CourseDetail() {
                       isSelected={selectedLesson?.id === lesson.id}
                       order={idx + 1}
                       onSelect={() => handleSelectLesson(lesson.id)}
-                      onDelete={() => handleDeleteLesson(lesson.id)}
                     />
                   ))}
 

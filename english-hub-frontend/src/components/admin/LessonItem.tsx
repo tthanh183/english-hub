@@ -3,13 +3,17 @@ import { Clock, Edit, Grip, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
+import { useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteLesson } from '@/services/lessonService';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { isAxiosError } from 'axios';
 
 type LessonItemProps = {
   lesson: LessonResponse;
   isSelected: boolean;
   order: number;
   onSelect: () => void;
-  onDelete: () => void;
 };
 
 export default function LessonItem({
@@ -17,8 +21,43 @@ export default function LessonItem({
   isSelected,
   order,
   onSelect,
-  onDelete,
 }: LessonItemProps) {
+  const { courseId } = useParams();
+  const queryClient = useQueryClient();
+  const deleteLessonMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      lessonId,
+    }: {
+      courseId: string;
+      lessonId: string;
+    }) => deleteLesson(courseId, lessonId),
+    onSuccess: (response: string, { lessonId }) => {
+      queryClient.setQueryData<LessonResponse[]>(
+        ['lessons'],
+        (oldLessons = []) =>
+          Array.isArray(oldLessons)
+            ? oldLessons.filter(lesson => lesson.id !== lessonId)
+            : []
+      );
+      showSuccess(response);
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
+
+  const handleDelete = () => {
+    deleteLessonMutation.mutate({
+      courseId: courseId!,
+      lessonId: lesson.id,
+    });
+  };
+
   return (
     <div
       key={lesson.id}
@@ -60,7 +99,8 @@ export default function LessonItem({
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-red-500"
-          onClick={onDelete}
+          onClick={handleDelete}
+          disabled={deleteLessonMutation.isPending}
         >
           <Trash className="h-4 w-4" />
         </Button>
