@@ -16,7 +16,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import ExerciseItem from '@/components/admin/ExceriseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
-import { deleteExercise, getAllExercises } from '@/services/exerciseService';
+import { getAllExercises } from '@/services/exerciseService';
 import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
 
 // Type definitions for exercise structures
@@ -134,33 +134,6 @@ export default function CourseDetail() {
     },
   });
 
-  const deleteExerciseMutation = useMutation({
-    mutationFn: ({
-      courseId,
-      exerciseId,
-    }: {
-      courseId: string;
-      exerciseId: string;
-    }) => deleteExercise(courseId, exerciseId),
-    onSuccess: (response: string, { exerciseId }) => {
-      queryClient.setQueryData<ExerciseResponse[]>(
-        ['exercises'],
-        (oldExercises = []) =>
-          Array.isArray(oldExercises)
-            ? oldExercises.filter(exercise => exercise.id !== exerciseId)
-            : []
-      );
-      showSuccess(response);
-    },
-    onError: error => {
-      if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-      } else {
-        showError('Something went wrong');
-      }
-    },
-  });
-
   const handleSelectLesson = (id: string) => {
     if (selectedLesson?.id !== id) {
       setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
@@ -185,13 +158,6 @@ export default function CourseDetail() {
     deleteLessonMutation.mutate({
       courseId: courseId || '',
       lessonId: id,
-    });
-  };
-
-  const handleDeleteExercise = (id: string) => {
-    deleteExerciseMutation.mutate({
-      courseId: courseId || '',
-      exerciseId: id,
     });
   };
 
@@ -303,7 +269,6 @@ export default function CourseDetail() {
                       isSelected={selectedExercise?.id === exercise.id}
                       order={idx + 1}
                       onSelect={() => handleSelectExercise(exercise.id)}
-                      onDelete={() => handleDeleteExercise(exercise.id)}
                     />
                   ))}
 

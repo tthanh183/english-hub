@@ -3,13 +3,17 @@ import { Clock, Edit, Grip, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
 import { ExerciseResponse } from '@/types/exerciseType';
+import { useParams } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteExercise } from '@/services/exerciseService';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { isAxiosError } from 'axios';
 
 type LessonItemProps = {
   exercise: ExerciseResponse;
   isSelected: boolean;
   order: number;
   onSelect: () => void;
-  onDelete: () => void;
 };
 
 export default function ExerciseItem({
@@ -17,8 +21,42 @@ export default function ExerciseItem({
   isSelected,
   order,
   onSelect,
-  onDelete,
 }: LessonItemProps) {
+  const { courseId } = useParams();
+  const queryClient = useQueryClient();
+  const deleteExerciseMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      exerciseId,
+    }: {
+      courseId: string;
+      exerciseId: string;
+    }) => deleteExercise(courseId, exerciseId),
+    onSuccess: (response: string, { exerciseId }) => {
+      queryClient.setQueryData<ExerciseResponse[]>(
+        ['exercises'],
+        (oldExercises = []) =>
+          Array.isArray(oldExercises)
+            ? oldExercises.filter(exercise => exercise.id !== exerciseId)
+            : []
+      );
+      showSuccess(response);
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
+
+  const handleDelete = () => {
+    deleteExerciseMutation.mutate({
+      courseId: courseId!,
+      exerciseId: exercise.id,
+    });
+  };
   return (
     <div
       key={exercise.id}
@@ -60,7 +98,8 @@ export default function ExerciseItem({
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-red-500"
-          onClick={onDelete}
+          onClick={handleDelete}
+          disabled={deleteExerciseMutation.isPending}
         >
           <Trash className="h-4 w-4" />
         </Button>
