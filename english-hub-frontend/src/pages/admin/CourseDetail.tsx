@@ -16,7 +16,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import ExerciseItem from '@/components/admin/ExceriseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
-import { getAllExercises } from '@/services/exerciseService';
+import { deleteExercise, getAllExercises } from '@/services/exerciseService';
 import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
 
 // Type definitions for exercise structures
@@ -134,6 +134,33 @@ export default function CourseDetail() {
     },
   });
 
+  const deleteExerciseMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      exerciseId,
+    }: {
+      courseId: string;
+      exerciseId: string;
+    }) => deleteExercise(courseId, exerciseId),
+    onSuccess: (response: string, { exerciseId }) => {
+      queryClient.setQueryData<ExerciseResponse[]>(
+        ['exercises'],
+        (oldExercises = []) =>
+          Array.isArray(oldExercises)
+            ? oldExercises.filter(exercise => exercise.id !== exerciseId)
+            : []
+      );
+      showSuccess(response);
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
+
   const handleSelectLesson = (id: string) => {
     if (selectedLesson?.id !== id) {
       setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
@@ -162,7 +189,10 @@ export default function CourseDetail() {
   };
 
   const handleDeleteExercise = (id: string) => {
-    return id;
+    deleteExerciseMutation.mutate({
+      courseId: courseId || '',
+      exerciseId: id,
+    });
   };
 
   if (isLessonsLoading || isExercisesLoading) {
