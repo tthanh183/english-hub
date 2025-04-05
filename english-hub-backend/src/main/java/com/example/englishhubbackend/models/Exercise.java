@@ -17,6 +17,7 @@ public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
+    String title;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     Course course;
