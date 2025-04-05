@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
+import { ArrowLeft, BookOpen, FileText, Plus } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, BookOpen, FileText, Plus } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import AddLessonDialog from '@/components/admin/AddLessonDialog';
-import { useQuery } from '@tanstack/react-query';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
 import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
-import ExerciseItem from '@/components/admin/ExceriseItem';
+import ExerciseItem from '@/components/admin/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
 import { getAllExercises } from '@/services/exerciseService';
@@ -116,10 +117,8 @@ export default function CourseDetail() {
       setSelectedExercise(
         exercises.find(exercise => exercise.id === id) || null
       );
-      setIsAddExerciseOpen(true);
     } else {
       setSelectedExercise(null);
-      setIsAddExerciseOpen(false);
     }
   };
 
@@ -157,7 +156,6 @@ export default function CourseDetail() {
             Exercise Bank
           </TabsTrigger>
         </TabsList>
-
         <TabsContent value="lessons" className="space-y-4">
           <div className="grid md:grid-cols-1 gap-6">
             <Card>
@@ -210,54 +208,81 @@ export default function CourseDetail() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-4">
-          <div className="grid md:grid-cols-1 gap-6">
+          {selectedExercise ? (
+            // Edit view shown when exercise is selected
             <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Exercise Bank</CardTitle>
-                  <AddExerciseDialog
-                    isOpen={isAddExerciseOpen}
-                    onOpenChange={setIsAddExerciseOpen}
-                  />
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setSelectedExercise(null)}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Back to exercises</span>
+                  </Button>
+                  <div>
+                    <CardTitle>Edit Exercise</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedExercise.title}
+                    </p>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {exercises.map((exercise, idx) => (
-                    <ExerciseItem
-                      key={exercise.id}
-                      exercise={exercise}
-                      isSelected={selectedExercise?.id === exercise.id}
-                      order={idx + 1}
-                      onSelect={() => handleSelectExercise(exercise.id)}
-                    />
-                  ))}
-
-                  {exercises.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium">No exercises yet</h3>
-                      <p className="text-muted-foreground mb-4">
-                        This course doesn't have any exercises. Add your first
-                        exercise to get started.
-                      </p>
-                      <Button onClick={() => setIsAddLessonOpen(true)}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add First Exercise
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                {/* Your UpdateExerciseCard component will go here */}
+                {/* <UpdateExerciseCard
+                  selectedExercise={selectedExercise}
+                  setSelectedExercise={setSelectedExercise}
+                /> */}
               </CardContent>
             </Card>
+          ) : (
+            // List view shown when no exercise is selected
+            <div className="grid md:grid-cols-1 gap-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Exercise Bank</CardTitle>
+                    <AddExerciseDialog
+                      isOpen={isAddExerciseOpen}
+                      onOpenChange={setIsAddExerciseOpen}
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {exercises.map((exercise, idx) => (
+                      <ExerciseItem
+                        key={exercise.id}
+                        exercise={exercise}
+                        isSelected={selectedExercise?.id === exercise.id}
+                        order={idx + 1}
+                        onSelect={() => handleSelectExercise(exercise.id)}
+                      />
+                    ))}
 
-            {selectedLesson && (
-              <UpdateLessonCard
-                selectedLesson={selectedLesson}
-                setSelectedLesson={setSelectedLesson}
-              />
-            )}
-          </div>
+                    {exercises.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium">
+                          No exercises yet
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          This course doesn't have any exercises. Add your first
+                          exercise to get started.
+                        </p>
+                        <Button onClick={() => setIsAddExerciseOpen(true)}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add First Exercise
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>
