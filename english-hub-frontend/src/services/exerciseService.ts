@@ -1,4 +1,4 @@
-import { ExerciseResponse } from '@/types/exerciseType';
+import { ExerciseCreateRequest, ExerciseResponse } from '@/types/exerciseType';
 import axiosInstance from './axiosInstance';
 
 export async function getAllExercises(
@@ -10,7 +10,7 @@ export async function getAllExercises(
 
 export async function createExercise(
   courseId: string,
-  exercise: ExerciseResponse
+  exercise: ExerciseCreateRequest
 ): Promise<ExerciseResponse> {
   const response = await axiosInstance.post(
     `/courses/${courseId}/exercises`,

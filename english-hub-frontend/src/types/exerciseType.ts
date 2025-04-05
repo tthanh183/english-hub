@@ -6,12 +6,4 @@ export type ExerciseResponse = {
 
 export type ExerciseCreateRequest = {
   title: string;
-  content: string;
-  duration: number;
-};
-
-export type ExerciseUpdateRequest = {
-  title?: string;
-  content?: string;
-  duration?: number;
 };
