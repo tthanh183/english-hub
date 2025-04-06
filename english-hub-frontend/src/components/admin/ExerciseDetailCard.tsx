@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Pencil, Trash2, Plus, Image, Mic, FileText, Eye } from 'lucide-react';
+import AddQuestionDialog from './AddQuestionDialog';
+import { useState } from 'react';
 
 // Mock questions data for demonstration
 const mockQuestions = [
@@ -110,6 +112,8 @@ export function ExerciseDetailCard({
   selectedExercise,
   setSelectedExercise,
 }: ExerciseDetailCardProps) {
+  const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
+
   // Mock functions for demonstration
   const handleEdit = (question: any) => {
     console.log('Edit question:', question);
@@ -133,9 +137,10 @@ export function ExerciseDetailCard({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Questions List</h2>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" /> Add Question
-        </Button>
+        <AddQuestionDialog
+          isOpen={isAddQuestionOpen}
+          onOpenChange={setIsAddQuestionOpen}
+        />
       </div>
 
       <div className="rounded-md border">
