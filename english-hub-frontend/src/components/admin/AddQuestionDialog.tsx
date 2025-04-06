@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { QuestionType } from '@/types/questionType';
+import Part1QuestionContent from './Part1QuestionContent';
 
 type AddQuestionDialogProps = {
   isOpen: boolean;
@@ -67,89 +68,7 @@ export default function AddQuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Photograph</Label>
-                <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-center aspect-video">
-                  <Image className="h-8 w-8 text-gray-400" />
-                  <div className="text-sm text-gray-500">
-                    Drag and drop an image, or click to browse
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Upload Image
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Audio File</Label>
-                <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-center aspect-video">
-                  <Mic className="h-8 w-8 text-gray-400" />
-                  <div className="text-sm text-gray-500">
-                    Drag and drop an audio file, or click to browse
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Upload Audio
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <div className="space-y-2">
-                <Label htmlFor="p1-transcript">Audio Transcript</Label>
-                <Textarea
-                  id="p1-transcript"
-                  placeholder="Enter the transcript of what is said in the audio"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[1, 2, 3, 4].map(num => (
-                  <div
-                    key={num}
-                    className={`border rounded-md p-4 ${
-                      num === 1
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup defaultValue="option1" className="flex">
-                        <RadioGroupItem
-                          value={`option${num}`}
-                          id={`option${num}`}
-                          checked={num === 1}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`option${num}`}
-                        className="flex items-center gap-2 font-medium"
-                      >
-                        Option {String.fromCharCode(64 + num)}
-                        {num === 1 && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`option${num}-text`}
-                      placeholder={`Enter option ${num}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        );
+        return <Part1QuestionContent />;
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
         return (
@@ -925,11 +844,6 @@ export default function AddQuestionDialog({
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="points">Points</Label>
-                    <Input id="points" type="number" defaultValue="1" min="1" />
                   </div>
                 </CardContent>
               </Card>
