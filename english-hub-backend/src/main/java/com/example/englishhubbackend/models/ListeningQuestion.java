@@ -18,9 +18,4 @@ public class ListeningQuestion extends Question {
     @ManyToOne(fetch = FetchType.EAGER)
     Audio audio;
     String imageUrl;
-    String choiceA;
-    String choiceB;
-    String choiceC;
-    String choiceD;
-    String correctAnswer;
 }

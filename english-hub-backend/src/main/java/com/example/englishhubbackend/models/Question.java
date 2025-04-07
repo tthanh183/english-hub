@@ -23,11 +23,16 @@ public abstract class Question {
     @OneToOne
     QuestionType questionType;
     @Column(name = "created_at")
-    LocalDate completedAt;
+    LocalDate createdAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = true)
     Exercise exercise;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exam_id", nullable = true)
     Exam exam;
+    String choiceA;
+    String choiceB;
+    String choiceC;
+    String choiceD;
+    String correctAnswer;
 }

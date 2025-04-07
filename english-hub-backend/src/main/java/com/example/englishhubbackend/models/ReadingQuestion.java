@@ -17,9 +17,4 @@ import lombok.experimental.SuperBuilder;
 public class ReadingQuestion extends Question {
     @ManyToOne(fetch = FetchType.EAGER)
     Passage passage;
-    String choiceA;
-    String choiceB;
-    String choiceC;
-    String choiceD;
-    String correctAnswer;
 }
