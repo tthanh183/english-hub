@@ -18,7 +18,7 @@ public enum ErrorCode {
     INVALID_VERIFICATION_CODE(1009, "The verification code you entered is invalid. Please check and try again.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1010, "User not found. Please check the email address and try again, or register if you don't have an account.", HttpStatus.NOT_FOUND),
     ACCOUNT_ALREADY_VERIFIED(1011, "Your account has already been verified.", HttpStatus.CONFLICT),
-    ACCOUNT_UNVERIFIED(1012, "Your account is unverified. Please check your email for the verification link.", HttpStatus.CONFLICT),
+    ACCOUNT_UNVERIFIED(1012, "Your account is unverified. Please check your email for the verification code.", HttpStatus.CONFLICT),
     ACCOUNT_DEACTIVATED(1013, "Your account has been deactivated. Please contact support for more information.", HttpStatus.CONFLICT),
     FILE_UPLOAD_FAILED(1014, "There was an error uploading your file. Please try again.", HttpStatus.INTERNAL_SERVER_ERROR),
     COURSE_NOT_FOUND(1015, "Course not found. Please check the course ID and try again.", HttpStatus.NOT_FOUND),
