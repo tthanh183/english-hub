@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Trash, Plus, Mic, Image } from 'lucide-react';
+import { Save, Trash, Plus, Mic } from 'lucide-react';
 import { useState } from 'react';
 import {
   Dialog,

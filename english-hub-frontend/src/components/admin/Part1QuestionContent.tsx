@@ -77,7 +77,7 @@ export default function Part1QuestionContent() {
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-full h-56 object-contain"
+                  className="w-auto h-56 object-cover"
                 />
                 <Button
                   variant="destructive"
@@ -100,7 +100,10 @@ export default function Part1QuestionContent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={e => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
                 >
                   Upload Image
                 </Button>
@@ -158,7 +161,10 @@ export default function Part1QuestionContent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => audioInputRef.current?.click()}
+                  onClick={e => {
+                    e.stopPropagation();
+                    audioInputRef.current?.click();
+                  }}
                 >
                   Upload Audio
                 </Button>
