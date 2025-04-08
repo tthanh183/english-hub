@@ -11,7 +11,7 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(1002, "User already exists", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1003, "Invalid email", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1004, "Invalid password", HttpStatus.BAD_REQUEST),
-    UNAUTHENTICATED(1005, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHENTICATED(1005, "Incorrect username or password", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1006, "You do not have permission", HttpStatus.UNAUTHORIZED),
     EMAIL_SEND_FAILED(1007, "Email send failed", HttpStatus.INTERNAL_SERVER_ERROR),
     VERIFICATION_CODE_EXPIRED(1008,"Verification code has expired" , HttpStatus.BAD_REQUEST ),
