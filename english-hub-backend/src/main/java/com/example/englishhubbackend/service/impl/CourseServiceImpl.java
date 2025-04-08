@@ -48,7 +48,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
         courseMapper.toCourse(courseUpdateRequest, course);
         course.setUpdatedDate(LocalDate.now());
         return courseMapper.toCourseResponse(courseRepository.save(course));
@@ -57,12 +57,12 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteCourse(UUID courseId) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
         courseRepository.delete(course);
     }
 
     @Override
     public Course getCourseEntityById(UUID courseId) {
-        return courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUD));
+        return courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
     }
 }

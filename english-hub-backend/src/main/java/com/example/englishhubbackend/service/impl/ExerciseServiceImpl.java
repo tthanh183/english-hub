@@ -33,7 +33,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     public ExerciseResponse createExercise(UUID courseId, ExerciseCreateRequest exerciseCreateRequest) {
         Course course = courseService.getCourseEntityById(courseId);
         if (course == null) {
-            throw new AppException(ErrorCode.COURSE_NOT_FOUD);
+            throw new AppException(ErrorCode.COURSE_NOT_FOUND);
         }
         Exercise exercise = exerciseMapper.toExercise(exerciseCreateRequest);
         exercise.setCourse(course);

@@ -39,7 +39,7 @@ public class LessonServiceImpl implements LessonService {
     public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
         Course course = courseService.getCourseEntityById(courseId);
         if (course == null) {
-            throw new AppException(ErrorCode.COURSE_NOT_FOUD);
+            throw new AppException(ErrorCode.COURSE_NOT_FOUND);
         }
         Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
         lesson.setCourse(course);
