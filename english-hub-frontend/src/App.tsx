@@ -11,27 +11,30 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
 import CourseManagement from './pages/admin/CourseManagement';
 import CourseDetail from './pages/admin/CourseDetail';
+import { ROUTES } from './constants/routes';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/verify" element={<VerifyPage />} />
+        <Route path={ROUTES.HOME} element={<HomePage />} />
+        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        <Route path={ROUTES.VERIFY} element={<VerifyPage />} />
+        <Route
+          path={ROUTES.FORGOT_PASSWORD}
+          element={<div>Forgot Password</div>}
+        />
 
-        {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} /> */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
-          {/* The DashboardLayout will wrap all admin pages */}
-          <Route path="/admin" element={<AdminDashboardLayout />}>
-            {/* Admin specific routes */}
+          <Route path={ROUTES.ADMIN} element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="courses" element={<CourseManagement />} />
-            <Route path="courses/:courseId" element={<CourseDetail />} />
-            {/* Add more admin routes here */}
+            <Route path={ROUTES.ADMIN_USERS} element={<UserManagement />} />
+            <Route path={ROUTES.ADMIN_COURSES} element={<CourseManagement />} />
+            <Route
+              path={ROUTES.ADMIN_COURSES_DETAIL}
+              element={<CourseDetail />}
+            />
           </Route>
         </Route>
       </Routes>
