@@ -72,6 +72,11 @@ public class CourseServiceImpl implements CourseService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteCourse(UUID courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
+        String imageUrl = course.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            s3Service.deleteFileFromS3(fileName);
+        }
         courseRepository.delete(course);
     }
 
