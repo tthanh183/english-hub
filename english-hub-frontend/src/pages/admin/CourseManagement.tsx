@@ -10,7 +10,6 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
 import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { deleteFileFromS3 } from '@/utils/s3UploadUtil';
 
 export default function CourseManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -46,8 +45,6 @@ export default function CourseManagement() {
     }
 
     try {
-      const imageUrl = course.imageUrl;
-      await deleteFileFromS3(imageUrl);
       const response = await deleteCourse(id);
       showSuccess(response);
       queryClient.setQueryData<CourseResponse[]>(
