@@ -20,7 +20,6 @@ import { CourseCreateRequest, CourseResponse } from '@/types/courseType';
 import { createCourse } from '@/services/courseService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import { getPresignedUrl, uploadFileToS3 } from '@/utils/s3UploadUtil';
 
 type AddCourseDialogProps = {
   isOpen: boolean;
@@ -34,13 +33,13 @@ export default function AddCourseDialog({
   const [newCourse, setNewCourse] = useState<CourseCreateRequest>({
     title: '',
     description: '',
-    imageUrl: '',
+    image: null,
   });
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  
+
   const courseMutation = useMutation({
     mutationFn: createCourse,
     onSuccess: (response: CourseResponse) => {
@@ -64,7 +63,7 @@ export default function AddCourseDialog({
   });
 
   const resetDialogState = () => {
-    setNewCourse({ title: '', description: '', imageUrl: '' });
+    setNewCourse({ title: '', description: '', image: null });
     setImage(null);
     setPreviewUrl(null);
   };
@@ -76,16 +75,14 @@ export default function AddCourseDialog({
   }, [isOpen]);
 
   const handleAddCourse = async () => {
-    const presignedUrl = await getPresignedUrl(image?.name || '');
     if (!image) {
       showError('Please select an image file');
       return;
     }
-    const imageUrl = await uploadFileToS3(image, presignedUrl);
     courseMutation.mutate({
       title: newCourse.title,
       description: newCourse.description,
-      imageUrl,
+      image: image,
     });
   };
 

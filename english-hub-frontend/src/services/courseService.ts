@@ -13,7 +13,19 @@ export async function getAllCourses(): Promise<CourseResponse[]> {
 export async function createCourse(
   course: CourseCreateRequest
 ): Promise<CourseResponse> {
-  const response = await axiosInstance.post('/courses', course);
+  const formData = new FormData();
+  formData.append('title', course.title);
+  formData.append('description', course.description);
+  if (course.image) {
+    formData.append('image', course.image);
+  }
+
+  const response = await axiosInstance.post('/courses', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
   return response.data.result;
 }
 
@@ -21,7 +33,19 @@ export async function updateCourse(
   courseId: string,
   course: CourseUpdateRequest
 ): Promise<CourseResponse> {
-  const response = await axiosInstance.put(`/courses/${courseId}`, course);
+  const formData = new FormData();
+  formData.append('title', course.title);
+  formData.append('description', course.description);
+  if (course.image) {
+    formData.append('image', course.image);
+  }
+
+  const response = await axiosInstance.put(`/courses/${courseId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
   return response.data.result;
 }
 

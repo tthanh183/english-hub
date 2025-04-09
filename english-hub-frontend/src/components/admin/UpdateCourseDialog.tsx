@@ -18,11 +18,6 @@ import { CourseResponse, CourseUpdateRequest } from '@/types/courseType';
 import { updateCourse } from '@/services/courseService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import {
-  deleteFileFromS3,
-  getPresignedUrl,
-  uploadFileToS3,
-} from '@/utils/s3UploadUtil';
 
 type UpdateCourseDialogProps = {
   isOpen: boolean;
@@ -99,18 +94,12 @@ export default function UpdateCourseDialog({
     }
 
     try {
-      let imageUrl = selectedCourse.imageUrl;
-      if (image) {
-        await deleteFileFromS3(imageUrl);
-        const presignedUrl = await getPresignedUrl(image.name);
-        imageUrl = await uploadFileToS3(image, presignedUrl);
-      }
       const { id, ...courseData } = selectedCourse;
       updateMutation.mutate({
         courseId: id,
         course: {
           ...courseData,
-          imageUrl,
+          image: image || null,
         },
       });
     } catch (error) {
@@ -212,6 +201,7 @@ export default function UpdateCourseDialog({
           <Button
             onClick={handleUpdateCourse}
             disabled={updateMutation.isPending}
+            className='min-w-[120px]'
           >
             {updateMutation.isPending ? <Spinner /> : 'Save changes'}
           </Button>

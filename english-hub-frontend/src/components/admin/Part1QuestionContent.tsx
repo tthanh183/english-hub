@@ -4,6 +4,7 @@ import { Image, Mic, X } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Part1QuestionContent() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -15,6 +16,17 @@ export default function Part1QuestionContent() {
 
   const [correctAnswer, setCorrectAnswer] = useState<number>(1);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
+
+  const queryClient = useQueryClient();
+  // const { mutate: uploadImage } = useUploadImageMutation(queryClient, {
+  //   onSuccess: () => {
+  //     // Handle success
+  //   },
+  //   onError: () => {
+  //     // Handle error
+  //   },
+  // });
+
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
