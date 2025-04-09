@@ -14,5 +14,5 @@ import java.io.File;
 public class CourseCreateRequest {
     String title;
     String description;
-    String imageUrl;
+    MultipartFile image;
 }

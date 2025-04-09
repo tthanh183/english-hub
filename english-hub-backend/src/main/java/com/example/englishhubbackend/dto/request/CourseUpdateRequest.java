@@ -2,6 +2,7 @@ package com.example.englishhubbackend.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -11,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class CourseUpdateRequest {
     String title;
     String description;
-    String imageUrl;
+    MultipartFile image;
 }

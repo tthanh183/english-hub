@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,11 +30,14 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
     CourseRepository courseRepository;
     CourseMapper courseMapper;
+    S3Service s3Service;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public CourseResponse createCourse(CourseCreateRequest courseCreateRequest) {
+        String imageUrl = s3Service.uploadFileToS3(courseCreateRequest.getImage());
         Course newCourse = courseMapper.toCourse(courseCreateRequest);
+        newCourse.setImageUrl(imageUrl);
         newCourse.setCreatedDate(LocalDate.now());
         newCourse.setUpdatedDate(LocalDate.now());
         return courseMapper.toCourseResponse(courseRepository.save(newCourse));
@@ -49,6 +53,16 @@ public class CourseServiceImpl implements CourseService {
     @PreAuthorize("hasRole('ADMIN')")
     public CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
+        String imageUrl = course.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            s3Service.deleteFileFromS3(fileName);
+        }
+        if (courseUpdateRequest.getImage() != null) {
+            String newImageUrl = s3Service.uploadFileToS3(courseUpdateRequest.getImage());
+            course.setImageUrl(newImageUrl);
+        }
+
         courseMapper.toCourse(courseUpdateRequest, course);
         course.setUpdatedDate(LocalDate.now());
         return courseMapper.toCourseResponse(courseRepository.save(course));
