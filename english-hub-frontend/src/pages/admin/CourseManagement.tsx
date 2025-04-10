@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { Input } from '@/components/ui/input';
 import { deleteCourse, getAllCourses } from '@/services/courseService';
-import AddCourseDialog from '@/components/admin/AddCourseDialog';
 import CourseCard from '@/components/admin/CourseCard';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
-import UpdateCourseDialog from '@/components/admin/UpdateCourseDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
+import CourseDialog from '@/components/admin/CourseDialog';
+import { Button } from '@/components/ui/button';
 
 export default function CourseManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -75,7 +75,11 @@ export default function CourseManagement() {
             platform.
           </p>
         </div>
-        <AddCourseDialog
+        <Button onClick={() => setIsAddCourseOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Course
+        </Button>
+        <CourseDialog
           isOpen={isAddCourseOpen}
           onOpenChange={setIsAddCourseOpen}
         />
@@ -104,11 +108,10 @@ export default function CourseManagement() {
         ))}
       </div>
 
-      <UpdateCourseDialog
+      <CourseDialog
         isOpen={isEditCourseOpen}
         onOpenChange={setIsEditCourseOpen}
-        selectedCourse={selectedCourse}
-        setSelectedCourse={setSelectedCourse}
+        course={selectedCourse}
       />
     </div>
   );
