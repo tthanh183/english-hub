@@ -10,98 +10,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
-import { Pencil, Trash2, Plus, Image, Mic, FileText, Eye } from 'lucide-react';
+import { Pencil, Trash2, Plus, Mic, FileText, Eye } from 'lucide-react';
 import AddQuestionDialog from './AddQuestionDialog';
 import { useState } from 'react';
-
-// Mock questions data for demonstration
-const mockQuestions = [
-  {
-    id: 'q-1',
-    title: 'What is the main purpose of the memo?',
-    type: 'multiple_choice',
-    media: [],
-    options: [
-      {
-        id: 'opt-1-1',
-        text: 'To announce a new company policy',
-        isCorrect: true,
-      },
-      {
-        id: 'opt-1-2',
-        text: 'To request feedback from employees',
-        isCorrect: false,
-      },
-      {
-        id: 'opt-1-3',
-        text: 'To introduce a new staff member',
-        isCorrect: false,
-      },
-      {
-        id: 'opt-1-4',
-        text: 'To inform about a schedule change',
-        isCorrect: false,
-      },
-    ],
-    points: 1,
-  },
-  {
-    id: 'q-2',
-    title: 'According to the passage, when will the meeting take place?',
-    type: 'multiple_choice',
-    media: [],
-    options: [
-      { id: 'opt-2-1', text: 'Monday morning', isCorrect: false },
-      { id: 'opt-2-2', text: 'Wednesday afternoon', isCorrect: true },
-      { id: 'opt-2-3', text: 'Friday evening', isCorrect: false },
-      { id: 'opt-2-4', text: 'Tuesday at noon', isCorrect: false },
-    ],
-    points: 1,
-  },
-  {
-    id: 'q-3',
-    title: 'What does this image show?',
-    type: 'multiple_choice',
-    media: [
-      {
-        type: 'image',
-        url: 'https://via.placeholder.com/400x300?text=Office+Meeting',
-      },
-    ],
-    options: [
-      { id: 'opt-3-1', text: 'A business meeting', isCorrect: true },
-      { id: 'opt-3-2', text: 'A factory floor', isCorrect: false },
-      { id: 'opt-3-3', text: 'A corporate party', isCorrect: false },
-      { id: 'opt-3-4', text: 'An empty conference room', isCorrect: false },
-    ],
-    points: 2,
-  },
-  {
-    id: 'q-4',
-    title: 'Listen to the conversation and select the appropriate response',
-    type: 'multiple_choice',
-    media: [{ type: 'audio', url: 'https://example.com/sample-audio.mp3' }],
-    options: [
-      {
-        id: 'opt-4-1',
-        text: "Yes, I've been working here for three years",
-        isCorrect: false,
-      },
-      {
-        id: 'opt-4-2',
-        text: 'No, the meeting was rescheduled',
-        isCorrect: true,
-      },
-      {
-        id: 'opt-4-3',
-        text: "I think it's on the second floor",
-        isCorrect: false,
-      },
-      { id: 'opt-4-4', text: 'Thank you for asking', isCorrect: false },
-    ],
-    points: 2,
-  },
-];
+import { useQuery } from '@tanstack/react-query';
+import { getQuestionsFromExercise } from '@/services/exerciseService';
+import { useParams } from 'react-router-dom';
+import { QuestionResponse, QuestionType } from '@/types/questionType';
 
 type ExerciseDetailCardProps = {
   selectedExercise?: ExerciseResponse;
@@ -114,23 +29,46 @@ export function ExerciseDetailCard({
 }: ExerciseDetailCardProps) {
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
 
-  // Mock functions for demonstration
-  const handleEdit = (question: any) => {
+  const { courseId } = useParams();
+
+  const { data: questions = [], isLoading } = useQuery({
+    queryKey: ['questions', selectedExercise?.id],
+    queryFn: () =>
+      getQuestionsFromExercise(courseId || '', selectedExercise?.id || ''),
+    enabled: !!selectedExercise?.id,
+  });
+
+  const handleEdit = (question: QuestionResponse) => {
     console.log('Edit question:', question);
+    // Implement edit functionality
   };
 
   const handleDelete = (questionId: string) => {
     console.log('Delete question:', questionId);
+    // Implement delete functionality
   };
 
-  const handlePreview = (question: any) => {
+  const handlePreview = (question: QuestionResponse) => {
     console.log('Preview question:', question);
+    // Implement preview functionality
   };
 
-  // Helper to get the correct answer
-  const getCorrectAnswer = (question: any): string => {
-    const correctOption = question.options?.find((o: any) => o.isCorrect);
-    return correctOption?.text || 'No correct answer set';
+  const getQuestionTypeDisplay = (question: QuestionResponse): string => {
+    const typeMappings: Record<string, string> = {
+      [QuestionType.PART_1_PHOTOGRAPHS]: 'Part 1',
+      [QuestionType.PART_2_QUESTIONS_RESPONSES]: 'Part 2',
+      [QuestionType.PART_3_CONVERSATIONS]: 'Part 3',
+      [QuestionType.PART_4_TALKS]: 'Part 4',
+      [QuestionType.PART_5_INCOMPLETE_SENTENCES]: 'Part 5',
+      [QuestionType.PART_6_TEXT_COMPLETION]: 'Part 6',
+      [QuestionType.PART_7_READING_COMPREHENSION]: 'Part 7',
+    };
+
+    return typeMappings[question.questionType] || question.questionType;
+  };
+
+  const handleAddQuestion = () => {
+    setIsAddQuestionOpen(true);
   };
 
   return (
@@ -144,97 +82,68 @@ export function ExerciseDetailCard({
         />
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">#</TableHead>
-              <TableHead>Question</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Correct Answer</TableHead>
-              <TableHead className="text-center">Points</TableHead>
-              <TableHead className="w-[140px] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockQuestions.map((question, index) => (
-              <TableRow key={question.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {question.media?.length > 0 ? (
-                      question.media[0].type === 'image' ? (
-                        <Avatar className="h-8 w-8 rounded-md">
-                          <img
-                            src={question.media[0].url}
-                            alt=""
-                            className="object-cover"
-                          />
-                        </Avatar>
-                      ) : (
-                        <div className="h-8 w-8 bg-muted rounded-md flex items-center justify-center">
-                          <Mic className="h-4 w-4" />
-                        </div>
-                      )
-                    ) : (
-                      <div className="h-8 w-8 bg-muted rounded-md flex items-center justify-center">
-                        <FileText className="h-4 w-4" />
-                      </div>
-                    )}
-                    <span className="truncate max-w-[250px]">
-                      {question.title}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="font-normal">
-                    {question.media?.length > 0
-                      ? question.media[0].type === 'image'
-                        ? 'Photo Question'
-                        : 'Audio Question'
-                      : 'Text Question'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="max-w-[200px] truncate">
-                    {getCorrectAnswer(question)}
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">{question.points}</TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handlePreview(question)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(question)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive"
-                      onClick={() => handleDelete(question.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+      {isLoading ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      ) : questions.length > 0 ? (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>Question</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="w-[140px] text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {questions.map((question, index) => (
+                <TableRow key={question.id}>
+                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {question.title}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="font-normal">
+                      {getQuestionTypeDisplay(question)}
+                    </Badge>
+                  </TableCell>
 
-      {/* Empty state */}
-      {mockQuestions.length === 0 && (
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handlePreview(question)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(question)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive"
+                        onClick={() => handleDelete(question.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center border rounded-md">
           <FileText className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium">No questions yet</h3>
@@ -242,7 +151,7 @@ export function ExerciseDetailCard({
             This exercise doesn't have any questions. Add your first question to
             get started.
           </p>
-          <Button>
+          <Button onClick={handleAddQuestion}>
             <Plus className="h-4 w-4 mr-2" />
             Add First Question
           </Button>

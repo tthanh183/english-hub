@@ -58,3 +58,13 @@ export async function addQuestion(
   );
   return response.data.result;
 }
+
+export async function getQuestionsFromExercise(
+  courseId: string,
+  exerciseId: string
+): Promise<QuestionResponse[]> {
+  const response = await axiosInstance.get(
+    `/courses/${courseId}/exercises/${exerciseId}/questions`
+  );
+  return response.data.result;
+}

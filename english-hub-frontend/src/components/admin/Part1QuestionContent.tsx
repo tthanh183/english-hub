@@ -2,7 +2,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   QuestionCreateRequest,
   QuestionResponse,
@@ -37,6 +37,7 @@ export default function Part1QuestionContent({
 
   const { courseId } = useParams();
 
+  const queryClient = useQueryClient();
   const createMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -48,6 +49,11 @@ export default function Part1QuestionContent({
       questionData: QuestionCreateRequest;
     }) => addQuestion(courseId, exerciseId, questionData),
     onSuccess: (response: QuestionResponse) => {
+      queryClient.setQueryData<QuestionResponse[]>(
+        ['questions', exerciseId],
+        (oldQuestions = []) =>
+          Array.isArray(oldQuestions) ? [...oldQuestions, response] : [response]
+      );
       showSuccess('Question created successfully!');
     },
     onError: error => {

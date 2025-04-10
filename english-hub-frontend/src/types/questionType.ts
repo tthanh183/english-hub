@@ -25,8 +25,8 @@ export type QuestionResponse = {
   id: string;
   title: string;
   questionType: QuestionType;
-  audio?: string;
-  image?: string;
+  audioUrl?: string;
+  imageUrl?: string;
   passage?: string;
   choiceA?: string;
   choiceB?: string;
