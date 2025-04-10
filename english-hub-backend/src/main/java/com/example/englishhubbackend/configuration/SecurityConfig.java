@@ -26,7 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-  private final String[] PUBLIC_ENDPOINTS = {"/api/auth/*"};
+  private final String[] publicEndpoints = {"/api/auth/*"};
 
   @Value("${security.jwt.secret-key}")
   private String secretKey;
@@ -38,7 +38,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             request ->
                 request
-                    .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+                    .requestMatchers(HttpMethod.POST, publicEndpoints)
                     .permitAll()
                     .requestMatchers(
                         "/v3/api-docs/**",
@@ -66,16 +66,15 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Allowed origins
+    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
     configuration.setAllowedMethods(
-        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // HTTP methods
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Allowed headers
+        List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
     configuration.setAllowCredentials(
-        true); // Allow credentials (cookies, Authorization headers, etc.)
+        true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration(
-        "/**", configuration); // Apply this CORS policy to all endpoints
+    source.registerCorsConfiguration("/**", configuration);
     return source;
   }
 
