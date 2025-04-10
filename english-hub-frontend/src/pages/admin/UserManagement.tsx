@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreHorizontal, Search } from 'lucide-react';
+import { MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
@@ -28,10 +28,9 @@ import {
   deactivateUser,
   getAllUsers,
 } from '@/services/userService';
-import AddUserDialog from '@/components/admin/AddUserDialog';
-import UpdateUserDialog from '@/components/admin/UpdateUserDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
+import UserDialog from '@/components/admin/UserDialog';
 
 export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -138,7 +137,10 @@ export default function UserManagement() {
           <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
           <p className="text-muted-foreground">Manage your platform users.</p>
         </div>
-        <AddUserDialog isOpen={isAddUserOpen} onOpenChange={setIsAddUserOpen} />
+        <Button onClick={() => setIsAddUserOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Add User
+        </Button>
+        <UserDialog isOpen={isAddUserOpen} onOpenChange={setIsAddUserOpen} />
       </div>
 
       <div className="flex items-center justify-between">
@@ -218,11 +220,10 @@ export default function UserManagement() {
         </Table>
       </div>
 
-      <UpdateUserDialog
+      <UserDialog
         isOpen={isEditUserOpen}
         onOpenChange={setIsEditUserOpen}
-        selectedUser={selectedUser}
-        setSelectedUser={setSelectedUser}
+        user={selectedUser}
       />
     </div>
   );
