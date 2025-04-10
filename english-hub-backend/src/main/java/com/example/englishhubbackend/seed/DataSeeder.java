@@ -22,8 +22,8 @@ public class DataSeeder implements CommandLineRunner {
   RoleRepository roleRepository;
 
   @Override
-  public void run(String... args) throws Exception {
-    if (!userRepository.findByEmail("admin@email.com").isPresent()) {
+  public void run(String... args) {
+    if (userRepository.findByEmail("admin@email.com").isEmpty()) {
       User admin = new User();
       admin.setUsername("Admin");
       admin.setEmail("admin@email.com");
