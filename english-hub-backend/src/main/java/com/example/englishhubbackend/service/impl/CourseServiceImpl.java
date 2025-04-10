@@ -46,6 +46,14 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
+  public CourseResponse getCourseById(UUID uuid) {
+    return courseMapper.toCourseResponse(
+        courseRepository
+            .findById(uuid)
+            .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND)));
+  }
+
+  @Override
   @PreAuthorize("hasRole('ADMIN')")
   public CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest) {
     Course course =

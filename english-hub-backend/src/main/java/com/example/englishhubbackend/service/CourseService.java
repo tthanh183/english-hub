@@ -12,9 +12,12 @@ public interface CourseService {
 
   List<CourseResponse> getAllCourses();
 
+  CourseResponse getCourseById(UUID uuid);
+
   CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest);
 
   void deleteCourse(UUID uuid);
 
   Course getCourseEntityById(UUID courseId);
+
 }
