@@ -71,6 +71,14 @@ public class ExerciseServiceImpl implements ExerciseService {
         return mapQuestionToResponse(questionService.saveQuestion(question));
     }
 
+    @Override
+    public List<QuestionResponse> getAllQuestionsFromExercise(UUID exerciseId) {
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+        return exercise.getQuestions().stream()
+                .map(this::mapQuestionToResponse).collect(Collectors.toList());
+    }
+
     private QuestionResponse mapQuestionToResponse(Question question) {
         if (question instanceof ListeningQuestion) {
             return questionMapper.toQuestionResponse((ListeningQuestion) question);

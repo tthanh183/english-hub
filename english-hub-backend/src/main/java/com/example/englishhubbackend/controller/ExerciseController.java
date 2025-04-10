@@ -44,4 +44,11 @@ public class ExerciseController {
         return ApiResponse.<QuestionResponse>builder()
                 .result(exerciseService.addQuestionsToExercise(UUID.fromString(exerciseId), questionCreateRequest)).build();
     }
+
+    @GetMapping("/{exerciseId}/questions")
+    public ApiResponse<List<QuestionResponse>> getAllQuestionsFromExercise(@PathVariable String exerciseId) {
+        return ApiResponse.<List<QuestionResponse>>builder()
+                .result(exerciseService.getAllQuestionsFromExercise(UUID.fromString(exerciseId))).build();
+    }
+
 }
