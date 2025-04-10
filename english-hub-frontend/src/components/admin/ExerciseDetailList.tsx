@@ -140,6 +140,7 @@ export function ExerciseDetailCard({
         <AddQuestionDialog
           isOpen={isAddQuestionOpen}
           onOpenChange={setIsAddQuestionOpen}
+          exerciseId={selectedExercise?.id || ''}
         />
       </div>
 

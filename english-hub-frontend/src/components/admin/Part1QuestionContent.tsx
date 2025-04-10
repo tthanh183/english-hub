@@ -1,196 +1,167 @@
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Image, Mic, X } from 'lucide-react';
+import { Save } from 'lucide-react';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import {
+  QuestionCreateRequest,
+  QuestionResponse,
+  QuestionType,
+} from '@/types/questionType';
+import { Spinner } from '../Spinner';
+import MediaUploader from '@/components/admin/MediaUploader';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { useRef, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { addQuestion } from '@/services/exerciseService';
+import { useParams } from 'react-router-dom';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { isAxiosError } from 'axios';
 
-export default function Part1QuestionContent() {
+type Part1QuestionContentProps = {
+  exerciseId?: string;
+  questionTitle: string;
+};
+
+export default function Part1QuestionContent({
+  exerciseId,
+  questionTitle,
+}: Part1QuestionContentProps) {
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioName, setAudioName] = useState<string>('');
-  const audioInputRef = useRef<HTMLInputElement>(null);
+  const [audioPreview, setAudioPreview] = useState<string | null>(null);
 
   const [correctAnswer, setCorrectAnswer] = useState<number>(1);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
 
-  const queryClient = useQueryClient();
-  // const { mutate: uploadImage } = useUploadImageMutation(queryClient, {
-  //   onSuccess: () => {
-  //     // Handle success
-  //   },
-  //   onError: () => {
-  //     // Handle error
-  //   },
-  // });
+  const { courseId } = useParams();
 
+  const createMutation = useMutation({
+    mutationFn: ({
+      courseId,
+      exerciseId,
+      questionData,
+    }: {
+      courseId: string;
+      exerciseId: string;
+      questionData: QuestionCreateRequest;
+    }) => addQuestion(courseId, exerciseId, questionData),
+    onSuccess: (response: QuestionResponse) => {
+      showSuccess('Question created successfully!');
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+    onSettled: () => {
+      resetContentState();
+    },
+  });
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const resetContentState = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setAudioFile(null);
+    setAudioPreview(null);
+    setOptions(['', '', '', '']);
+    setCorrectAnswer(1);
+  };
+
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
     if (file) {
-      // Tạo URL xem trước cho ảnh đã chọn
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-
-      // Ở đây bạn có thể thêm code để upload ảnh lên server
-      console.log('File selected:', file);
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleImageClear = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
     setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  };
+
+  const handleAudioChange = (file: File | null) => {
+    setAudioFile(file);
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setAudioPreview(previewUrl);
     }
   };
 
-  // Xử lý upload audio
-  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type.startsWith('audio/')) {
-      setAudioFile(file);
-      setAudioName(file.name);
-
-      // Ở đây bạn có thể gọi API để upload audio lên server
-      console.log('Audio file selected:', file);
+  const handleAudioClear = () => {
+    if (audioPreview) {
+      URL.revokeObjectURL(audioPreview);
     }
-  };
-
-  // Xử lý xóa audio
-  const handleRemoveAudio = () => {
     setAudioFile(null);
-    setAudioName('');
-    if (audioInputRef.current) {
-      audioInputRef.current.value = '';
-    }
+    setAudioPreview(null);
   };
 
-  // Xử lý thay đổi nội dung đáp án
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
   };
 
+  const handleAddQuestion = () => {
+    if (!imageFile) {
+      showError('Please upload an image');
+      return;
+    }
+
+    if (!audioFile) {
+      showError('Please upload an audio file');
+      return;
+    }
+
+    if (options.some(opt => !opt.trim())) {
+      showError('Please fill in all answer options');
+      return;
+    }
+
+    const questionData: QuestionCreateRequest = {
+      title: questionTitle,
+      questionType: QuestionType.PART_1_PHOTOGRAPHS,
+      audio: audioFile,
+      image: imageFile,
+      choiceA: options[0],
+      choiceB: options[1],
+      choiceC: options[2],
+      choiceD: options[3],
+      correctAnswer: options[0],
+    };
+
+    createMutation.mutate({
+      courseId: courseId || '',
+      exerciseId: exerciseId || '',
+      questionData,
+    });
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label>Photograph</Label>
-          <div
-            className="border-2 border-dashed rounded-lg overflow-hidden"
-            onClick={() => !imagePreview && fileInputRef.current?.click()}
-          >
-            {imagePreview ? (
-              <div className="relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-auto h-56 object-cover"
-                />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleRemoveImage();
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="p-6 flex flex-col items-center justify-center gap-2 text-center aspect-video">
-                <Image className="h-8 w-8 text-gray-400" />
-                <div className="text-sm text-gray-500">
-                  Drag and drop an image, or click to browse
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={e => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  Upload Image
-                </Button>
-              </div>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-          </div>
-        </div>
+        <MediaUploader
+          type="image"
+          value={imagePreview}
+          onChange={handleImageChange}
+          onClear={handleImageClear}
+          label="Photograph"
+        />
 
-        <div className="space-y-2">
-          <Label>Audio File</Label>
-          <div
-            className="border-2 border-dashed rounded-lg overflow-hidden"
-            onClick={() => !audioFile && audioInputRef.current?.click()}
-          >
-            {audioFile ? (
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 bg-primary/10 rounded-md flex items-center justify-center">
-                    <Mic className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium truncate max-w-[200px]">
-                      {audioName}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {(audioFile.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="h-8 w-8 rounded-full p-0"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleRemoveAudio();
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="p-6 flex flex-col items-center justify-center gap-2 text-center aspect-video">
-                <Mic className="h-8 w-8 text-gray-400" />
-                <div className="text-sm text-gray-500">
-                  Drag and drop an audio file, or click to browse
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={e => {
-                    e.stopPropagation();
-                    audioInputRef.current?.click();
-                  }}
-                >
-                  Upload Audio
-                </Button>
-              </div>
-            )}
-            <input
-              ref={audioInputRef}
-              type="file"
-              accept="audio/*"
-              className="hidden"
-              onChange={handleAudioUpload}
-            />
-          </div>
-        </div>
+        <MediaUploader
+          type="audio"
+          value={audioPreview}
+          onChange={handleAudioChange}
+          onClear={handleAudioClear}
+          label="Audio File"
+        />
       </div>
 
       <div className="mt-6">
@@ -238,10 +209,39 @@ export default function Part1QuestionContent() {
                 placeholder={`Enter option ${num}`}
                 value={options[num - 1]}
                 onChange={e => handleOptionChange(num - 1, e.target.value)}
+                onClick={e => e.stopPropagation()}
               />
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="flex justify-end gap-3 mt-8">
+        <Button
+          variant="outline"
+          onClick={() => {
+            handleImageClear();
+            handleAudioClear();
+            setOptions(['', '', '', '']);
+            setCorrectAnswer(1);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          className="gap-1 min-w-[120px]"
+          onClick={handleAddQuestion}
+          disabled={createMutation.isPending}
+        >
+          {createMutation.isPending ? (
+            <Spinner />
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-1" />
+              Save Question
+            </>
+          )}
+        </Button>
       </div>
     </>
   );

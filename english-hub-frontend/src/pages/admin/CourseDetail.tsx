@@ -17,7 +17,7 @@ import { ExerciseResponse } from '@/types/exerciseType';
 import { CourseResponse } from '@/types/courseType';
 import { getAllExercises } from '@/services/exerciseService';
 import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
-import { ExerciseDetailCard } from '@/components/admin/ExerciseDetailCard';
+import { ExerciseDetailCard } from '@/components/admin/ExerciseDetailList';
 
 // Type definitions for exercise structures
 type MediaType = {

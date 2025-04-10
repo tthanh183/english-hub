@@ -16,13 +16,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Save, Trash, Plus, Mic } from 'lucide-react';
+import { Trash, Plus, Mic } from 'lucide-react';
 import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -34,15 +33,18 @@ import Part1QuestionContent from './Part1QuestionContent';
 type AddQuestionDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  exerciseId?: string;
 };
 
 export default function AddQuestionDialog({
   isOpen,
   onOpenChange,
+  exerciseId,
 }: AddQuestionDialogProps) {
   const [selectedPart, setSelectedPart] = useState<QuestionType>(
     QuestionType.PART_1_PHOTOGRAPHS
   );
+  const [title, setTitle] = useState<string>('');
 
   const getPartDescription = (part: string): string => {
     switch (part) {
@@ -68,7 +70,9 @@ export default function AddQuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return <Part1QuestionContent />;
+        return (
+          <Part1QuestionContent exerciseId={exerciseId} questionTitle={title} />
+        );
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
         return (
@@ -800,7 +804,13 @@ export default function AddQuestionDialog({
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="title">Question Title</Label>
-                    <Input id="title" placeholder="Enter a descriptive title" />
+                    <Input
+                      id="title"
+                      placeholder="Enter a descriptive title"
+                      onChange={e => {
+                        setTitle(e.target.value);
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -863,16 +873,6 @@ export default function AddQuestionDialog({
             </div>
           </div>
         </div>
-
-        {/* Footer always visible at the bottom */}
-        <DialogFooter className="px-6 py-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button className="gap-1">
-            <Save className="h-4 w-4" /> Save Question
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
