@@ -14,10 +14,5 @@ public interface CourseMapper {
 
   CourseResponse toCourseResponse(Course course);
 
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "createdDate", ignore = true)
-  @Mapping(target = "updatedDate", ignore = true)
-  @Mapping(target = "lessons", ignore = true)
-  @Mapping(target = "exercises", ignore = true)
   void toCourse(CourseUpdateRequest courseUpdateRequest, @MappingTarget Course course);
 }

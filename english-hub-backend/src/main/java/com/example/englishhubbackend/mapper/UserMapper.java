@@ -23,11 +23,6 @@ public interface UserMapper {
   @Mapping(source = "role", target = "role")
   User toUser(UserCreateRequest userCreateRequest, @Context RoleService roleService);
 
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "joinDate", ignore = true)
-  @Mapping(target = "status", ignore = true)
-  @Mapping(target = "password", ignore = true)
-  @Mapping(target = "enabled", ignore = true)
   @Mapping(source = "role", target = "role")
   void updateUser(
       UserUpdateRequest userUpdateRequest,
