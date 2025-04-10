@@ -23,7 +23,6 @@ export default function CourseDetail() {
   const [isAddLessonOpen, setIsAddLessonOpen] = useState<boolean>(false);
   const [isEditLessonOpen, setIsEditLessonOpen] = useState<boolean>(false);
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState<boolean>(false);
-  const [isEditExerciseOpen, setIsEditExerciseOpen] = useState<boolean>(false);
 
   const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
     null
@@ -55,8 +54,10 @@ export default function CourseDetail() {
   const handleSelectLesson = (id: string) => {
     if (selectedLesson?.id !== id) {
       setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
+      setIsEditLessonOpen(true);
     } else {
       setSelectedLesson(null);
+      setIsEditLessonOpen(false);
     }
   };
 
@@ -206,7 +207,6 @@ export default function CourseDetail() {
                       <ExerciseItem
                         key={exercise.id}
                         exercise={exercise}
-                        isSelected={selectedExercise?.id === exercise.id}
                         order={idx + 1}
                         onSelect={() => handleSelectExercise(exercise.id)}
                       />

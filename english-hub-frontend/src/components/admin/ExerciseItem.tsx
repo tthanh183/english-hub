@@ -11,14 +11,12 @@ import { isAxiosError } from 'axios';
 
 type LessonItemProps = {
   exercise: ExerciseResponse;
-  isSelected: boolean;
   order: number;
   onSelect: () => void;
 };
 
 export default function ExerciseItem({
   exercise,
-  isSelected,
   order,
   onSelect,
 }: LessonItemProps) {
@@ -58,12 +56,7 @@ export default function ExerciseItem({
     });
   };
   return (
-    <div
-      key={exercise.id}
-      className={`flex items-center p-3 rounded-md border ${
-        isSelected ? 'border-primary bg-muted/50' : ''
-      }`}
-    >
+    <div key={exercise.id} className="flex items-center p-3 rounded-md border">
       <div className="flex items-center mr-2">
         <Grip className="h-4 w-4 text-muted-foreground" />
       </div>
