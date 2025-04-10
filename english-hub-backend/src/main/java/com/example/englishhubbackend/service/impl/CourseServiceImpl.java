@@ -42,7 +42,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public List<CourseResponse> getAllCourses() {
     List<Course> courses = courseRepository.findAllByOrderByCreatedDateAsc();
-    return courses.stream().map(courseMapper::toCourseResponse).collect(Collectors.toList());
+    return courses.stream().map(courseMapper::toCourseResponse).toList();
   }
 
   @Override
@@ -56,10 +56,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public CourseResponse updateCourse(UUID courseId, CourseUpdateRequest courseUpdateRequest) {
-    Course course =
-        courseRepository
-            .findById(courseId)
-            .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
+    Course course = getCourseEntityById(courseId);
     String imageUrl = course.getImageUrl();
     if (imageUrl != null && !imageUrl.isEmpty()) {
       String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
@@ -78,10 +75,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public void deleteCourse(UUID courseId) {
-    Course course =
-        courseRepository
-            .findById(courseId)
-            .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
+    Course course = getCourseEntityById(courseId);
     String imageUrl = course.getImageUrl();
     if (imageUrl != null && !imageUrl.isEmpty()) {
       String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
@@ -96,4 +90,5 @@ public class CourseServiceImpl implements CourseService {
         .findById(courseId)
         .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
   }
+
 }
