@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreateRequest {
-    String username;
-    String email;
-    String role;
+  String username;
+  String email;
+  String role;
 }

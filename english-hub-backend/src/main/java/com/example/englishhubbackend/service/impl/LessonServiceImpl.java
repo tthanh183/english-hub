@@ -11,53 +11,56 @@ import com.example.englishhubbackend.models.Lesson;
 import com.example.englishhubbackend.repository.LessonRepository;
 import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.LessonService;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LessonServiceImpl implements LessonService {
-    LessonRepository lessonRepository;
-    LessonMapper lessonMapper;
-    CourseService courseService;
+  LessonRepository lessonRepository;
+  LessonMapper lessonMapper;
+  CourseService courseService;
 
-    @Override
-    public List<LessonResponse> getAllLessonsFromCourse(UUID courseId) {
-        return lessonRepository.findAllByCourseId(courseId).stream()
-                .map(lessonMapper::toLessonResponse)
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<LessonResponse> getAllLessonsFromCourse(UUID courseId) {
+    return lessonRepository.findAllByCourseId(courseId).stream()
+        .map(lessonMapper::toLessonResponse)
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
-        Course course = courseService.getCourseEntityById(courseId);
-        if (course == null) {
-            throw new AppException(ErrorCode.COURSE_NOT_FOUND);
-        }
-        Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
-        lesson.setCourse(course);
-        return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
+  @Override
+  public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
+    Course course = courseService.getCourseEntityById(courseId);
+    if (course == null) {
+      throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
+    Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
+    lesson.setCourse(course);
+    return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
+  }
 
-    @Override
-    public LessonResponse updateLesson(UUID lessonId, LessonUpdateRequest lessonUpdateRequest) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-        lessonMapper.toLesson(lessonUpdateRequest, lesson);
-        return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
-    }
+  @Override
+  public LessonResponse updateLesson(UUID lessonId, LessonUpdateRequest lessonUpdateRequest) {
+    Lesson lesson =
+        lessonRepository
+            .findById(lessonId)
+            .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+    lessonMapper.toLesson(lessonUpdateRequest, lesson);
+    return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
+  }
 
-    @Override
-    public void deleteLesson(UUID lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-        lessonRepository.delete(lesson);
-    }
+  @Override
+  public void deleteLesson(UUID lessonId) {
+    Lesson lesson =
+        lessonRepository
+            .findById(lessonId)
+            .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+    lessonRepository.delete(lesson);
+  }
 }

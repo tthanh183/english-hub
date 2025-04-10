@@ -17,32 +17,27 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class S3ServiceImpl implements S3Service {
-    S3Client s3Client;
+  S3Client s3Client;
 
-    @Value("${aws.s3.bucket}")
-    @NonFinal
-    private String bucketName;
+  @Value("${aws.s3.bucket}")
+  @NonFinal
+  private String bucketName;
 
-    @Override
-    public String uploadFileToS3(MultipartFile file) {
-        String fileName = file.getOriginalFilename();
-        try {
-        s3Client.putObject(PutObjectRequest.builder().bucket(bucketName)
-                        .key(fileName).build(),
-                RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to upload file to S3: " + e.getMessage());
-        }
-        return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+  @Override
+  public String uploadFileToS3(MultipartFile file) {
+    String fileName = file.getOriginalFilename();
+    try {
+      s3Client.putObject(
+          PutObjectRequest.builder().bucket(bucketName).key(fileName).build(),
+          RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to upload file to S3: " + e.getMessage());
     }
+    return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+  }
 
-    @Override
-    public void deleteFileFromS3(String fileName) {
-        s3Client.deleteObject(
-                DeleteObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(fileName)
-                        .build()
-        );
-    }
+  @Override
+  public void deleteFileFromS3(String fileName) {
+    s3Client.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(fileName).build());
+  }
 }

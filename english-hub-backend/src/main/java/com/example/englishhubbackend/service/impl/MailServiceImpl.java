@@ -14,15 +14,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MailServiceImpl implements EmailService {
-    JavaMailSender mailSender;
+  JavaMailSender mailSender;
 
-    @Override
-    public void sendVerificationEmail(String to, String subject, String text) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(text, true);
-        mailSender.send(mimeMessage);
-    }
+  @Override
+  public void sendVerificationEmail(String to, String subject, String text)
+      throws MessagingException {
+    MimeMessage mimeMessage = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+    helper.setTo(to);
+    helper.setSubject(subject);
+    helper.setText(text, true);
+    mailSender.send(mimeMessage);
+  }
 }

@@ -14,24 +14,27 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    User toUser(RegisterRequest registerRequest);
+  User toUser(RegisterRequest registerRequest);
 
-    @Mapping(source = "role.name", target = "role")
-    @Mapping(source = "status", target = "status")
-    UserResponse toUserResponse(User user);
+  @Mapping(source = "role.name", target = "role")
+  @Mapping(source = "status", target = "status")
+  UserResponse toUserResponse(User user);
 
-    @Mapping(source = "role", target = "role")
-    User toUser(UserCreateRequest userCreateRequest, @Context RoleService roleService);
+  @Mapping(source = "role", target = "role")
+  User toUser(UserCreateRequest userCreateRequest, @Context RoleService roleService);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "joinDate", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    @Mapping(target = "enabled", ignore = true)
-    @Mapping(source = "role", target = "role")
-    void updateUser(UserUpdateRequest userUpdateRequest, @MappingTarget User user, @Context RoleService roleService);
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "joinDate", ignore = true)
+  @Mapping(target = "status", ignore = true)
+  @Mapping(target = "password", ignore = true)
+  @Mapping(target = "enabled", ignore = true)
+  @Mapping(source = "role", target = "role")
+  void updateUser(
+      UserUpdateRequest userUpdateRequest,
+      @MappingTarget User user,
+      @Context RoleService roleService);
 
-    default Role mapRole(String roleName, @Context RoleService roleService) {
-        return roleService.getRole(roleName);
-    }
+  default Role mapRole(String roleName, @Context RoleService roleService) {
+    return roleService.getRole(roleName);
+  }
 }

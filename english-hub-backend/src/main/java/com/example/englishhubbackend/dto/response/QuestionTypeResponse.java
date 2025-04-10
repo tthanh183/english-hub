@@ -1,6 +1,5 @@
 package com.example.englishhubbackend.dto.response;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class QuestionTypeResponse {
-    String name;
-    String description;
+  String name;
+  String description;
 }

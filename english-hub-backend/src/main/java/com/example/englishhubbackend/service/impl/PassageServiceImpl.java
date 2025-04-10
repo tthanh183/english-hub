@@ -12,11 +12,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PassageServiceImpl implements PassageService {
-    PassageRepository passageRepository;
+  PassageRepository passageRepository;
 
-
-    @Override
-    public void savePassage(Passage passage) {
-        passageRepository.save(passage);
-    }
+  @Override
+  public void savePassage(Passage passage) {
+    passageRepository.save(passage);
+  }
 }

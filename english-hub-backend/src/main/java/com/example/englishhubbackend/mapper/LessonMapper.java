@@ -10,9 +10,11 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface LessonMapper {
-    Lesson toLesson(LessonCreateRequest lessonCreateRequest);
-    LessonResponse toLessonResponse(Lesson lesson);
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "course", ignore = true)
-    void toLesson(LessonUpdateRequest lessonUpdateRequest, @MappingTarget Lesson lesson);
+  Lesson toLesson(LessonCreateRequest lessonCreateRequest);
+
+  LessonResponse toLessonResponse(Lesson lesson);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "course", ignore = true)
+  void toLesson(LessonUpdateRequest lessonUpdateRequest, @MappingTarget Lesson lesson);
 }

@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class QuestionType {
-    @Id
-    String name;
-    String description;
+  @Id String name;
+  String description;
 }

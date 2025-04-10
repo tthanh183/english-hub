@@ -1,6 +1,5 @@
 package com.example.englishhubbackend.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,5 +9,5 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExerciseCreateRequest {
-    String title;
+  String title;
 }

@@ -1,9 +1,8 @@
 package com.example.englishhubbackend.dto.response;
 
+import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.UUID;
 
 @Data
 @Builder
@@ -11,8 +10,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonResponse {
-    UUID id;
-    String title;
-    String content;
-    Long duration;
+  UUID id;
+  String title;
+  String content;
+  Long duration;
 }

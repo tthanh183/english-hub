@@ -17,21 +17,21 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class DataSeeder implements CommandLineRunner {
-    UserRepository userRepository;
-    PasswordEncoder passwordEncoder;
-    RoleRepository roleRepository;
+  UserRepository userRepository;
+  PasswordEncoder passwordEncoder;
+  RoleRepository roleRepository;
 
-    @Override
-    public void run(String... args) throws Exception {
-        if(!userRepository.findByEmail("admin@email.com").isPresent()) {
-            User admin = new User();
-            admin.setUsername("Admin");
-            admin.setEmail("admin@email.com");
-            admin.setPassword(passwordEncoder.encode("admin"));
-            admin.setEnabled(true);
-            admin.setRole(roleRepository.findById(RoleEnum.ADMIN.name()).orElse(null));
-            userRepository.save(admin);
-            log.info("Admin account created");
-        }
+  @Override
+  public void run(String... args) throws Exception {
+    if (!userRepository.findByEmail("admin@email.com").isPresent()) {
+      User admin = new User();
+      admin.setUsername("Admin");
+      admin.setEmail("admin@email.com");
+      admin.setPassword(passwordEncoder.encode("admin"));
+      admin.setEnabled(true);
+      admin.setRole(roleRepository.findById(RoleEnum.ADMIN.name()).orElse(null));
+      userRepository.save(admin);
+      log.info("Admin account created");
     }
+  }
 }

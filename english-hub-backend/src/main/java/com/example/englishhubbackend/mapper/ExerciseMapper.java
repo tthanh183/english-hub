@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface ExerciseMapper {
-    Exercise toExercise(ExerciseCreateRequest exerciseCreateRequest);
-    ExerciseResponse toExerciseResponse(Exercise exercise);
+  Exercise toExercise(ExerciseCreateRequest exerciseCreateRequest);
+
+  ExerciseResponse toExerciseResponse(Exercise exercise);
 }

@@ -15,7 +15,8 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class ListeningQuestion extends Question {
-    @ManyToOne(fetch = FetchType.EAGER)
-    Audio audio;
-    String imageUrl;
+  @ManyToOne(fetch = FetchType.EAGER)
+  Audio audio;
+
+  String imageUrl;
 }
