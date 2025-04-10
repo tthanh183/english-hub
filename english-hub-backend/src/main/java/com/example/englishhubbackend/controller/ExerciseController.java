@@ -1,8 +1,10 @@
 package com.example.englishhubbackend.controller;
 
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
+import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExerciseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +37,11 @@ public class ExerciseController {
     public ApiResponse<Void> deleteExercise(@PathVariable String exerciseId) {
         exerciseService.deleteExercise(UUID.fromString(exerciseId));
         return ApiResponse.<Void>builder().message("Exercise deleted successfully").build();
+    }
+
+    @PostMapping("/{exerciseId}/questions")
+    public ApiResponse<QuestionResponse> addQuestionToExercise(@PathVariable String exerciseId, @ModelAttribute QuestionCreateRequest questionCreateRequest) {
+        return ApiResponse.<QuestionResponse>builder()
+                .result(exerciseService.addQuestionsToExercise(UUID.fromString(exerciseId), questionCreateRequest)).build();
     }
 }

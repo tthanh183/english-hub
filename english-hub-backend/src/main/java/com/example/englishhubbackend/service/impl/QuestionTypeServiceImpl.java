@@ -1,7 +1,10 @@
 package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.response.QuestionTypeResponse;
+import com.example.englishhubbackend.exception.AppException;
+import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.QuestionTypeMapper;
+import com.example.englishhubbackend.models.QuestionType;
 import com.example.englishhubbackend.repository.QuestionTypeRepository;
 import com.example.englishhubbackend.service.QuestionTypeService;
 import lombok.AccessLevel;
@@ -31,5 +34,11 @@ public class QuestionTypeServiceImpl implements QuestionTypeService {
         return questionTypeRepository.findById(questionTypeName)
                 .map(questionTypeMapper::toQuestionTypeResponse)
                 .orElse(null);
+    }
+
+    @Override
+    public QuestionType getQuestionTypeEntityByDescription(String description) {
+        return questionTypeRepository.findByDescription(description)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_TYPE_NOT_FOUND));
     }
 }

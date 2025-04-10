@@ -8,7 +8,8 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +27,7 @@ public abstract class Question {
     LocalDate createdAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = true)
+    @ToString.Exclude
     Exercise exercise;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exam_id", nullable = true)

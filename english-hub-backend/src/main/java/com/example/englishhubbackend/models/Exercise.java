@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,5 +23,6 @@ public class Exercise {
     @JoinColumn(name = "course_id")
     Course course;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise")
+    @ToString.Exclude
     List<Question> questions;
 }

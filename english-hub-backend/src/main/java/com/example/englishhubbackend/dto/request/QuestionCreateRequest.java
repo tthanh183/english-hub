@@ -2,6 +2,7 @@ package com.example.englishhubbackend.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -14,8 +15,8 @@ public class QuestionCreateRequest {
     String title;
     String questionType;
     LocalDate createdAt;
-    String imageUrl;
-    String audioUrl;
+    MultipartFile image;
+    MultipartFile audio;
     String passage;
     String choiceA;
     String choiceB;

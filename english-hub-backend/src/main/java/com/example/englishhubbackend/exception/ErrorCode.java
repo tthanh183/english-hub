@@ -23,7 +23,9 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED(1014, "There was an error uploading your file. Please try again.", HttpStatus.INTERNAL_SERVER_ERROR),
     COURSE_NOT_FOUND(1015, "Course not found. Please check the course ID and try again.", HttpStatus.NOT_FOUND),
     LESSON_NOT_FOUND(1016, "Lesson not found. Please check the lesson ID and try again.", HttpStatus.NOT_FOUND),
-    EXERCISE_NOT_FOUND(1017, "Exercise not found. Please check the exercise ID and try again.", HttpStatus.NOT_FOUND);
+    EXERCISE_NOT_FOUND(1017, "Exercise not found. Please check the exercise ID and try again.", HttpStatus.NOT_FOUND),
+    QUESTION_TYPE_NOT_FOUND(1018, "Question type not found. Please check the question type ID and try again.", HttpStatus.NOT_FOUND),
+    QUESTION_TYPE_NOT_SUPPORTED(1019, "Question type not supported. Please check the question type and try again.", HttpStatus.BAD_REQUEST),;
 
     private int code;
     private String message;
