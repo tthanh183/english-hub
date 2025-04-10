@@ -10,6 +10,11 @@ export async function getAllCourses(): Promise<CourseResponse[]> {
   return response.data.result;
 }
 
+export async function getCourseById(courseId: string): Promise<CourseResponse> {
+  const response = await axiosInstance.get(`/courses/${courseId}`);
+  return response.data.result;
+}
+
 export async function createCourse(
   course: CourseCreateRequest
 ): Promise<CourseResponse> {

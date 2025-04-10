@@ -8,80 +8,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LessonItem from '@/components/admin/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
-import AddLessonDialog from '@/components/admin/AddLessonDialog';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
-import UpdateLessonCard from '@/components/admin/UpdateLessonCard';
 import ExerciseItem from '@/components/admin/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
-import { CourseResponse } from '@/types/courseType';
 import { getAllExercises } from '@/services/exerciseService';
 import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
 import { ExerciseDetailCard } from '@/components/admin/ExerciseDetailList';
-
-// Type definitions for exercise structures
-type MediaType = {
-  type: 'image' | 'audio';
-  url: string;
-};
-
-type Option = {
-  id: string;
-  text: string;
-  isCorrect?: boolean;
-};
-
-type Question = {
-  id: string;
-  title: string;
-  type: string;
-  instructions?: string;
-  options?: Option[];
-  media?: MediaType[];
-  correctAnswer?: string | string[];
-  points: number;
-  imageIndex?: number;
-};
-
-type QuestionGroup = {
-  id: string;
-  title: string;
-  audioUrl?: string;
-  script?: string;
-  imageUrl?: string; // Cho Part 1 (photos)
-  questions: Question[];
-};
-
-type ToeicExercise = {
-  id: string | number;
-  title: string;
-  section: 'listening' | 'reading';
-  type: string;
-  difficulty: string;
-  estimatedTime: string;
-  instructions: string;
-  audioUrl?: string;
-  passage?: string;
-  script?: string;
-  images?: string[];
-  additionalPassages?: string[];
-  questions: Question[];
-  questionGroups?: QuestionGroup[];
-};
-
-const CourseInitial = {
-  title: 'abc',
-  description: 'abc',
-  imageUrl: 'abc',
-  createdDate: new Date(),
-  updatedDate: new Date(),
-};
+import LessonDialog from '@/components/admin/LessonDialog';
+import { getCourseById } from '@/services/courseService';
 
 export default function CourseDetail() {
-  const [course, setCourse] = useState<CourseResponse | null>(CourseInitial);
   const [activeTab, setActiveTab] = useState('lessons');
   const [isAddLessonOpen, setIsAddLessonOpen] = useState<boolean>(false);
+  const [isEditLessonOpen, setIsEditLessonOpen] = useState<boolean>(false);
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState<boolean>(false);
+  const [isEditExerciseOpen, setIsEditExerciseOpen] = useState<boolean>(false);
 
   const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
     null
@@ -94,6 +36,11 @@ export default function CourseDetail() {
   useEffect(() => {
     setSelectedLesson(null);
   }, [activeTab]);
+
+  const { data: course } = useQuery({
+    queryKey: ['course', courseId],
+    queryFn: () => getCourseById(courseId || ''),
+  });
 
   const { data: lessons = [], isLoading: isLessonsLoading } = useQuery({
     queryKey: ['lessons'],
@@ -137,8 +84,8 @@ export default function CourseDetail() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{course.title}</h1>
-          <p className="text-muted-foreground">{course.description}</p>
+          <h1 className="text-3xl font-bold tracking-tight">{course?.title}</h1>
+          <p className="text-muted-foreground">{course?.description}</p>
         </div>
       </div>
 
@@ -163,7 +110,11 @@ export default function CourseDetail() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle>Lesson Structure</CardTitle>
-                  <AddLessonDialog
+                  <Button onClick={() => setIsAddLessonOpen(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Lesson
+                  </Button>
+                  <LessonDialog
                     isOpen={isAddLessonOpen}
                     onOpenChange={setIsAddLessonOpen}
                   />
@@ -200,9 +151,10 @@ export default function CourseDetail() {
             </Card>
 
             {selectedLesson && (
-              <UpdateLessonCard
-                selectedLesson={selectedLesson}
-                setSelectedLesson={setSelectedLesson}
+              <LessonDialog
+                isOpen={isEditLessonOpen}
+                onOpenChange={setIsEditLessonOpen}
+                lesson={selectedLesson}
               />
             )}
           </div>
@@ -210,7 +162,6 @@ export default function CourseDetail() {
 
         <TabsContent value="exercises" className="space-y-4">
           {selectedExercise ? (
-            // Edit view shown when exercise is selected
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
@@ -231,7 +182,6 @@ export default function CourseDetail() {
                 </div>
               </CardHeader>
               <CardContent>
-                {/* Your UpdateExerciseCard component will go here */}
                 <ExerciseDetailCard
                   selectedExercise={selectedExercise}
                   setSelectedExercise={setSelectedExercise}
@@ -239,7 +189,6 @@ export default function CourseDetail() {
               </CardContent>
             </Card>
           ) : (
-            // List view shown when no exercise is selected
             <div className="grid md:grid-cols-1 gap-6">
               <Card>
                 <CardHeader>
