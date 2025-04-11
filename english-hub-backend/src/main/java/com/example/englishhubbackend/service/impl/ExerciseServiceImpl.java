@@ -57,8 +57,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
   @Override
   public ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
-    Exercise exercise =
-        exerciseRepository
+    Exercise exercise = exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     exercise.setTitle(exerciseUpdateRequest.getTitle());

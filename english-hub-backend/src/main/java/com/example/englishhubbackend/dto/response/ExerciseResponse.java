@@ -14,4 +14,5 @@ public class ExerciseResponse {
   UUID id;
   String title;
   LocalDateTime createdAt;
+
 }
