@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { QuestionType } from '@/types/questionType';
-import Part1QuestionContent from './Part1QuestionContent';
+import Part1Dialog from '@/components/admin/Part1Dialog';
 
 type AddQuestionDialogProps = {
   isOpen: boolean;
@@ -70,9 +70,7 @@ export default function AddQuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return (
-          <Part1QuestionContent exerciseId={exerciseId} questionTitle={title} />
-        );
+        return <Part1Dialog exerciseId={exerciseId} questionTitle={title} />;
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
         return (
@@ -174,7 +172,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label as="h3" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Questions
                 </Label>
                 <Button variant="outline" size="sm" className="gap-1">
@@ -351,7 +349,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label as="h3" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Questions
                 </Label>
                 <Button variant="outline" size="sm" className="gap-1">
@@ -508,7 +506,7 @@ export default function AddQuestionDialog({
 
             <div className="border rounded-md p-4 mt-4">
               <div className="flex items-center justify-between mb-3">
-                <Label as="h3" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Blank 1
                 </Label>
               </div>
@@ -554,7 +552,7 @@ export default function AddQuestionDialog({
 
             <div className="border rounded-md p-4">
               <div className="flex items-center justify-between mb-3">
-                <Label as="h3" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Blank 2
                 </Label>
               </div>
@@ -618,7 +616,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label as="h3" className="text-base font-medium">
+                <Label className="text-base font-medium">
                   Questions
                 </Label>
                 <Button variant="outline" size="sm" className="gap-1">
