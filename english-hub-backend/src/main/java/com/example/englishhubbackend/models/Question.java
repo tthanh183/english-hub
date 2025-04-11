@@ -21,7 +21,9 @@ public abstract class Question {
   UUID id;
 
   String title;
-  @OneToOne QuestionType questionType;
+
+  @ManyToOne
+  QuestionType questionType;
 
   @Column(name = "created_at")
   LocalDate createdAt;

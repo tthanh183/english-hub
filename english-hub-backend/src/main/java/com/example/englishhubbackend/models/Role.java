@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Role {
-  @Id String name;
+  @Id
+  String name;
   String description;
 }

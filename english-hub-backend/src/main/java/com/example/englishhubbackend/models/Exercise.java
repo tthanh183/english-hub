@@ -32,5 +32,4 @@ public class Exercise {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise")
   @ToString.Exclude
   List<Question> questions;
-
 }
