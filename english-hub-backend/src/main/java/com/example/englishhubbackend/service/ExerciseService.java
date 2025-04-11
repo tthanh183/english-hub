@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.service;
 
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
+import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
@@ -12,10 +13,13 @@ public interface ExerciseService {
 
   List<ExerciseResponse> getAllExerciseFromCourse(UUID courseID);
 
+  ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest);
+
   void deleteExercise(UUID exerciseId);
 
   QuestionResponse addQuestionsToExercise(
       UUID exerciseId, QuestionCreateRequest questionCreateRequest);
 
   List<QuestionResponse> getAllQuestionsFromExercise(UUID exerciseId);
+
 }

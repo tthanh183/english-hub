@@ -1,6 +1,7 @@
 package com.example.englishhubbackend.service.impl;
 
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
+import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
@@ -51,6 +52,16 @@ public class ExerciseServiceImpl implements ExerciseService {
     return exerciseRepository.findAllByCourseId(courseID).stream()
         .map(exerciseMapper::toExerciseResponse)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
+    Exercise exercise =
+        exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+    exercise.setTitle(exerciseUpdateRequest.getTitle());
+    return exerciseMapper.toExerciseResponse(exerciseRepository.save(exercise));
   }
 
   @Override
