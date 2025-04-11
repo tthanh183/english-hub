@@ -20,6 +20,18 @@ export async function createExercise(
   return response.data.result;
 }
 
+export async function updateExercise(
+  courseId: string,
+  exerciseId: string,
+  exercise: ExerciseCreateRequest
+): Promise<ExerciseResponse> {
+  const response = await axiosInstance.put(
+    `/courses/${courseId}/exercises/${exerciseId}`,
+    exercise
+  );
+  return response.data.result;
+}
+
 export async function deleteExercise(
   courseId: string,
   exerciseId: string

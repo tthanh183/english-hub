@@ -1,4 +1,4 @@
-import { Clock, Edit, Grip, Trash } from 'lucide-react';
+import { Clock, Edit, Eye, Grip, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
@@ -13,12 +13,14 @@ type LessonItemProps = {
   exercise: ExerciseResponse;
   order: number;
   onSelect: () => void;
+  onEdit: () => void;
 };
 
 export default function ExerciseItem({
   exercise,
   order,
   onSelect,
+  onEdit,
 }: LessonItemProps) {
   const { courseId } = useParams();
   const queryClient = useQueryClient();
@@ -79,11 +81,14 @@ export default function ExerciseItem({
         </div>
       </div>
       <div className="flex items-center gap-1">
+        <Button variant="ghost" size="sm" onClick={onSelect}>
+          <Eye className="h-4 w-4" />
+        </Button>
         <Button
           variant="ghost"
           size="icon"
           className="h-8 w-8"
-          onClick={onSelect}
+          onClick={onEdit}
         >
           <Edit className="h-4 w-4" />
         </Button>

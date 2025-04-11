@@ -13,22 +13,27 @@ import { getAllLessons } from '@/services/lessonService';
 import ExerciseItem from '@/components/admin/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { getAllExercises } from '@/services/exerciseService';
-import AddExerciseDialog from '@/components/admin/AddExerciseDialog';
 import { ExerciseDetailCard } from '@/components/admin/ExerciseDetailList';
 import LessonDialog from '@/components/admin/LessonDialog';
 import { getCourseById } from '@/services/courseService';
+import ExerciseDialog from '@/components/admin/ExerciseDialog';
 
 export default function CourseDetail() {
   const [activeTab, setActiveTab] = useState('lessons');
   const [isAddLessonOpen, setIsAddLessonOpen] = useState<boolean>(false);
   const [isEditLessonOpen, setIsEditLessonOpen] = useState<boolean>(false);
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState<boolean>(false);
+  const [isEditExerciseOpen, setIsEditExerciseOpen] = useState<boolean>(false);
+  const [isViewExerciseOpen, setIsViewExerciseOpen] = useState<boolean>(false);
 
   const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
     null
   );
   const [selectedExercise, setSelectedExercise] =
     useState<ExerciseResponse | null>(null);
+  const [editedExercise, setEditedExercise] = useState<ExerciseResponse | null>(
+    null
+  );
 
   const { courseId } = useParams();
 
@@ -66,8 +71,20 @@ export default function CourseDetail() {
       setSelectedExercise(
         exercises.find(exercise => exercise.id === id) || null
       );
+      setIsViewExerciseOpen(true);
     } else {
       setSelectedExercise(null);
+      setIsViewExerciseOpen(false);
+    }
+  };
+
+  const handleEditExercise = (id: string) => {
+    if (editedExercise?.id !== id) {
+      setEditedExercise(exercises.find(exercise => exercise.id === id) || null);
+      setIsEditExerciseOpen(true);
+    } else {
+      setEditedExercise(null);
+      setIsEditExerciseOpen(false);
     }
   };
 
@@ -162,7 +179,7 @@ export default function CourseDetail() {
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-4">
-          {selectedExercise ? (
+          {selectedExercise && isViewExerciseOpen ? (
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
@@ -195,7 +212,11 @@ export default function CourseDetail() {
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle>Exercise Bank</CardTitle>
-                    <AddExerciseDialog
+                    <Button onClick={() => setIsAddExerciseOpen(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Exercise
+                    </Button>
+                    <ExerciseDialog
                       isOpen={isAddExerciseOpen}
                       onOpenChange={setIsAddExerciseOpen}
                     />
@@ -209,6 +230,7 @@ export default function CourseDetail() {
                         exercise={exercise}
                         order={idx + 1}
                         onSelect={() => handleSelectExercise(exercise.id)}
+                        onEdit={() => handleEditExercise(exercise.id)}
                       />
                     ))}
 
@@ -231,6 +253,13 @@ export default function CourseDetail() {
                   </div>
                 </CardContent>
               </Card>
+              {editedExercise && (
+                <ExerciseDialog
+                  isOpen={isEditExerciseOpen}
+                  onOpenChange={setIsEditExerciseOpen}
+                  exercise={editedExercise}
+                />
+              )}
             </div>
           )}
         </TabsContent>

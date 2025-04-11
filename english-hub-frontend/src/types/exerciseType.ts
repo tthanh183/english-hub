@@ -7,3 +7,7 @@ export type ExerciseResponse = {
 export type ExerciseCreateRequest = {
   title: string;
 };
+
+export type ExerciseUpdateRequest = {
+  title: string;
+};
