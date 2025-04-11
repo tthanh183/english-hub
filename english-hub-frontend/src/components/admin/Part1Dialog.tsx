@@ -22,6 +22,14 @@ type Part1QuestionContentProps = {
   questionTitle: string;
 };
 
+// Định nghĩa options cố định cho TOEIC
+const TOEIC_OPTIONS = [
+  { letter: 'A', index: 0 },
+  { letter: 'B', index: 1 },
+  { letter: 'C', index: 2 },
+  { letter: 'D', index: 3 },
+];
+
 export default function Part1QuestionContent({
   exerciseId,
   questionTitle,
@@ -32,7 +40,7 @@ export default function Part1QuestionContent({
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
 
-  const [correctAnswer, setCorrectAnswer] = useState<number>(1);
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0); // Mặc định là A
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
 
   const { courseId } = useParams();
@@ -74,7 +82,7 @@ export default function Part1QuestionContent({
     setAudioFile(null);
     setAudioPreview(null);
     setOptions(['', '', '', '']);
-    setCorrectAnswer(1);
+    setCorrectAnswerIndex(0); // Reset về A
   };
 
   const handleImageChange = (file: File | null) => {
@@ -115,7 +123,16 @@ export default function Part1QuestionContent({
     setOptions(newOptions);
   };
 
+  const indexToLetter = (index: number): string => {
+    return String.fromCharCode(65 + index);
+  };
+
   const handleAddQuestion = () => {
+    if (questionTitle) {
+      showError('Please enter a question title');
+      return;
+    }
+
     if (!imageFile) {
       showError('Please upload an image');
       return;
@@ -123,11 +140,6 @@ export default function Part1QuestionContent({
 
     if (!audioFile) {
       showError('Please upload an audio file');
-      return;
-    }
-
-    if (options.some(opt => !opt.trim())) {
-      showError('Please fill in all answer options');
       return;
     }
 
@@ -140,7 +152,7 @@ export default function Part1QuestionContent({
       choiceB: options[1],
       choiceC: options[2],
       choiceD: options[3],
-      correctAnswer: options[0],
+      correctAnswer: indexToLetter(correctAnswerIndex),
     };
 
     createMutation.mutate({
@@ -173,37 +185,36 @@ export default function Part1QuestionContent({
       <div className="mt-6">
         <Label>Answer Options</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-          {[1, 2, 3, 4].map(num => (
+          {TOEIC_OPTIONS.map(({ letter, index }) => (
             <div
-              key={num}
-              className={`border rounded-md p-4 ${
-                num === correctAnswer
+              key={letter}
+              className={`border rounded-md p-4 transition-colors ${
+                index === correctAnswerIndex
                   ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                   : ''
               }`}
-              onClick={() => setCorrectAnswer(num)}
+              onClick={() => setCorrectAnswerIndex(index)}
             >
               <div className="flex items-center gap-2 mb-3">
                 <RadioGroup
-                  value={`option${correctAnswer}`}
+                  value={correctAnswerIndex.toString()}
                   onValueChange={value => {
-                    const optionNum = parseInt(value.replace('option', ''));
-                    setCorrectAnswer(optionNum);
+                    setCorrectAnswerIndex(parseInt(value));
                   }}
                   className="flex"
                 >
                   <RadioGroupItem
-                    value={`option${num}`}
-                    id={`option${num}`}
-                    checked={num === correctAnswer}
+                    value={index.toString()}
+                    id={`option-${letter}`}
+                    checked={index === correctAnswerIndex}
                   />
                 </RadioGroup>
                 <Label
-                  htmlFor={`option${num}`}
+                  htmlFor={`option-${letter}`}
                   className="flex items-center gap-2 font-medium cursor-pointer"
                 >
-                  Option {String.fromCharCode(64 + num)}
-                  {num === correctAnswer && (
+                  {letter}
+                  {index === correctAnswerIndex && (
                     <span className="text-xs text-green-600 font-normal">
                       (Correct)
                     </span>
@@ -211,11 +222,14 @@ export default function Part1QuestionContent({
                 </Label>
               </div>
               <Input
-                id={`option${num}-text`}
-                placeholder={`Enter option ${num}`}
-                value={options[num - 1]}
-                onChange={e => handleOptionChange(num - 1, e.target.value)}
+                id={`option-${letter}-text`}
+                placeholder={`Enter option ${letter}`}
+                value={options[index]}
+                onChange={e => handleOptionChange(index, e.target.value)}
                 onClick={e => e.stopPropagation()}
+                className={
+                  index === correctAnswerIndex ? 'border-green-500' : ''
+                }
               />
             </div>
           ))}
@@ -229,10 +243,10 @@ export default function Part1QuestionContent({
             handleImageClear();
             handleAudioClear();
             setOptions(['', '', '', '']);
-            setCorrectAnswer(1);
+            setCorrectAnswerIndex(0);
           }}
         >
-          Cancel
+          Reset
         </Button>
         <Button
           className="gap-1 min-w-[120px]"
