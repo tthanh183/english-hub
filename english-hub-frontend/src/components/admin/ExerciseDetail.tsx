@@ -9,8 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar } from '@/components/ui/avatar';
-import { Pencil, Trash2, Plus, Mic, FileText, Eye } from 'lucide-react';
+import { Pencil, Trash2, Plus, FileText, Eye } from 'lucide-react';
 import AddQuestionDialog from './AddQuestionDialog';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';

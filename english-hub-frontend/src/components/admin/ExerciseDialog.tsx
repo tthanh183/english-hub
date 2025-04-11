@@ -41,20 +41,16 @@ export default function ExerciseDialog({
   const { courseId } = useParams();
   const queryClient = useQueryClient();
 
-  // Initialize form when dialog opens or when exercise changes
   useEffect(() => {
     if (isOpen) {
       if (exercise) {
-        // Edit mode - populate form with exercise data
         setTitle(exercise.title);
       } else {
-        // Add mode - reset form
         setTitle('');
       }
     }
   }, [isOpen, exercise]);
 
-  // Create exercise mutation
   const createExerciseMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -74,7 +70,6 @@ export default function ExerciseDialog({
     onSettled: handleSettled,
   });
 
-  // Update exercise mutation
   const updateExerciseMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -99,7 +94,6 @@ export default function ExerciseDialog({
     onSettled: handleSettled,
   });
 
-  // Common error handler
   function handleError(error: unknown) {
     if (isAxiosError(error)) {
       showError(error.response?.data.message || 'An error occurred');
@@ -108,12 +102,10 @@ export default function ExerciseDialog({
     }
   }
 
-  // Common settled handler
   function handleSettled() {
     onOpenChange(false);
   }
 
-  // Handle form submission
   const handleSubmit = () => {
     if (!courseId) {
       showError('Course ID is missing');
@@ -126,14 +118,12 @@ export default function ExerciseDialog({
     }
 
     if (isEditMode && exercise) {
-      // Update existing exercise
       updateExerciseMutation.mutate({
         courseId,
         exerciseId: exercise.id,
         exerciseData: { title },
       });
     } else {
-      // Create new exercise
       createExerciseMutation.mutate({
         courseId,
         exercise: { title },

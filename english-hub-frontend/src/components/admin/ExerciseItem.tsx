@@ -24,6 +24,7 @@ export default function ExerciseItem({
 }: LessonItemProps) {
   const { courseId } = useParams();
   const queryClient = useQueryClient();
+
   const deleteExerciseMutation = useMutation({
     mutationFn: ({
       courseId,
