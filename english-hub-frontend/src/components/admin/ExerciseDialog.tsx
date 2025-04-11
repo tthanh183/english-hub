@@ -165,7 +165,7 @@ export default function ExerciseDialog({
           </Button>
           <Button
             onClick={handleSubmit}
-            className="min-w-[120px]"
+            className="w-[150px]"
             disabled={isPending}
           >
             {isPending ? (

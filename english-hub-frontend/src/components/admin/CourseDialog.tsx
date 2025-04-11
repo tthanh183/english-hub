@@ -246,7 +246,7 @@ export default function CourseDialog({
           <Button
             onClick={handleSubmit}
             disabled={isPending}
-            className="min-w-[120px]"
+            className="w-[150px]"
           >
             {isPending ? (
               <Spinner />

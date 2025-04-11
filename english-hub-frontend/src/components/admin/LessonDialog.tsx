@@ -225,7 +225,7 @@ export default function LessonDialog({
           <Button
             onClick={handleSubmit}
             disabled={isPending}
-            className="min-w-[130px]"
+            className="w-[150px]"
           >
             {isPending ? (
               <Spinner />
