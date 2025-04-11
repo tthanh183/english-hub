@@ -29,6 +29,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { QuestionType } from '@/types/questionType';
 import Part1Dialog from '@/components/admin/Part1Dialog';
+import Part2Dialog from './Part2Dialog';
 
 type AddQuestionDialogProps = {
   isOpen: boolean;
@@ -73,74 +74,7 @@ export default function AddQuestionDialog({
         return <Part1Dialog exerciseId={exerciseId} questionTitle={title} />;
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
-        return (
-          <>
-            <div className="space-y-2">
-              <Label>Audio Question</Label>
-              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-center">
-                <Mic className="h-8 w-8 text-gray-400" />
-                <div className="text-sm text-gray-500">
-                  Drag and drop an audio file, or click to browse
-                </div>
-                <Button variant="outline" size="sm">
-                  Upload Audio
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <div className="space-y-2">
-                <Label htmlFor="transcript">Question Transcript</Label>
-                <Textarea
-                  id="transcript"
-                  placeholder="Enter the transcript of the audio question"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                {[1, 2, 3].map(num => (
-                  <div
-                    key={num}
-                    className={`border rounded-md p-4 ${
-                      num === 1
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup defaultValue="option1" className="flex">
-                        <RadioGroupItem
-                          value={`option${num}`}
-                          id={`p2-option${num}`}
-                          checked={num === 1}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`p2-option${num}`}
-                        className="flex items-center gap-2 font-medium"
-                      >
-                        Option {String.fromCharCode(64 + num)}
-                        {num === 1 && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`p2-option${num}-text`}
-                      placeholder={`Enter option ${num}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        );
+        return <Part2Dialog />;
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (
@@ -172,9 +106,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label className="text-base font-medium">
-                  Questions
-                </Label>
+                <Label className="text-base font-medium">Questions</Label>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Plus className="h-4 w-4" /> Add Question
                 </Button>
@@ -349,9 +281,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label className="text-base font-medium">
-                  Questions
-                </Label>
+                <Label className="text-base font-medium">Questions</Label>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Plus className="h-4 w-4" /> Add Question
                 </Button>
@@ -506,9 +436,7 @@ export default function AddQuestionDialog({
 
             <div className="border rounded-md p-4 mt-4">
               <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">
-                  Blank 1
-                </Label>
+                <Label className="text-base font-medium">Blank 1</Label>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
@@ -552,9 +480,7 @@ export default function AddQuestionDialog({
 
             <div className="border rounded-md p-4">
               <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">
-                  Blank 2
-                </Label>
+                <Label className="text-base font-medium">Blank 2</Label>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
@@ -616,9 +542,7 @@ export default function AddQuestionDialog({
 
             <div>
               <div className="flex items-center justify-between mb-4">
-                <Label className="text-base font-medium">
-                  Questions
-                </Label>
+                <Label className="text-base font-medium">Questions</Label>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Plus className="h-4 w-4" /> Add Question
                 </Button>
