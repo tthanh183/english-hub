@@ -1,5 +1,5 @@
 import { LessonResponse } from '@/types/lessonType';
-import { Clock, Edit, Grip, Trash } from 'lucide-react';
+import { Calendar, Clock, Edit, Grip, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
+import { format } from 'date-fns';
 
 type LessonItemProps = {
   lesson: LessonResponse;
@@ -82,6 +83,10 @@ export default function LessonItem({
               <span className="mx-2">•</span>
               <Clock className="h-3 w-3 mr-1" />
               {longToString(lesson.duration)}
+
+              <span className="mx-2">•</span>
+              <Calendar className="h-3 w-3 mr-1" />
+              <span>{format(new Date(lesson.createdDate), 'yyyy-MM-dd')}</span>
             </div>
           </div>
         </div>

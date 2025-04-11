@@ -2,6 +2,7 @@ export type ExerciseResponse = {
   id: string;
   title: string;
   questionNum: number;
+  createdDate: Date;
 };
 
 export type ExerciseCreateRequest = {

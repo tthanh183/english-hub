@@ -3,6 +3,7 @@ export type LessonResponse = {
   title: string;
   content: string;
   duration: number;
+  createdDate: Date;
 };
 
 export type LessonCreateRequest = {
