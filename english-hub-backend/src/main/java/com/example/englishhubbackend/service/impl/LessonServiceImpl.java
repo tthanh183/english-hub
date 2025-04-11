@@ -31,7 +31,7 @@ public class LessonServiceImpl implements LessonService {
 
   @Override
   public List<LessonResponse> getAllLessonsFromCourse(UUID courseId) {
-    return lessonRepository.findAllByCourseIdOrderByCreatedAt(courseId).stream()
+    return lessonRepository.findAllByCourseIdOrderByCreatedDate(courseId).stream()
         .map(lessonMapper::toLessonResponse)
         .toList();
   }
@@ -43,7 +43,7 @@ public class LessonServiceImpl implements LessonService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
-    lesson.setCreatedAt(LocalDate.now());
+    lesson.setCreatedDate(LocalDate.now());
     lesson.setCourse(course);
     return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
   }

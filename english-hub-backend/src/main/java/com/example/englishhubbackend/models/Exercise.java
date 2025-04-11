@@ -22,7 +22,8 @@ public class Exercise {
 
   String title;
 
-  LocalDate createdAt;
+  @Column(name = "created_at")
+  LocalDate createdDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "course_id")

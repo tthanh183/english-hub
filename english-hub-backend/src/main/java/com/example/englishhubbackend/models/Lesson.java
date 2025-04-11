@@ -25,7 +25,8 @@ public class Lesson {
 
   Long duration;
 
-  LocalDate createdAt;
+  @Column(name = "created_at")
+  LocalDate createdDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "course_id")

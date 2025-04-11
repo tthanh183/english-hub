@@ -13,6 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class ExerciseResponse {
   UUID id;
   String title;
-  LocalDateTime createdAt;
-
+  LocalDateTime createdDate;
 }

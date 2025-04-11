@@ -15,5 +15,5 @@ public class LessonResponse {
   String title;
   String content;
   Long duration;
-  LocalDate createdAt;
+  LocalDate createdDate;
 }

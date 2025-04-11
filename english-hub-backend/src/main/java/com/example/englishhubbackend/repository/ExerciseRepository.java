@@ -6,6 +6,6 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExerciseRepository extends JpaRepository<Exercise, UUID> {
-  List<Exercise> findAllByCourseIdOrderByCreatedAt(UUID courseId);
+  List<Exercise> findAllByCourseIdOrderByCreatedDate(UUID courseId);
 
 }

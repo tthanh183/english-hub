@@ -43,14 +43,14 @@ public class ExerciseServiceImpl implements ExerciseService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     Exercise exercise = exerciseMapper.toExercise(exerciseCreateRequest);
-    exercise.setCreatedAt(LocalDate.now());
+    exercise.setCreatedDate(LocalDate.now());
     exercise.setCourse(course);
     return exerciseMapper.toExerciseResponse(exerciseRepository.save(exercise));
   }
 
   @Override
   public List<ExerciseResponse> getAllExerciseFromCourse(UUID courseID) {
-    return exerciseRepository.findAllByCourseIdOrderByCreatedAt(courseID).stream()
+    return exerciseRepository.findAllByCourseIdOrderByCreatedDate(courseID).stream()
         .map(exerciseMapper::toExerciseResponse)
         .toList();
   }
