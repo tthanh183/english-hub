@@ -11,6 +11,8 @@ import com.example.englishhubbackend.models.Lesson;
 import com.example.englishhubbackend.repository.LessonRepository;
 import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.LessonService;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,9 +31,9 @@ public class LessonServiceImpl implements LessonService {
 
   @Override
   public List<LessonResponse> getAllLessonsFromCourse(UUID courseId) {
-    return lessonRepository.findAllByCourseId(courseId).stream()
+    return lessonRepository.findAllByCourseIdOrderByCreatedAt(courseId).stream()
         .map(lessonMapper::toLessonResponse)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -41,6 +43,7 @@ public class LessonServiceImpl implements LessonService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
+    lesson.setCreatedAt(LocalDate.now());
     lesson.setCourse(course);
     return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
   }

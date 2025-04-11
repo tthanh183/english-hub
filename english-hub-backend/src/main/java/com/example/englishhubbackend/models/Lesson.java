@@ -1,6 +1,8 @@
 package com.example.englishhubbackend.models;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +24,8 @@ public class Lesson {
   String content;
 
   Long duration;
+
+  LocalDate createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "course_id")
