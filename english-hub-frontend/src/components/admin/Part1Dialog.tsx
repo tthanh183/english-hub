@@ -12,22 +12,26 @@ import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { addQuestion } from '@/services/exerciseService';
+import { addQuestion, updateQuestion } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { PART1_OPTIONS } from '@/constants/options';
-import { indexToLetter } from '@/utils/questionUtil';
+import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 
 type Part1QuestionContentProps = {
   exerciseId?: string;
   questionTitle: string;
+  question?: QuestionResponse;
 };
 
 export default function Part1QuestionContent({
   exerciseId,
   questionTitle,
+  question,
 }: Part1QuestionContentProps) {
+  const isEditMode = !!question;
+
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -37,19 +41,45 @@ export default function Part1QuestionContent({
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
 
+  useEffect(() => {
+    if (question && question.questionType === QuestionType.PART_1_PHOTOGRAPHS) {
+      if (question.imageUrl) setImagePreview(question.imageUrl);
+      if (question.audioUrl) setAudioPreview(question.audioUrl);
+
+      const newOptions = [
+        question.choiceA || '',
+        question.choiceB || '',
+        question.choiceC || '',
+        question.choiceD || '',
+      ];
+      setOptions(newOptions);
+      if (question.correctAnswer) {
+        const index = letterToIndex(question.correctAnswer);
+        setCorrectAnswerIndex(index);
+      }
+    }
+  }, [question]);
+
   const { courseId } = useParams();
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: ({
-      courseId,
-      exerciseId,
-      questionData,
-    }: {
+    mutationFn: (data: {
       courseId: string;
       exerciseId: string;
       questionData: QuestionCreateRequest;
-    }) => addQuestion(courseId, exerciseId, questionData),
+    }) => {
+      if (isEditMode && question) {
+        return updateQuestion(
+          data.courseId,
+          data.exerciseId,
+          question.id,
+          data.questionData
+        );
+      } else {
+        return addQuestion(data.courseId, data.exerciseId, data.questionData);
+      }
+    },
     onSuccess: (response: QuestionResponse) => {
       queryClient.setQueryData<QuestionResponse[]>(
         ['questions', exerciseId],

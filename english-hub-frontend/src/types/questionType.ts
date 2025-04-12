@@ -21,6 +21,19 @@ export type QuestionCreateRequest = {
   correctAnswer: string;
 };
 
+export type QuestionUpdateRequest = {
+  title: string;
+  questionType: QuestionType;
+  audio?: File | null;
+  image?: File | null;
+  passage?: string;
+  choiceA: string;
+  choiceB: string;
+  choiceC: string;
+  choiceD?: string;
+  correctAnswer: string;
+};
+
 export type QuestionResponse = {
   id: string;
   title: string;

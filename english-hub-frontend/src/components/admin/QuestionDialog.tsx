@@ -17,35 +17,49 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Trash, Plus, Mic } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { QuestionType } from '@/types/questionType';
+import { QuestionResponse, QuestionType } from '@/types/questionType';
 import Part1Dialog from '@/components/admin/Part1Dialog';
 import Part2Dialog from './Part2Dialog';
 
-type AddQuestionDialogProps = {
+type QuestionDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   exerciseId?: string;
+  question?: QuestionResponse;
 };
 
-export default function AddQuestionDialog({
+export default function QuestionDialog({
   isOpen,
   onOpenChange,
   exerciseId,
-}: AddQuestionDialogProps) {
+  question,
+}: QuestionDialogProps) {
+  const isEditMode = !!question;
+
   const [selectedPart, setSelectedPart] = useState<QuestionType>(
-    QuestionType.PART_1_PHOTOGRAPHS
+    isEditMode ? question.questionType : QuestionType.PART_1_PHOTOGRAPHS
   );
-  const [title, setTitle] = useState<string>('');
+
+  const [title, setTitle] = useState<string>(isEditMode ? question.title : '');
+
+  useEffect(() => {
+    if (question) {
+      setSelectedPart(question.questionType);
+      setTitle(question.title);
+    } else {
+      setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
+      setTitle('');
+    }
+  }, [question]);
 
   const getPartDescription = (part: string): string => {
     switch (part) {
@@ -71,7 +85,13 @@ export default function AddQuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return <Part1Dialog exerciseId={exerciseId} questionTitle={title} />;
+        return (
+          <Part1Dialog
+            exerciseId={exerciseId}
+            questionTitle={title}
+            question={question}
+          />
+        );
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
         return <Part2Dialog exerciseId={exerciseId} questionTitle={title} />;
@@ -616,7 +636,6 @@ export default function AddQuestionDialog({
                 </CardContent>
               </Card>
 
-              {/* Question 2 */}
               <Card>
                 <CardHeader className="py-3 px-4">
                   <div className="flex items-center justify-between">
@@ -698,26 +717,20 @@ export default function AddQuestionDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Question
-        </Button>
-      </DialogTrigger>
-
-      {/* Dialog được thiết kế lại để sử dụng không gian hiệu quả hơn */}
       <DialogContent className="min-w-[90vw] w-[1200px] max-h-[90vh] p-0 gap-0 overflow-auto flex flex-col">
         <DialogHeader className="px-6 py-4 border-b">
-          <DialogTitle className="text-xl">Add New Question</DialogTitle>
+          <DialogTitle className="text-xl">
+            {isEditMode ? 'Edit Question' : 'Add New Question'}
+          </DialogTitle>
           <DialogDescription>
-            Create a new TOEIC question for your exercise
+            {isEditMode
+              ? 'Edit this TOEIC question'
+              : 'Create a new TOEIC question for your exercise'}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Main content area with scrolling */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Left sidebar - Common question metadata */}
             <div className="lg:col-span-1 space-y-4">
               <Card>
                 <CardHeader className="pb-3">
@@ -728,6 +741,7 @@ export default function AddQuestionDialog({
                     <Label htmlFor="title">Question Title</Label>
                     <Input
                       id="title"
+                      value={title}
                       placeholder="Enter a descriptive title"
                       onChange={e => {
                         setTitle(e.target.value);
@@ -781,7 +795,6 @@ export default function AddQuestionDialog({
               </Card>
             </div>
 
-            {/* Right main content - Part-specific form fields */}
             <div className="lg:col-span-3">
               <Card>
                 <CardHeader>

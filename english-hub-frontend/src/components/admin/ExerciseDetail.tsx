@@ -10,23 +10,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2, Plus, FileText, Eye } from 'lucide-react';
-import AddQuestionDialog from './AddQuestionDialog';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getQuestionsFromExercise } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
+import QuestionDialog from './QuestionDialog';
 
 type ExerciseDetailCardProps = {
   selectedExercise?: ExerciseResponse;
   setSelectedExercise?: (exercise: ExerciseResponse | null) => void;
 };
 
-export function ExerciseDetailCard({
-  selectedExercise,
-  setSelectedExercise,
-}: ExerciseDetailCardProps) {
+export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
+  const [isEditQuestionOpen, setIsEditQuestionOpen] = useState<boolean>(false);
+
+  const [selectedQuestion, setSelectedQuestion] =
+    useState<QuestionResponse | null>(null);
 
   const { courseId } = useParams();
 
@@ -37,9 +38,14 @@ export function ExerciseDetailCard({
     enabled: !!selectedExercise?.id,
   });
 
-  const handleEdit = (question: QuestionResponse) => {
-    console.log('Edit question:', question);
-    // Implement edit functionality
+  const handleAddQuestion = () => {
+    setSelectedQuestion(null);
+    setIsAddQuestionOpen(true);
+  };
+
+  const handleEditQuestion = (question: QuestionResponse) => {
+    setSelectedQuestion(question);
+    setIsEditQuestionOpen(true);
   };
 
   const handleDelete = (questionId: string) => {
@@ -66,15 +72,15 @@ export function ExerciseDetailCard({
     return typeMappings[question.questionType] || question.questionType;
   };
 
-  const handleAddQuestion = () => {
-    setIsAddQuestionOpen(true);
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Questions List</h2>
-        <AddQuestionDialog
+        <h2 className="text-xl font-bold">Questions List</h2>\
+        <Button size="sm" onClick={handleAddQuestion}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Question
+        </Button>
+        <QuestionDialog
           isOpen={isAddQuestionOpen}
           onOpenChange={setIsAddQuestionOpen}
           exerciseId={selectedExercise?.id || ''}
@@ -123,7 +129,7 @@ export function ExerciseDetailCard({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(question)}
+                        onClick={() => handleEditQuestion(question)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -140,6 +146,14 @@ export function ExerciseDetailCard({
                 </TableRow>
               ))}
             </TableBody>
+            {selectedQuestion && (
+              <QuestionDialog
+                isOpen={isEditQuestionOpen}
+                onOpenChange={setIsEditQuestionOpen}
+                exerciseId={selectedExercise?.id}
+                question={selectedQuestion}
+              />
+            )}
           </Table>
         </div>
       ) : (

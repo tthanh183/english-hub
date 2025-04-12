@@ -13,7 +13,7 @@ import { getAllLessons } from '@/services/lessonService';
 import ExerciseItem from '@/components/admin/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { getAllExercises } from '@/services/exerciseService';
-import { ExerciseDetailCard } from '@/components/admin/ExerciseDetail';
+import { ExerciseDetail } from '@/components/admin/ExerciseDetail';
 import LessonDialog from '@/components/admin/LessonDialog';
 import { getCourseById } from '@/services/courseService';
 import ExerciseDialog from '@/components/admin/ExerciseDialog';
@@ -200,10 +200,7 @@ export default function CourseDetail() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ExerciseDetailCard
-                  selectedExercise={selectedExercise}
-                  setSelectedExercise={setSelectedExercise}
-                />
+                <ExerciseDetail selectedExercise={selectedExercise} />
               </CardContent>
             </Card>
           ) : (
