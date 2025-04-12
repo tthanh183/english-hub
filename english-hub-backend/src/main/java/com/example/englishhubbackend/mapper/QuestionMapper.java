@@ -1,11 +1,13 @@
 package com.example.englishhubbackend.mapper;
 
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.models.ListeningQuestion;
 import com.example.englishhubbackend.models.ReadingQuestion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
@@ -22,4 +24,8 @@ public interface QuestionMapper {
   @Mapping(target = "questionType", source = "questionType.name")
   @Mapping(target = "passage", source = "passage.content")
   QuestionResponse toQuestionResponse(ReadingQuestion readingQuestion);
+
+  void toListeningQuestion(QuestionUpdateRequest questionUpdateRequest, @MappingTarget ListeningQuestion listeningQuestion);
+  @Mapping(target = "passage", ignore = true)
+  void toReadingQuestion(QuestionUpdateRequest questionUpdateRequest, @MappingTarget ReadingQuestion readingQuestion);
 }

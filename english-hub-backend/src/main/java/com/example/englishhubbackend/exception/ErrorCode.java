@@ -73,7 +73,9 @@ public enum ErrorCode {
       1019,
       "Question type not supported. Please check the question type and try again.",
       HttpStatus.BAD_REQUEST),
-  ;
+    QUESTION_NOT_FOUND(1020,
+            "Question not found. Please check the question ID and try again.",
+            HttpStatus.NOT_FOUND),;
 
   private int code;
   private String message;

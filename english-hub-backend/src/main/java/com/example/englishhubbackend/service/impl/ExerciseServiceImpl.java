@@ -3,6 +3,7 @@ package com.example.englishhubbackend.service.impl;
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
 import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.exception.AppException;
@@ -86,7 +87,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     Question question = questionService.createQuestionEntity(questionCreateRequest);
     question.setCreatedAt(LocalDate.now());
     question.setExercise(exercise);
-    return mapQuestionToResponse(questionService.saveQuestion(question));
+    return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
 
   @Override
@@ -96,17 +97,20 @@ public class ExerciseServiceImpl implements ExerciseService {
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     return exercise.getQuestions().stream()
-        .map(this::mapQuestionToResponse)
+        .map(questionService::mapQuestionToResponse)
         .collect(Collectors.toList());
   }
 
-  private QuestionResponse mapQuestionToResponse(Question question) {
-    if (question instanceof ListeningQuestion) {
-      return questionMapper.toQuestionResponse((ListeningQuestion) question);
-    } else if (question instanceof ReadingQuestion) {
-      return questionMapper.toQuestionResponse((ReadingQuestion) question);
-    } else {
-      throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
-    }
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public QuestionResponse updateQuestionInExercise(UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest) {
+    Exercise exercise =
+        exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+
+    Question question = questionService.updateQuestionEntity(questionId, questionUpdateRequest);
+    question.setExercise(exercise);
+    return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
 }

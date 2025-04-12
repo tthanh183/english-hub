@@ -3,6 +3,7 @@ package com.example.englishhubbackend.service;
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
 import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import java.util.List;
@@ -22,4 +23,6 @@ public interface ExerciseService {
 
   List<QuestionResponse> getAllQuestionsFromExercise(UUID exerciseId);
 
+  QuestionResponse updateQuestionInExercise(
+      UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest);
 }

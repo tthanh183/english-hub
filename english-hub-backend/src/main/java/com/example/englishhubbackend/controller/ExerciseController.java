@@ -3,6 +3,7 @@ package com.example.englishhubbackend.controller;
 import com.example.englishhubbackend.dto.request.ExerciseCreateRequest;
 import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
@@ -71,4 +72,18 @@ public class ExerciseController {
         .result(exerciseService.getAllQuestionsFromExercise(UUID.fromString(exerciseId)))
         .build();
   }
+
+    @PutMapping("/{exerciseId}/questions/{questionId}")
+    public ApiResponse<QuestionResponse> updateQuestionInExercise(
+        @PathVariable String exerciseId,
+        @PathVariable String questionId,
+        @ModelAttribute QuestionUpdateRequest questionUpdateRequest) {
+        return ApiResponse.<QuestionResponse>builder()
+            .result(
+                exerciseService.updateQuestionInExercise(
+                    UUID.fromString(exerciseId),
+                    UUID.fromString(questionId),
+                    questionUpdateRequest))
+            .build();
+    }
 }
