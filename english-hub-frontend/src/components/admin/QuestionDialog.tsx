@@ -26,7 +26,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { QuestionResponse, QuestionType } from '@/types/questionType';
+import {
+  QUESTION_TYPE_DISPLAY,
+  QuestionResponse,
+  QuestionType,
+} from '@/types/questionType';
 import Part1Dialog from '@/components/admin/Part1Dialog';
 import Part2Dialog from './Part2Dialog';
 
@@ -756,38 +760,18 @@ export default function QuestionDialog({
                       onValueChange={value =>
                         setSelectedPart(value as QuestionType)
                       }
+                      value={selectedPart}
+                      disabled={isEditMode}
                     >
                       <SelectTrigger id="part">
                         <SelectValue placeholder="Select part" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={QuestionType.PART_1_PHOTOGRAPHS}>
-                          {QuestionType.PART_1_PHOTOGRAPHS}
-                        </SelectItem>
-                        <SelectItem
-                          value={QuestionType.PART_2_QUESTIONS_RESPONSES}
-                        >
-                          {QuestionType.PART_2_QUESTIONS_RESPONSES}
-                        </SelectItem>
-                        <SelectItem value={QuestionType.PART_3_CONVERSATIONS}>
-                          {QuestionType.PART_3_CONVERSATIONS}
-                        </SelectItem>
-                        <SelectItem value={QuestionType.PART_4_TALKS}>
-                          {QuestionType.PART_4_TALKS}
-                        </SelectItem>
-                        <SelectItem
-                          value={QuestionType.PART_5_INCOMPLETE_SENTENCES}
-                        >
-                          {QuestionType.PART_5_INCOMPLETE_SENTENCES}
-                        </SelectItem>
-                        <SelectItem value={QuestionType.PART_6_TEXT_COMPLETION}>
-                          {QuestionType.PART_6_TEXT_COMPLETION}
-                        </SelectItem>
-                        <SelectItem
-                          value={QuestionType.PART_7_READING_COMPREHENSION}
-                        >
-                          {QuestionType.PART_7_READING_COMPREHENSION}
-                        </SelectItem>
+                        {Object.entries(QuestionType).map(([, value]) => (
+                          <SelectItem key={value} value={value}>
+                            {QUESTION_TYPE_DISPLAY[value as QuestionType]}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

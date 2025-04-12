@@ -108,5 +108,7 @@ export async function getQuestionsFromExercise(
   const response = await axiosInstance.get(
     `/courses/${courseId}/exercises/${exerciseId}/questions`
   );
+  console.log('Questions from exercise:', response.data.result);
+  
   return response.data.result;
 }
