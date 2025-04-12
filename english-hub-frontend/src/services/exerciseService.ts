@@ -6,8 +6,6 @@ export async function getAllExercises(
   courseId: string
 ): Promise<ExerciseResponse[]> {
   const response = await axiosInstance.get(`/courses/${courseId}/exercises`);
-  console.log(response.data.result);
-
   return response.data.result;
 }
 
