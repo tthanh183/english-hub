@@ -1,6 +1,6 @@
 package com.example.englishhubbackend.dto.response;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,5 +15,5 @@ public class LessonResponse {
   String title;
   String content;
   Long duration;
-  LocalDate createdDate;
+  LocalDateTime createdDate;
 }

@@ -13,6 +13,7 @@ import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.LessonService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class LessonServiceImpl implements LessonService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     Lesson lesson = lessonMapper.toLesson(lessonCreateRequest);
-    lesson.setCreatedDate(LocalDate.now());
+    lesson.setCreatedDate(LocalDateTime.now());
     lesson.setCourse(course);
     return lessonMapper.toLessonResponse(lessonRepository.save(lesson));
   }

@@ -2,7 +2,7 @@ package com.example.englishhubbackend.models;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.*;
@@ -23,7 +23,7 @@ public class Exercise {
   String title;
 
   @Column(name = "created_at")
-  LocalDate createdDate;
+  LocalDateTime createdDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "course_id")

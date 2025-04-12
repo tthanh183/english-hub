@@ -15,6 +15,7 @@ import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.ExerciseService;
 import com.example.englishhubbackend.service.QuestionService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class ExerciseServiceImpl implements ExerciseService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     Exercise exercise = exerciseMapper.toExercise(exerciseCreateRequest);
-    exercise.setCreatedDate(LocalDate.now());
+    exercise.setCreatedDate(LocalDateTime.now());
     exercise.setCourse(course);
     return exerciseMapper.toExerciseResponse(exerciseRepository.save(exercise));
   }
