@@ -31,19 +31,12 @@ export default function Part2Dialog({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // Sử dụng index thay vì string để đơn giản hóa logic
-  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0); // 0 = A, 1 = B, 2 = C
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
 
-  // Sửa mảng options chỉ còn 3 phần tử, phù hợp với Part 2
   const [options, setOptions] = useState<string[]>(['', '', '']);
 
   const { courseId } = useParams();
   const queryClient = useQueryClient();
-
-  // Nếu chưa có hàm indexToLetter trong utils, thêm ở đây
-  const convertIndexToLetter = (index: number): string => {
-    return String.fromCharCode(65 + index); // 65 = 'A'
-  };
 
   const createMutation = useMutation({
     mutationFn: ({
@@ -82,7 +75,7 @@ export default function Part2Dialog({
     setImageFile(null);
     setImagePreview(null);
     setOptions(['', '', '']);
-    setCorrectAnswerIndex(0); // Reset về A
+    setCorrectAnswerIndex(0);
   };
 
   const handleImageChange = (file: File | null) => {
@@ -125,7 +118,7 @@ export default function Part2Dialog({
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
-      correctAnswer: convertIndexToLetter(correctAnswerIndex), // Chuyển từ index sang A, B, C
+      correctAnswer: indexToLetter(correctAnswerIndex),
     };
 
     createMutation.mutate({
@@ -135,7 +128,6 @@ export default function Part2Dialog({
     });
   };
 
-  // Cleanup object URLs
   useEffect(() => {
     return () => {
       if (imagePreview) {
