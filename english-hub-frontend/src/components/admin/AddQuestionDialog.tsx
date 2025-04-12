@@ -74,7 +74,7 @@ export default function AddQuestionDialog({
         return <Part1Dialog exerciseId={exerciseId} questionTitle={title} />;
 
       case QuestionType.PART_2_QUESTIONS_RESPONSES:
-        return <Part2Dialog />;
+        return <Part2Dialog exerciseId={exerciseId} questionTitle={title} />;
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (
