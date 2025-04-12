@@ -1,6 +1,10 @@
 import { ExerciseCreateRequest, ExerciseResponse } from '@/types/exerciseType';
 import axiosInstance from './axiosInstance';
-import { QuestionCreateRequest, QuestionResponse } from '@/types/questionType';
+import {
+  QuestionCreateRequest,
+  QuestionResponse,
+  QuestionUpdateRequest,
+} from '@/types/questionType';
 
 export async function getAllExercises(
   courseId: string
@@ -75,7 +79,7 @@ export async function updateQuestion(
   courseId: string,
   exerciseId: string,
   questionId: string,
-  question: QuestionCreateRequest
+  question: QuestionUpdateRequest
 ): Promise<QuestionResponse> {
   const formData = new FormData();
   formData.append('title', question.title);
@@ -93,7 +97,7 @@ export async function updateQuestion(
     formData.append('choiceD', question.choiceD);
   }
   formData.append('correctAnswer', question.correctAnswer);
-
+  console.log(formData);
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
     formData
@@ -108,7 +112,5 @@ export async function getQuestionsFromExercise(
   const response = await axiosInstance.get(
     `/courses/${courseId}/exercises/${exerciseId}/questions`
   );
-  console.log('Questions from exercise:', response.data.result);
-  
   return response.data.result;
 }

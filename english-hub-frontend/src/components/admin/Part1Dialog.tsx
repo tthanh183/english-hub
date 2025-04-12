@@ -63,7 +63,7 @@ export default function Part1QuestionContent({
   const { courseId } = useParams();
 
   const queryClient = useQueryClient();
-  const createMutation = useMutation({
+  const saveMutation = useMutation({
     mutationFn: (data: {
       courseId: string;
       exerciseId: string;
@@ -80,13 +80,15 @@ export default function Part1QuestionContent({
         return addQuestion(data.courseId, data.exerciseId, data.questionData);
       }
     },
-    onSuccess: (response: QuestionResponse) => {
-      queryClient.setQueryData<QuestionResponse[]>(
-        ['questions', exerciseId],
-        (oldQuestions = []) =>
-          Array.isArray(oldQuestions) ? [...oldQuestions, response] : [response]
-      );
-      showSuccess('Question created successfully!');
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['questions', variables.exerciseId],
+      });
+      if (isEditMode) {
+        showSuccess('Question updated successfully');
+      } else {
+        showSuccess('Question added successfully');
+      }
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -96,7 +98,9 @@ export default function Part1QuestionContent({
       }
     },
     onSettled: () => {
-      resetContentState();
+      if (!isEditMode) {
+        resetContentState();
+      }
     },
   });
 
@@ -147,18 +151,18 @@ export default function Part1QuestionContent({
     setOptions(newOptions);
   };
 
-  const handleAddQuestion = () => {
-    if (questionTitle) {
+  const handleSaveQuestion = () => {
+    if (!questionTitle) {
       showError('Please enter a question title');
       return;
     }
 
-    if (!imageFile) {
+    if (!isEditMode && !imageFile) {
       showError('Please upload an image');
       return;
     }
 
-    if (!audioFile) {
+    if (!isEditMode && !audioFile) {
       showError('Please upload an audio file');
       return;
     }
@@ -175,7 +179,7 @@ export default function Part1QuestionContent({
       correctAnswer: indexToLetter(correctAnswerIndex),
     };
 
-    createMutation.mutate({
+    saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
       questionData,
@@ -184,10 +188,11 @@ export default function Part1QuestionContent({
 
   useEffect(() => {
     return () => {
-      if (imagePreview) {
+      if (imagePreview && !imagePreview.startsWith('http')) {
         URL.revokeObjectURL(imagePreview);
       }
-      if (audioPreview) {
+
+      if (audioPreview && !audioPreview.startsWith('http')) {
         URL.revokeObjectURL(audioPreview);
       }
     };
@@ -268,28 +273,20 @@ export default function Part1QuestionContent({
       </div>
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button
-          variant="outline"
-          onClick={() => {
-            handleImageClear();
-            handleAudioClear();
-            setOptions(['', '', '', '']);
-            setCorrectAnswerIndex(0);
-          }}
-        >
-          Reset
+        <Button variant="outline" onClick={() => resetContentState()}>
+          Cancel
         </Button>
         <Button
           className="gap-1 min-w-[120px]"
-          onClick={handleAddQuestion}
-          disabled={createMutation.isPending}
+          onClick={handleSaveQuestion}
+          disabled={saveMutation.isPending}
         >
-          {createMutation.isPending ? (
+          {saveMutation.isPending ? (
             <Spinner />
           ) : (
             <>
               <Save className="h-4 w-4 mr-1" />
-              Save Question
+              {isEditMode ? 'Update Question' : 'Save Question'}
             </>
           )}
         </Button>
