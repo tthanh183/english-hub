@@ -16,19 +16,12 @@ import { addQuestion } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
+import { PART1_OPTIONS } from '@/constants/options';
 
 type Part1QuestionContentProps = {
   exerciseId?: string;
   questionTitle: string;
 };
-
-// Định nghĩa options cố định cho TOEIC
-const TOEIC_OPTIONS = [
-  { letter: 'A', index: 0 },
-  { letter: 'B', index: 1 },
-  { letter: 'C', index: 2 },
-  { letter: 'D', index: 3 },
-];
 
 export default function Part1QuestionContent({
   exerciseId,
@@ -40,7 +33,7 @@ export default function Part1QuestionContent({
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
 
-  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0); // Mặc định là A
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
 
   const { courseId } = useParams();
@@ -82,7 +75,7 @@ export default function Part1QuestionContent({
     setAudioFile(null);
     setAudioPreview(null);
     setOptions(['', '', '', '']);
-    setCorrectAnswerIndex(0); // Reset về A
+    setCorrectAnswerIndex(0);
   };
 
   const handleImageChange = (file: File | null) => {
@@ -185,7 +178,7 @@ export default function Part1QuestionContent({
       <div className="mt-6">
         <Label>Answer Options</Label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-          {TOEIC_OPTIONS.map(({ letter, index }) => (
+          {PART1_OPTIONS.map(({ letter, index }) => (
             <div
               key={letter}
               className={`border rounded-md p-4 transition-colors ${
