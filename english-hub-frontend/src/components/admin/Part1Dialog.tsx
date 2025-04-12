@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { PART1_OPTIONS } from '@/constants/options';
+import { indexToLetter } from '@/utils/questionUtil';
 
 type Part1QuestionContentProps = {
   exerciseId?: string;
@@ -114,10 +115,6 @@ export default function Part1QuestionContent({
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
-  };
-
-  const indexToLetter = (index: number): string => {
-    return String.fromCharCode(65 + index);
   };
 
   const handleAddQuestion = () => {

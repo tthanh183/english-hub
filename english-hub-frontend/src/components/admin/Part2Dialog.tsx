@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MediaUploader from './MediaUploader';
 import { Button } from '../ui/button';
 import { Spinner } from '../Spinner';
@@ -16,6 +16,8 @@ import {
 } from '@/types/questionType';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import { PART2_OPTIONS } from '@/constants/options';
+import { indexToLetter } from '@/utils/questionUtil';
 
 type Part2DialogProps = {
   exerciseId?: string;
@@ -29,12 +31,20 @@ export default function Part2Dialog({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const [correctAnswer, setCorrectAnswer] = useState<string>('A');
-  const [options, setOptions] = useState<string[]>(['', '', '', '']);
+  // Sử dụng index thay vì string để đơn giản hóa logic
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0); // 0 = A, 1 = B, 2 = C
+
+  // Sửa mảng options chỉ còn 3 phần tử, phù hợp với Part 2
+  const [options, setOptions] = useState<string[]>(['', '', '']);
 
   const { courseId } = useParams();
-
   const queryClient = useQueryClient();
+
+  // Nếu chưa có hàm indexToLetter trong utils, thêm ở đây
+  const convertIndexToLetter = (index: number): string => {
+    return String.fromCharCode(65 + index); // 65 = 'A'
+  };
+
   const createMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -66,10 +76,13 @@ export default function Part2Dialog({
   });
 
   const resetContentState = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setImageFile(null);
     setImagePreview(null);
-    setOptions(['', '', '', '']);
-    setCorrectAnswer(1);
+    setOptions(['', '', '']);
+    setCorrectAnswerIndex(0); // Reset về A
   };
 
   const handleImageChange = (file: File | null) => {
@@ -112,7 +125,7 @@ export default function Part2Dialog({
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
-      correctAnswer: correctAnswer,
+      correctAnswer: convertIndexToLetter(correctAnswerIndex), // Chuyển từ index sang A, B, C
     };
 
     createMutation.mutate({
@@ -122,44 +135,69 @@ export default function Part2Dialog({
     });
   };
 
+  // Cleanup object URLs
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <MediaUploader
-          type="image"
-          value={imagePreview}
-          onChange={handleImageChange}
-          onClear={handleImageClear}
-          label="Photograph"
-        />
+      <div className="mb-6">
+        <div className="w-full max-w-md mx-auto">
+          <MediaUploader
+            type="image"
+            value={imagePreview}
+            onChange={handleImageChange}
+            onClear={handleImageClear}
+            label="Photograph"
+            className="max-h-[250px]"
+          />
+        </div>
       </div>
 
       <div className="mt-6">
-        <Label>Answer Options</Label>
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-base font-medium">Answer Options</Label>
+          <span className="text-sm text-muted-foreground">
+            Select the correct answer
+          </span>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-          {[1, 2, 3].map(num => (
+          {PART2_OPTIONS.map(({ letter, index }) => (
             <div
-              key={num}
-              className={`border rounded-md p-4 ${
-                num === 1
+              key={letter}
+              className={`border rounded-md p-4 transition-colors ${
+                index === correctAnswerIndex
                   ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                   : ''
               }`}
+              onClick={() => setCorrectAnswerIndex(index)}
             >
               <div className="flex items-center gap-2 mb-3">
-                <RadioGroup defaultValue="option1" className="flex">
+                <RadioGroup
+                  value={correctAnswerIndex.toString()}
+                  onValueChange={value =>
+                    setCorrectAnswerIndex(parseInt(value))
+                  }
+                  className="flex"
+                >
                   <RadioGroupItem
-                    value={`option${num}`}
-                    id={`p2-option${num}`}
-                    checked={num === 1}
+                    value={index.toString()}
+                    id={`option-${letter}`}
+                    checked={index === correctAnswerIndex}
                   />
                 </RadioGroup>
                 <Label
-                  htmlFor={`p2-option${num}`}
-                  className="flex items-center gap-2 font-medium"
+                  htmlFor={`option-${letter}`}
+                  className="flex items-center gap-2 font-medium cursor-pointer"
                 >
-                  Option {String.fromCharCode(64 + num)}
-                  {num === 1 && (
+                  {letter}
+                  {index === correctAnswerIndex && (
                     <span className="text-xs text-green-600 font-normal">
                       (Correct)
                     </span>
@@ -167,26 +205,23 @@ export default function Part2Dialog({
                 </Label>
               </div>
               <Input
-                id={`p2-option${num}-text`}
-                placeholder={`Enter option ${num}`}
-                value={options[num - 1]}
-                onChange={e => handleOptionChange(num - 1, e.target.value)}
+                id={`option-${letter}-text`}
+                placeholder={`Enter option ${letter}`}
+                value={options[index]}
+                onChange={e => handleOptionChange(index, e.target.value)}
                 onClick={e => e.stopPropagation()}
+                className={
+                  index === correctAnswerIndex ? 'border-green-500' : ''
+                }
               />
             </div>
           ))}
         </div>
       </div>
+
       <div className="flex justify-end gap-3 mt-8">
-        <Button
-          variant="outline"
-          onClick={() => {
-            handleImageClear();
-            setOptions(['', '', '']);
-            setCorrectAnswer('A');
-          }}
-        >
-          Cancel
+        <Button variant="outline" onClick={resetContentState}>
+          Reset
         </Button>
         <Button
           className="gap-1 min-w-[120px]"
