@@ -32,11 +32,15 @@ export default function Part1QuestionContent({
 }: Part1QuestionContentProps) {
   const isEditMode = !!question;
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>();
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    question?.imageUrl || null
+  );
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(null);
+  const [audioPreview, setAudioPreview] = useState<string | null>(
+    question?.audioUrl || null
+  );
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
@@ -122,7 +126,7 @@ export default function Part1QuestionContent({
   };
 
   const handleImageClear = () => {
-    if (imagePreview) {
+    if (imagePreview && !imagePreview.startsWith('http')) {
       URL.revokeObjectURL(imagePreview);
     }
     setImageFile(null);
@@ -138,7 +142,7 @@ export default function Part1QuestionContent({
   };
 
   const handleAudioClear = () => {
-    if (audioPreview) {
+    if (audioPreview && !audioPreview.startsWith('http')) {
       URL.revokeObjectURL(audioPreview);
     }
     setAudioFile(null);
@@ -277,7 +281,7 @@ export default function Part1QuestionContent({
           Cancel
         </Button>
         <Button
-          className="gap-1 min-w-[120px]"
+          className="gap-1 w-[150px]"
           onClick={handleSaveQuestion}
           disabled={saveMutation.isPending}
         >
