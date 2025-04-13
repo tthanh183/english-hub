@@ -90,7 +90,7 @@ public class ExerciseController {
     public ApiResponse<QuestionResponse> updateQuestionInExercise(
         @PathVariable String exerciseId,
         @PathVariable String questionId,
-        @ModelAttribute QuestionUpdateRequest questionUpdateRequest) {
+        @RequestBody QuestionUpdateRequest questionUpdateRequest) {
         return ApiResponse.<QuestionResponse>builder()
             .result(
                 exerciseService.updateQuestionInExercise(

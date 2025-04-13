@@ -1,5 +1,6 @@
 package com.example.englishhubbackend.controller;
 
+import com.example.englishhubbackend.dto.request.DeleteFileRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.service.S3Service;
 import lombok.AccessLevel;
@@ -20,4 +21,10 @@ public class S3Controller {
        String fileUrl = s3Service.uploadFileToS3(file);
        return ApiResponse.<String>builder().result(fileUrl).build();
      }
+
+    @DeleteMapping("/delete")
+    public ApiResponse<Void> deleteFile(@RequestBody DeleteFileRequest deleteFileRequest) {
+        s3Service.deleteFileFromS3(deleteFileRequest.getFileName());
+        return ApiResponse.<Void>builder().build();
+    }
 }

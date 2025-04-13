@@ -113,16 +113,14 @@ public class QuestionServiceImpl implements QuestionService {
   private ListeningQuestion updateListeningQuestion(ListeningQuestion question, QuestionUpdateRequest request) {
     questionMapper.toListeningQuestion(request, question);
 
-    if (request.getAudio() != null && !request.getAudio().isEmpty()) {
+    if (request.getAudioUrl() != null) {
       Audio audio = question.getAudio();
       if (audio != null) {
-        s3Service.deleteFileFromS3(S3Util.getFileName(audio.getUrl()));
-        String newAudioUrl = s3Service.uploadFileToS3(request.getAudio());
-        audio.setUrl(newAudioUrl);
+        audio.setUrl(request.getAudioUrl());
         audioService.saveAudio(audio);
       } else {
         audio = new Audio();
-        audio.setUrl(s3Service.uploadFileToS3(request.getAudio()));
+        audio.setUrl(request.getAudioUrl());
         audioService.saveAudio(audio);
       }
       question.setAudio(audio);
@@ -131,12 +129,7 @@ public class QuestionServiceImpl implements QuestionService {
     String questionTypeName = question.getQuestionType().getName();
 
     if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())) {
-      if (request.getImage() != null && !request.getImage().isEmpty()) {
-        if (question.getImageUrl() != null) {
-          s3Service.deleteFileFromS3(S3Util.getFileName(question.getImageUrl()));
-        }
-        question.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
-      }
+      question.setImageUrl(request.getImageUrl());
     } else {
       question.setImageUrl(null);
     }
