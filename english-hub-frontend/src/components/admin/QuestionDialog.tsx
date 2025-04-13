@@ -65,6 +65,13 @@ export default function QuestionDialog({
     }
   }, [question]);
 
+  useEffect(() => {
+    if (!isOpen && !isEditMode) {
+      setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
+      setTitle('');
+    }
+  }, [isOpen, isEditMode]);
+
   const getPartDescription = (part: string): string => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
@@ -98,7 +105,13 @@ export default function QuestionDialog({
         );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
-        return <Part2Dialog exerciseId={exerciseId} questionTitle={title} question={question} />;
+        return (
+          <Part2Dialog
+            exerciseId={exerciseId}
+            questionTitle={title}
+            question={question}
+          />
+        );
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (
