@@ -8,7 +8,7 @@ import { Spinner } from '../Spinner';
 import { Save } from 'lucide-react';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { addQuestion } from '@/services/exerciseService';
+import { addQuestion, updateQuestion } from '@/services/exerciseService';
 import {
   QuestionCreateRequest,
   QuestionResponse,
@@ -17,44 +17,101 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { PART2_OPTIONS } from '@/constants/options';
-import { indexToLetter } from '@/utils/questionUtil';
+import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 
 type Part2DialogProps = {
   exerciseId?: string;
   questionTitle: string;
+  question?: QuestionResponse;
 };
 
 export default function Part2Dialog({
   exerciseId,
   questionTitle,
+  question,
 }: Part2DialogProps) {
+  const isEditMode = !!question;
+
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    question?.imageUrl || null
+  );
 
-  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(
+    question?.correctAnswer ? letterToIndex(question.correctAnswer) : 0
+  );
 
-  const [options, setOptions] = useState<string[]>(['', '', '']);
+  const [options, setOptions] = useState<string[]>(
+    isEditMode
+      ? [
+          question?.choiceA || '',
+          question?.choiceB || '',
+          question?.choiceC || '',
+        ]
+      : ['', '', '']
+  );
 
   const { courseId } = useParams();
   const queryClient = useQueryClient();
 
-  const createMutation = useMutation({
-    mutationFn: ({
-      courseId,
-      exerciseId,
-      questionData,
-    }: {
+  useEffect(() => {
+    if (
+      question &&
+      question.questionType === QuestionType.PART_2_QUESTIONS_RESPONSES
+    ) {
+      if (question.imageUrl) {
+        setImagePreview(question.imageUrl);
+      }
+
+      setOptions([
+        question.choiceA || '',
+        question.choiceB || '',
+        question.choiceC || '',
+      ]);
+
+      if (question.correctAnswer) {
+        const index = letterToIndex(question.correctAnswer);
+        setCorrectAnswerIndex(index);
+      }
+    } else if (!question) {
+      resetContentState();
+    }
+  }, [question]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview && !imagePreview.startsWith('http')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  const saveMutation = useMutation({
+    mutationFn: (data: {
       courseId: string;
       exerciseId: string;
       questionData: QuestionCreateRequest;
-    }) => addQuestion(courseId, exerciseId, questionData),
-    onSuccess: (response: QuestionResponse) => {
-      queryClient.setQueryData<QuestionResponse[]>(
-        ['questions', exerciseId],
-        (oldQuestions = []) =>
-          Array.isArray(oldQuestions) ? [...oldQuestions, response] : [response]
-      );
-      showSuccess('Question created successfully!');
+    }) => {
+      if (isEditMode && question) {
+        return updateQuestion(
+          data.courseId,
+          data.exerciseId,
+          question.id,
+          data.questionData
+        );
+      } else {
+        return addQuestion(data.courseId, data.exerciseId, data.questionData);
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['questions', variables.exerciseId],
+      });
+      if (isEditMode) {
+        showSuccess('Question updated successfully');
+      } else {
+        showSuccess('Question added successfully');
+      }
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -69,7 +126,7 @@ export default function Part2Dialog({
   });
 
   const resetContentState = () => {
-    if (imagePreview) {
+    if (imagePreview && !imagePreview.startsWith('http')) {
       URL.revokeObjectURL(imagePreview);
     }
     setImageFile(null);
@@ -87,7 +144,7 @@ export default function Part2Dialog({
   };
 
   const handleImageClear = () => {
-    if (imagePreview) {
+    if (imagePreview && !imagePreview.startsWith('http')) {
       URL.revokeObjectURL(imagePreview);
     }
     setImageFile(null);
@@ -100,8 +157,8 @@ export default function Part2Dialog({
     setOptions(newOptions);
   };
 
-  const handleAddQuestion = () => {
-    if (!imageFile) {
+  const handleSaveQuestion = () => {
+    if (!isEditMode && !imageFile) {
       showError('Please upload an image');
       return;
     }
@@ -114,27 +171,22 @@ export default function Part2Dialog({
     const questionData: QuestionCreateRequest = {
       title: questionTitle,
       questionType: QuestionType.PART_2_QUESTIONS_RESPONSES,
-      image: imageFile,
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
       correctAnswer: indexToLetter(correctAnswerIndex),
     };
 
-    createMutation.mutate({
+    if (imageFile) {
+      questionData.image = imageFile;
+    }
+
+    saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
       questionData,
     });
   };
-
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
-      }
-    };
-  }, [imagePreview]);
 
   return (
     <>
@@ -217,15 +269,15 @@ export default function Part2Dialog({
         </Button>
         <Button
           className="gap-1 min-w-[120px]"
-          onClick={handleAddQuestion}
-          disabled={createMutation.isPending}
+          onClick={handleSaveQuestion}
+          disabled={saveMutation.isPending}
         >
-          {createMutation.isPending ? (
+          {saveMutation.isPending ? (
             <Spinner />
           ) : (
             <>
               <Save className="h-4 w-4 mr-1" />
-              Save Question
+              {isEditMode ? 'Update Question' : 'Save Question'}
             </>
           )}
         </Button>
