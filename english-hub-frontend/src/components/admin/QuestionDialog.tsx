@@ -54,22 +54,17 @@ export default function QuestionDialog({
     isEditMode ? question.questionType : QuestionType.PART_1_PHOTOGRAPHS
   );
 
-  const [title, setTitle] = useState<string>(isEditMode ? question.title : '');
-
   useEffect(() => {
     if (question) {
       setSelectedPart(question.questionType);
-      setTitle(question.title);
     } else {
       setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
-      setTitle('');
     }
   }, [question]);
 
   useEffect(() => {
     if (!isOpen && !isEditMode) {
       setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
-      setTitle('');
     }
   }, [isOpen, isEditMode]);
 
@@ -97,31 +92,13 @@ export default function QuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return (
-          <Part1Dialog
-            exerciseId={exerciseId}
-            questionTitle={title}
-            question={question}
-          />
-        );
+        return <Part1Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
-        return (
-          <Part2Dialog
-            exerciseId={exerciseId}
-            questionTitle={title}
-            question={question}
-          />
-        );
+        return <Part2Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_3_CONVERSATIONS:
-        return (
-          <Part3Dialog
-            exerciseId={exerciseId}
-            questionTitle={title}
-            question={question}
-          />
-        );
+        return <Part3Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_4_TALKS:
         return (
@@ -585,22 +562,7 @@ export default function QuestionDialog({
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-1 space-y-4">
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Basic Details</CardTitle>
-                </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Question Title</Label>
-                    <Input
-                      id="title"
-                      value={title}
-                      placeholder="Enter a descriptive title"
-                      onChange={e => {
-                        setTitle(e.target.value);
-                      }}
-                    />
-                  </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="part">TOEIC Part</Label>
                     <Select
