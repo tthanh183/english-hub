@@ -58,22 +58,22 @@ export default function Part2Dialog({
       question &&
       question.questionType === QuestionType.PART_2_QUESTION_RESPONSES
     ) {
+      setTitle(question.title || '');
       if (question.audioUrl) {
         setAudioPreview(question.audioUrl);
       }
 
-      setOptions([
+      const newOptions = [
         question.choiceA || '',
         question.choiceB || '',
         question.choiceC || '',
-      ]);
+      ];
+      setOptions(newOptions);
 
       if (question.correctAnswer) {
         const index = letterToIndex(question.correctAnswer);
         setCorrectAnswerIndex(index);
       }
-    } else if (!question) {
-      resetContentState();
     }
   }, [question]);
 
