@@ -8,6 +8,8 @@ import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExerciseService;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -54,15 +56,26 @@ public class ExerciseController {
     return ApiResponse.<Void>builder().message("Exercise deleted successfully").build();
   }
 
-  @PostMapping("/{exerciseId}/questions")
+  @PostMapping("/{exerciseId}/question")
   public ApiResponse<QuestionResponse> addQuestionToExercise(
       @PathVariable String exerciseId,
-      @ModelAttribute QuestionCreateRequest questionCreateRequest) {
+      @RequestBody QuestionCreateRequest questionCreateRequest) {
     return ApiResponse.<QuestionResponse>builder()
         .result(
-            exerciseService.addQuestionsToExercise(
+            exerciseService.addQuestionToExercise(
                 UUID.fromString(exerciseId), questionCreateRequest))
         .build();
+  }
+
+  @PostMapping("/{exerciseId}/questions")
+  public ApiResponse<List<QuestionResponse>> addQuestionsToExercise(
+      @PathVariable String exerciseId,
+      @RequestBody List<QuestionCreateRequest> questionCreateRequest) {
+      return ApiResponse.<List<QuestionResponse>>builder()
+          .result(
+              exerciseService.addQuestionsToExercise(
+                  UUID.fromString(exerciseId), questionCreateRequest))
+          .build();
   }
 
   @GetMapping("/{exerciseId}/questions")

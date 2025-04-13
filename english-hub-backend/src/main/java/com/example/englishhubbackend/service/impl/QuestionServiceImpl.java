@@ -42,14 +42,13 @@ public class QuestionServiceImpl implements QuestionService {
       ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
-      String audioUrl = s3Service.uploadFileToS3(request.getAudio());
       Audio audio = new Audio();
-      audio.setUrl(audioUrl);
+      audio.setUrl(request.getAudioUrl());
       audioService.saveAudio(audio);
       listeningQuestion.setAudio(audio);
 
-      if (request.getImage() != null && !request.getImage().isEmpty()) {
-        listeningQuestion.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
+      if (request.getImageUrl() != null) {
+        listeningQuestion.setImageUrl(request.getImageUrl());
       }
 
       question = listeningQuestion;
@@ -60,9 +59,8 @@ public class QuestionServiceImpl implements QuestionService {
       ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
-      String audioUrl = s3Service.uploadFileToS3(request.getAudio());
       Audio audio = new Audio();
-      audio.setUrl(audioUrl);
+      audio.setUrl(request.getAudioUrl());
       audioService.saveAudio(audio);
       listeningQuestion.setAudio(audio);
 

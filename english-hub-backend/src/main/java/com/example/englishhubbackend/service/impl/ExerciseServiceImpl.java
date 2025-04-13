@@ -17,6 +17,7 @@ import com.example.englishhubbackend.service.ExerciseService;
 import com.example.englishhubbackend.service.QuestionService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -78,17 +79,47 @@ public class ExerciseServiceImpl implements ExerciseService {
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public QuestionResponse addQuestionsToExercise(
-      UUID exerciseId, QuestionCreateRequest questionCreateRequest) {
-    Exercise exercise =
-        exerciseRepository
+  public List<QuestionResponse> addQuestionsToExercise(
+          UUID exerciseId, List<QuestionCreateRequest> questionCreateRequests) {
+
+    Exercise exercise = exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+
+    UUID groupId = UUID.randomUUID();
+
+    List<QuestionResponse> questionResponses = new ArrayList<>();
+
+    for (QuestionCreateRequest questionCreateRequest : questionCreateRequests) {
+      Question question = questionService.createQuestionEntity(questionCreateRequest);
+
+      question.setGroupId(groupId);
+
+      question.setExercise(exercise);
+
+      Question savedQuestion = questionService.saveQuestion(question);
+      questionResponses.add(questionService.mapQuestionToResponse(savedQuestion));
+    }
+
+    return questionResponses;
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public QuestionResponse addQuestionToExercise(
+          UUID exerciseId, QuestionCreateRequest questionCreateRequest) {
+    Exercise exercise =
+            exerciseRepository
+                    .findById(exerciseId)
+                    .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     Question question = questionService.createQuestionEntity(questionCreateRequest);
+    UUID groupId = UUID.randomUUID();
+    question.setGroupId(groupId);
     question.setCreatedAt(LocalDate.now());
     question.setExercise(exercise);
     return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
+
 
   @Override
   public List<QuestionResponse> getAllQuestionsFromExercise(UUID exerciseId) {

@@ -42,4 +42,7 @@ public abstract class Question {
   String choiceC;
   String choiceD;
   String correctAnswer;
+
+  @Column(name = "group_id")
+  private UUID groupId;
 }
