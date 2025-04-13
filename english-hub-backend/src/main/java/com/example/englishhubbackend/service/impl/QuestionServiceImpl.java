@@ -33,43 +33,57 @@ public class QuestionServiceImpl implements QuestionService {
   QuestionTypeService questionTypeService;
 
   @Override
-  public Question createQuestionEntity(QuestionCreateRequest questionCreateRequest) {
-    QuestionType questionType =
-        questionTypeService.getQuestionTypeEntityById(
-            questionCreateRequest.getQuestionType());
-
+  public Question createQuestionEntity(QuestionCreateRequest request) {
+    QuestionType questionType = questionTypeService.getQuestionTypeEntityById(request.getQuestionType());
+    String questionTypeName = questionType.getName();
     Question question;
-    if (questionType.getName().equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())
-        || questionType.getName().equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name())
-        || questionType.getName().equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name())
-        || questionType.getName().equals(QuestionTypeEnum.PART_4_TALKS.name())) {
 
-      ListeningQuestion listeningQuestion =
-          questionMapper.toListeningQuestion(questionCreateRequest);
+    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())) {
+      ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
-      String audioUrl = s3Service.uploadFileToS3(questionCreateRequest.getAudio());
+      String audioUrl = s3Service.uploadFileToS3(request.getAudio());
       Audio audio = new Audio();
       audio.setUrl(audioUrl);
       audioService.saveAudio(audio);
-
       listeningQuestion.setAudio(audio);
-      listeningQuestion.setImageUrl(s3Service.uploadFileToS3(questionCreateRequest.getImage()));
+
+      if (request.getImage() != null && !request.getImage().isEmpty()) {
+        listeningQuestion.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
+      }
 
       question = listeningQuestion;
 
-    } else if (questionType.getName().equals(QuestionTypeEnum.PART_5_INCOMPLETE_SENTENCES.name())
-        || questionType.getName().equals(QuestionTypeEnum.PART_6_TEXT_COMPLETION.name())
-        || questionType.getName().equals(QuestionTypeEnum.PART_7_READING_COMPREHENSION.name())) {
+    } else if (questionTypeName.equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_4_TALKS.name())) {
+      ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
+      listeningQuestion.setQuestionType(questionType);
 
-      ReadingQuestion readingQuestion = questionMapper.toReadingQuestion(questionCreateRequest);
+      String audioUrl = s3Service.uploadFileToS3(request.getAudio());
+      Audio audio = new Audio();
+      audio.setUrl(audioUrl);
+      audioService.saveAudio(audio);
+      listeningQuestion.setAudio(audio);
+
+      listeningQuestion.setImageUrl(null);
+
+      question = listeningQuestion;
+
+    } else if (questionTypeName.equals(QuestionTypeEnum.PART_5_INCOMPLETE_SENTENCES.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_6_TEXT_COMPLETION.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_7_READING_COMPREHENSION.name())) {
+      ReadingQuestion readingQuestion = questionMapper.toReadingQuestion(request);
       readingQuestion.setQuestionType(questionType);
 
-      Passage passage = new Passage();
-      passage.setContent(questionCreateRequest.getPassage());
-      readingQuestion.setPassage(passage);
+      if (request.getPassage() != null && !request.getPassage().isEmpty()) {
+        Passage passage = new Passage();
+        passage.setContent(request.getPassage());
+        readingQuestion.setPassage(passage);
+      }
 
       question = readingQuestion;
+
     } else {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }
@@ -77,6 +91,7 @@ public class QuestionServiceImpl implements QuestionService {
     question.setCreatedAt(LocalDate.now());
     return question;
   }
+
 
   @Override
   public Question saveQuestion(Question question) {
@@ -107,30 +122,40 @@ public class QuestionServiceImpl implements QuestionService {
         String newAudioUrl = s3Service.uploadFileToS3(request.getAudio());
         audio.setUrl(newAudioUrl);
         audioService.saveAudio(audio);
-        question.setAudio(audio);
       } else {
-        Audio newAudio = new Audio();
-        newAudio.setUrl(s3Service.uploadFileToS3(request.getAudio()));
-        audioService.saveAudio(newAudio);
-        question.setAudio(newAudio);
+        audio = new Audio();
+        audio.setUrl(s3Service.uploadFileToS3(request.getAudio()));
+        audioService.saveAudio(audio);
       }
+      question.setAudio(audio);
     }
 
-    if (request.getImage() != null && !request.getImage().isEmpty()) {
-      if (question.getImageUrl() != null) {
-        s3Service.deleteFileFromS3(S3Util.getFileName(question.getImageUrl()));
+    String questionTypeName = question.getQuestionType().getName();
+
+    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())) {
+      if (request.getImage() != null && !request.getImage().isEmpty()) {
+        if (question.getImageUrl() != null) {
+          s3Service.deleteFileFromS3(S3Util.getFileName(question.getImageUrl()));
+        }
+        question.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
       }
-      question.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
+    } else {
+      question.setImageUrl(null);
     }
 
     return questionRepository.save(question);
   }
 
+
   private ReadingQuestion updateReadingQuestion(ReadingQuestion question, QuestionUpdateRequest request) {
     questionMapper.toReadingQuestion(request, question);
 
-    if (question.getPassage() != null) {
+    if (request.getPassage() != null && question.getPassage() != null) {
       question.getPassage().setContent(request.getPassage());
+    } else if (request.getPassage() != null) {
+      Passage passage = new Passage();
+      passage.setContent(request.getPassage());
+      question.setPassage(passage);
     }
 
     return questionRepository.save(question);
