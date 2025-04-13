@@ -1,4 +1,3 @@
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -10,17 +9,13 @@ import {
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Input } from '@/components/ui/input';
 import { addQuestions, updateQuestions } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
-
-const OPTIONS_LETTERS = ['A', 'B', 'C', 'D'];
+import QuestionCard from './QuestionCard';
 
 type Part3DialogProps = {
   exerciseId?: string;
@@ -150,24 +145,6 @@ export default function Part3Dialog({
     setAudioPreview(null);
   };
 
-  const handleOption1Change = (index: number, value: string) => {
-    const newOptions = [...options1];
-    newOptions[index] = value;
-    setOptions1(newOptions);
-  };
-
-  const handleOption2Change = (index: number, value: string) => {
-    const newOptions = [...options2];
-    newOptions[index] = value;
-    setOptions2(newOptions);
-  };
-
-  const handleOption3Change = (index: number, value: string) => {
-    const newOptions = [...options3];
-    newOptions[index] = value;
-    setOptions3(newOptions);
-  };
-
   const handleSaveQuestion = async () => {
     if (!questionTitle) {
       showError('Please enter a question title');
@@ -266,206 +243,36 @@ export default function Part3Dialog({
         </div>
       </div>
 
-      <Card className="mt-6">        
-        <CardContent>
-          <div className="space-y-4">
-            <Label htmlFor="q1-title">Title</Label>
-            <Input
-              id="q1-title"
-              value={title1}
-              onChange={e => setTitle1(e.target.value)}
-              placeholder="Enter title"
-            />
-            <div>
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[0, 1, 2, 3].map(index => (
-                  <div
-                    key={index}
-                    className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer1Index
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                    onClick={() => setCorrectAnswer1Index(index)}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup
-                        value={correctAnswer1Index.toString()}
-                        onValueChange={value => {
-                          setCorrectAnswer1Index(parseInt(value));
-                        }}
-                        className="flex"
-                      >
-                        <RadioGroupItem
-                          value={index.toString()}
-                          id={`q1-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer1Index}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`q1-option-${OPTIONS_LETTERS[index]}`}
-                        className="flex items-center gap-2 font-medium cursor-pointer"
-                      >
-                        {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer1Index && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`q1-option-${OPTIONS_LETTERS[index]}-text`}
-                      placeholder={`Enter option ${OPTIONS_LETTERS[index]}`}
-                      value={options1[index]}
-                      onChange={e => handleOption1Change(index, e.target.value)}
-                      onClick={e => e.stopPropagation()}
-                      className={
-                        index === correctAnswer1Index ? 'border-green-500' : ''
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <QuestionCard
+        title={title1}
+        setTitle={setTitle1}
+        options={options1}
+        setOptions={setOptions1}
+        correctAnswerIndex={correctAnswer1Index}
+        setCorrectAnswerIndex={setCorrectAnswer1Index}
+        part="part1"
+      />
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Question 2</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <Label htmlFor="q1-title">Title</Label>
-            <Input
-              id="q1-title"
-              value={title1}
-              onChange={e => setTitle1(e.target.value)}
-              placeholder="Enter title"
-            />
-            <div>
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[0, 1, 2, 3].map(index => (
-                  <div
-                    key={index}
-                    className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer2Index
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                    onClick={() => setCorrectAnswer2Index(index)}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup
-                        value={correctAnswer2Index.toString()}
-                        onValueChange={value => {
-                          setCorrectAnswer2Index(parseInt(value));
-                        }}
-                        className="flex"
-                      >
-                        <RadioGroupItem
-                          value={index.toString()}
-                          id={`q2-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer2Index}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`q2-option-${OPTIONS_LETTERS[index]}`}
-                        className="flex items-center gap-2 font-medium cursor-pointer"
-                      >
-                        {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer2Index && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`q2-option-${OPTIONS_LETTERS[index]}-text`}
-                      placeholder={`Enter option ${OPTIONS_LETTERS[index]}`}
-                      value={options2[index]}
-                      onChange={e => handleOption2Change(index, e.target.value)}
-                      onClick={e => e.stopPropagation()}
-                      className={
-                        index === correctAnswer2Index ? 'border-green-500' : ''
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <QuestionCard
+        title={title2}
+        setTitle={setTitle2}
+        options={options2}
+        setOptions={setOptions2}
+        correctAnswerIndex={correctAnswer2Index}
+        setCorrectAnswerIndex={setCorrectAnswer2Index}
+        part="part3"
+      />
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Question 3</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[0, 1, 2, 3].map(index => (
-                  <div
-                    key={index}
-                    className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer3Index
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                    onClick={() => setCorrectAnswer3Index(index)}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup
-                        value={correctAnswer3Index.toString()}
-                        onValueChange={value => {
-                          setCorrectAnswer3Index(parseInt(value));
-                        }}
-                        className="flex"
-                      >
-                        <RadioGroupItem
-                          value={index.toString()}
-                          id={`q3-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer3Index}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`q3-option-${OPTIONS_LETTERS[index]}`}
-                        className="flex items-center gap-2 font-medium cursor-pointer"
-                      >
-                        {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer3Index && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`q3-option-${OPTIONS_LETTERS[index]}-text`}
-                      placeholder={`Enter option ${OPTIONS_LETTERS[index]}`}
-                      value={options3[index]}
-                      onChange={e => handleOption3Change(index, e.target.value)}
-                      onClick={e => e.stopPropagation()}
-                      className={
-                        index === correctAnswer3Index ? 'border-green-500' : ''
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
+      <QuestionCard
+        title={title3}
+        setTitle={setTitle3}
+        options={options3}
+        setOptions={setOptions3}
+        correctAnswerIndex={correctAnswer3Index}
+        setCorrectAnswerIndex={setCorrectAnswer3Index}
+        part="part3"
+      />
+      
       <div className="flex justify-end gap-3 mt-8">
         <Button variant="outline" onClick={() => resetContentState()}>
           Cancel
