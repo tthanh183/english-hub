@@ -9,5 +9,5 @@ public interface QuestionTypeService {
 
   QuestionTypeResponse getQuestionType(String questionTypeName);
 
-  QuestionType getQuestionTypeEntityByDescription(String description);
+  QuestionType getQuestionTypeEntityById(String questionTypeName);
 }

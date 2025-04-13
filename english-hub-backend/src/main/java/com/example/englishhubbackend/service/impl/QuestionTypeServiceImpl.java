@@ -36,9 +36,9 @@ public class QuestionTypeServiceImpl implements QuestionTypeService {
   }
 
   @Override
-  public QuestionType getQuestionTypeEntityByDescription(String description) {
+  public QuestionType getQuestionTypeEntityById(String questionTypeName) {
     return questionTypeRepository
-        .findByDescription(description)
+        .findById(questionTypeName)
         .orElseThrow(() -> new AppException(ErrorCode.QUESTION_TYPE_NOT_FOUND));
   }
 }

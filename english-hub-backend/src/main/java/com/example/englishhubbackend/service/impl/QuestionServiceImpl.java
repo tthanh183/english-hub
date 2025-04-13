@@ -35,7 +35,7 @@ public class QuestionServiceImpl implements QuestionService {
   @Override
   public Question createQuestionEntity(QuestionCreateRequest questionCreateRequest) {
     QuestionType questionType =
-        questionTypeService.getQuestionTypeEntityByDescription(
+        questionTypeService.getQuestionTypeEntityById(
             questionCreateRequest.getQuestionType());
 
     Question question;
