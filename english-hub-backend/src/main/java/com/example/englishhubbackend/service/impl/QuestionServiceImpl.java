@@ -16,6 +16,7 @@ import com.example.englishhubbackend.service.S3Service;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.example.englishhubbackend.util.S3Util;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -102,10 +103,11 @@ public class QuestionServiceImpl implements QuestionService {
     if (request.getAudio() != null && !request.getAudio().isEmpty()) {
       Audio audio = question.getAudio();
       if (audio != null) {
-        s3Service.deleteFileFromS3(audio.getUrl());
+        s3Service.deleteFileFromS3(S3Util.getFileName(audio.getUrl()));
         String newAudioUrl = s3Service.uploadFileToS3(request.getAudio());
         audio.setUrl(newAudioUrl);
         audioService.saveAudio(audio);
+        question.setAudio(audio);
       } else {
         Audio newAudio = new Audio();
         newAudio.setUrl(s3Service.uploadFileToS3(request.getAudio()));
@@ -116,7 +118,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     if (request.getImage() != null && !request.getImage().isEmpty()) {
       if (question.getImageUrl() != null) {
-        s3Service.deleteFileFromS3(question.getImageUrl());
+        s3Service.deleteFileFromS3(S3Util.getFileName(question.getImageUrl()));
       }
       question.setImageUrl(s3Service.uploadFileToS3(request.getImage()));
     }
@@ -136,10 +138,10 @@ public class QuestionServiceImpl implements QuestionService {
 
 
   public QuestionResponse mapQuestionToResponse(Question question) {
-    if (question instanceof ListeningQuestion) {
-      return questionMapper.toQuestionResponse((ListeningQuestion) question);
-    } else if (question instanceof ReadingQuestion) {
-      return questionMapper.toQuestionResponse((ReadingQuestion) question);
+    if (question instanceof ListeningQuestion listeningQuestion) {
+        return questionMapper.toQuestionResponse(listeningQuestion);
+    } else if (question instanceof ReadingQuestion readingQuestion) {
+      return questionMapper.toQuestionResponse(readingQuestion);
     } else {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }

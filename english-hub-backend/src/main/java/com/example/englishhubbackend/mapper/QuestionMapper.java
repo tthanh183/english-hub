@@ -15,6 +15,7 @@ public interface QuestionMapper {
   ListeningQuestion toListeningQuestion(QuestionCreateRequest questionCreateRequest);
 
   @Mapping(target = "questionType", source = "questionType.name")
+  @Mapping(target = "audioUrl", source = "audio.url")
   QuestionResponse toQuestionResponse(ListeningQuestion listeningQuestion);
 
   @Mapping(target = "questionType", ignore = true)
@@ -25,6 +26,8 @@ public interface QuestionMapper {
   @Mapping(target = "passage", source = "passage.content")
   QuestionResponse toQuestionResponse(ReadingQuestion readingQuestion);
 
+  @Mapping(target = "audio", ignore = true)
+  @Mapping(target = "imageUrl", ignore = true)
   void toListeningQuestion(QuestionUpdateRequest questionUpdateRequest, @MappingTarget ListeningQuestion listeningQuestion);
   @Mapping(target = "passage", ignore = true)
   void toReadingQuestion(QuestionUpdateRequest questionUpdateRequest, @MappingTarget ReadingQuestion readingQuestion);
