@@ -12,104 +12,95 @@ import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
-import { addQuestion, updateQuestion } from '@/services/exerciseService';
+import { addQuestions, updateQuestions } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 
 const OPTIONS_LETTERS = ['A', 'B', 'C', 'D'];
 
 type Part3DialogProps = {
   exerciseId?: string;
   questionTitle: string;
-  question?: QuestionResponse;
+  questions?: QuestionResponse[];
 };
 
 export default function Part3Dialog({
   exerciseId,
   questionTitle,
-  question,
+  questions,
 }: Part3DialogProps) {
-  const isEditMode = !!question;
+  const isEditMode = !!questions;
   const { courseId } = useParams();
   const queryClient = useQueryClient();
 
-  // Audio state
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(
-    question?.audioUrl || null
-  );
+  const [audioPreview, setAudioPreview] = useState<string | null>(null);
 
-  // Question 1
-  const [question1, setQuestion1] = useState(question?.question1Text || '');
-  const [options1, setOptions1] = useState<string[]>([
-    question?.question1OptionA || '',
-    question?.question1OptionB || '',
-    question?.question1OptionC || '',
-    question?.question1OptionD || '',
-  ]);
-  const [correctAnswer1, setCorrectAnswer1] = useState<number>(
-    question?.question1CorrectAnswer
-      ? letterToIndex(question.question1CorrectAnswer)
-      : 0
-  );
+  const [options1, setOptions1] = useState<string[]>(['', '', '', '']);
+  const [correctAnswer1Index, setCorrectAnswer1Index] = useState<number>(0);
 
-  // Question 2
-  const [question2, setQuestion2] = useState(question?.title || '');
-  const [options2, setOptions2] = useState<string[]>([
-    question?.choiceA || '',
-    question?.question2OptionB || '',
-    question?.question2OptionC || '',
-    question?.question2OptionD || '',
-  ]);
-  const [correctAnswer2, setCorrectAnswer2] = useState<number>(
-    question?.question2CorrectAnswer
-      ? letterToIndex(question.question2CorrectAnswer)
-      : 0
-  );
+  const [options2, setOptions2] = useState<string[]>(['', '', '', '']);
+  const [correctAnswer2Index, setCorrectAnswer2Index] = useState<number>(0);
 
-  // Question 3
-  const [question3, setQuestion3] = useState(question?.question3Text || '');
-  const [options3, setOptions3] = useState<string[]>([
-    question?.question3OptionA || '',
-    question?.question3OptionB || '',
-    question?.question3OptionC || '',
-    question?.question3OptionD || '',
-  ]);
-  const [correctAnswer3, setCorrectAnswer3] = useState<number>(
-    question?.question3CorrectAnswer
-      ? letterToIndex(question.question3CorrectAnswer)
-      : 0
-  );
+  const [options3, setOptions3] = useState<string[]>(['', '', '', '']);
+  const [correctAnswer3Index, setCorrectAnswer3Index] = useState<number>(0);
+
+  useEffect(() => {
+    if (isEditMode && questions?.length === 3) {
+      if (questions[0].audioUrl) setAudioPreview(questions[0].audioUrl);
+
+      setOptions1([
+        questions[0].choiceA || '',
+        questions[0].choiceB || '',
+        questions[0].choiceC || '',
+        questions[0].choiceD || '',
+      ]);
+      setCorrectAnswer1Index(letterToIndex(questions[0].correctAnswer));
+
+      setOptions2([
+        questions[1].choiceA || '',
+        questions[1].choiceB || '',
+        questions[1].choiceC || '',
+        questions[1].choiceD || '',
+      ]);
+      setCorrectAnswer2Index(letterToIndex(questions[1].correctAnswer));
+
+      setOptions3([
+        questions[2].choiceA || '',
+        questions[2].choiceB || '',
+        questions[2].choiceC || '',
+        questions[2].choiceD || '',
+      ]);
+      setCorrectAnswer3Index(letterToIndex(questions[2].correctAnswer));
+    }
+  }, [questions, isEditMode]);
 
   const saveMutation = useMutation({
-    mutationFn: (data: {
+    mutationFn: async (data: {
       courseId: string;
       exerciseId: string;
-      questionData: QuestionCreateRequest;
+      questionData: QuestionCreateRequest[];
     }) => {
-      if (isEditMode && question) {
-        return updateQuestion(
-          data.courseId,
-          data.exerciseId,
-          question.id,
-          data.questionData
-        );
+      if (isEditMode && questions) {
+        return handleUpdateQuestion(data);
       } else {
-        return addQuestion(data.courseId, data.exerciseId, data.questionData);
+        return handleAddQuestion(data);
       }
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['questions', variables.exerciseId],
       });
-      if (isEditMode) {
-        showSuccess('Question updated successfully');
-      } else {
-        showSuccess('Question added successfully');
-      }
+
+      showSuccess(
+        isEditMode
+          ? 'Question updated successfully'
+          : 'Question added successfully'
+      );
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -129,17 +120,14 @@ export default function Part3Dialog({
     setAudioFile(null);
     setAudioPreview(null);
 
-    setQuestion1('');
     setOptions1(['', '', '', '']);
-    setCorrectAnswer1(0);
+    setCorrectAnswer1Index(0);
 
-    setQuestion2('');
     setOptions2(['', '', '', '']);
-    setCorrectAnswer2(0);
+    setCorrectAnswer2Index(0);
 
-    setQuestion3('');
     setOptions3(['', '', '', '']);
-    setCorrectAnswer3(0);
+    setCorrectAnswer3Index(0);
   };
 
   const handleAudioChange = (file: File | null) => {
@@ -176,7 +164,7 @@ export default function Part3Dialog({
     setOptions3(newOptions);
   };
 
-  const handleSaveQuestion = () => {
+  const handleSaveQuestion = async () => {
     if (!questionTitle) {
       showError('Please enter a question title');
       return;
@@ -187,62 +175,68 @@ export default function Part3Dialog({
       return;
     }
 
-    if (!question1 || !question2 || !question3) {
-      showError('Please enter all question texts');
-      return;
+    if (isEditMode) {
+      if (audioFile) {
+        await deleteFileFromS3(questions[0].audioUrl!);
+      }
     }
 
-    // Check all options are filled for each question
-    if (options1.some(opt => !opt.trim())) {
-      showError('Please fill all options for Question 1');
-      return;
-    }
+    const audioUrl = await uploadFileToS3(audioFile!);
 
-    if (options2.some(opt => !opt.trim())) {
-      showError('Please fill all options for Question 2');
-      return;
-    }
-
-    if (options3.some(opt => !opt.trim())) {
-      showError('Please fill all options for Question 3');
-      return;
-    }
-
-    const questionData: QuestionCreateRequest = {
+    const question1: QuestionCreateRequest = {
       title: questionTitle,
       questionType: QuestionType.PART_3_CONVERSATIONS,
-      audio: audioFile,
+      audioUrl: audioUrl,
+      choiceA: options1[0],
+      choiceB: options1[1],
+      choiceC: options1[2],
+      choiceD: options1[3],
+      correctAnswer: indexToLetter(correctAnswer1Index),
+    };
 
-      // Question 1
-      question1Text: question1,
-      question1OptionA: options1[0],
-      question1OptionB: options1[1],
-      question1OptionC: options1[2],
-      question1OptionD: options1[3],
-      question1CorrectAnswer: indexToLetter(correctAnswer1),
+    const question2: QuestionCreateRequest = {
+      title: questionTitle,
+      questionType: QuestionType.PART_3_CONVERSATIONS,
+      audioUrl: audioUrl,
+      choiceA: options2[0],
+      choiceB: options2[1],
+      choiceC: options2[2],
+      choiceD: options2[3],
+      correctAnswer: indexToLetter(correctAnswer2Index),
+    };
 
-      // Question 2
-      question2Text: question2,
-      question2OptionA: options2[0],
-      question2OptionB: options2[1],
-      question2OptionC: options2[2],
-      question2OptionD: options2[3],
-      question2CorrectAnswer: indexToLetter(correctAnswer2),
-
-      // Question 3
-      question3Text: question3,
-      question3OptionA: options3[0],
-      question3OptionB: options3[1],
-      question3OptionC: options3[2],
-      question3OptionD: options3[3],
-      question3CorrectAnswer: indexToLetter(correctAnswer3),
+    const question3: QuestionCreateRequest = {
+      title: questionTitle,
+      questionType: QuestionType.PART_3_CONVERSATIONS,
+      audioUrl: audioUrl,
+      choiceA: options3[0],
+      choiceB: options3[1],
+      choiceC: options3[2],
+      choiceD: options3[3],
+      correctAnswer: indexToLetter(correctAnswer3Index),
     };
 
     saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
-      questionData,
+      questionData: [question1, question2, question3],
     });
+  };
+
+  const handleAddQuestion = async (data: {
+    courseId: string;
+    exerciseId: string;
+    questionData: QuestionCreateRequest[];
+  }) => {
+    return addQuestions(data.courseId, data.exerciseId, data.questionData);
+  };
+
+  const handleUpdateQuestion = async (data: {
+    courseId: string;
+    exerciseId: string;
+    questionData: QuestionCreateRequest[];
+  }) => {
+    return updateQuestions(data.courseId, data.exerciseId, data.questionData);
   };
 
   useEffect(() => {
@@ -255,17 +249,19 @@ export default function Part3Dialog({
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-6">
-        <MediaUploader
-          type="audio"
-          value={audioPreview}
-          onChange={handleAudioChange}
-          onClear={handleAudioClear}
-          label="Audio Conversation"
-        />
+      <div className="mb-10">
+        <div className="w-full max-w-md mx-auto">
+          <MediaUploader
+            type="audio"
+            value={audioPreview}
+            onChange={handleAudioChange}
+            onClear={handleAudioClear}
+            label="Audio File"
+            className="max-h-[250px]"
+          />
+        </div>
       </div>
 
-      {/* Question 1 */}
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="text-lg">Question 1</CardTitle>
@@ -273,41 +269,30 @@ export default function Part3Dialog({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="question1">Question Text</Label>
-              <Input
-                id="question1"
-                value={question1}
-                onChange={e => setQuestion1(e.target.value)}
-                placeholder="Enter question 1"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
               <Label>Answer Options</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                 {[0, 1, 2, 3].map(index => (
                   <div
                     key={index}
                     className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer1
+                      index === correctAnswer1Index
                         ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                         : ''
                     }`}
-                    onClick={() => setCorrectAnswer1(index)}
+                    onClick={() => setCorrectAnswer1Index(index)}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <RadioGroup
-                        value={correctAnswer1.toString()}
+                        value={correctAnswer1Index.toString()}
                         onValueChange={value => {
-                          setCorrectAnswer1(parseInt(value));
+                          setCorrectAnswer1Index(parseInt(value));
                         }}
                         className="flex"
                       >
                         <RadioGroupItem
                           value={index.toString()}
                           id={`q1-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer1}
+                          checked={index === correctAnswer1Index}
                         />
                       </RadioGroup>
                       <Label
@@ -315,7 +300,7 @@ export default function Part3Dialog({
                         className="flex items-center gap-2 font-medium cursor-pointer"
                       >
                         {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer1 && (
+                        {index === correctAnswer1Index && (
                           <span className="text-xs text-green-600 font-normal">
                             (Correct)
                           </span>
@@ -329,7 +314,7 @@ export default function Part3Dialog({
                       onChange={e => handleOption1Change(index, e.target.value)}
                       onClick={e => e.stopPropagation()}
                       className={
-                        index === correctAnswer1 ? 'border-green-500' : ''
+                        index === correctAnswer1Index ? 'border-green-500' : ''
                       }
                     />
                   </div>
@@ -340,7 +325,6 @@ export default function Part3Dialog({
         </CardContent>
       </Card>
 
-      {/* Question 2 */}
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="text-lg">Question 2</CardTitle>
@@ -348,41 +332,30 @@ export default function Part3Dialog({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="question2">Question Text</Label>
-              <Input
-                id="question2"
-                value={question2}
-                onChange={e => setQuestion2(e.target.value)}
-                placeholder="Enter question 2"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
               <Label>Answer Options</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                 {[0, 1, 2, 3].map(index => (
                   <div
                     key={index}
                     className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer2
+                      index === correctAnswer2Index
                         ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                         : ''
                     }`}
-                    onClick={() => setCorrectAnswer2(index)}
+                    onClick={() => setCorrectAnswer2Index(index)}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <RadioGroup
-                        value={correctAnswer2.toString()}
+                        value={correctAnswer2Index.toString()}
                         onValueChange={value => {
-                          setCorrectAnswer2(parseInt(value));
+                          setCorrectAnswer2Index(parseInt(value));
                         }}
                         className="flex"
                       >
                         <RadioGroupItem
                           value={index.toString()}
                           id={`q2-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer2}
+                          checked={index === correctAnswer2Index}
                         />
                       </RadioGroup>
                       <Label
@@ -390,7 +363,7 @@ export default function Part3Dialog({
                         className="flex items-center gap-2 font-medium cursor-pointer"
                       >
                         {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer2 && (
+                        {index === correctAnswer2Index && (
                           <span className="text-xs text-green-600 font-normal">
                             (Correct)
                           </span>
@@ -404,7 +377,7 @@ export default function Part3Dialog({
                       onChange={e => handleOption2Change(index, e.target.value)}
                       onClick={e => e.stopPropagation()}
                       className={
-                        index === correctAnswer2 ? 'border-green-500' : ''
+                        index === correctAnswer2Index ? 'border-green-500' : ''
                       }
                     />
                   </div>
@@ -415,7 +388,6 @@ export default function Part3Dialog({
         </CardContent>
       </Card>
 
-      {/* Question 3 */}
       <Card className="mt-6">
         <CardHeader>
           <CardTitle className="text-lg">Question 3</CardTitle>
@@ -423,41 +395,30 @@ export default function Part3Dialog({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="question3">Question Text</Label>
-              <Input
-                id="question3"
-                value={question3}
-                onChange={e => setQuestion3(e.target.value)}
-                placeholder="Enter question 3"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
               <Label>Answer Options</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                 {[0, 1, 2, 3].map(index => (
                   <div
                     key={index}
                     className={`border rounded-md p-4 transition-colors ${
-                      index === correctAnswer3
+                      index === correctAnswer3Index
                         ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                         : ''
                     }`}
-                    onClick={() => setCorrectAnswer3(index)}
+                    onClick={() => setCorrectAnswer3Index(index)}
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <RadioGroup
-                        value={correctAnswer3.toString()}
+                        value={correctAnswer3Index.toString()}
                         onValueChange={value => {
-                          setCorrectAnswer3(parseInt(value));
+                          setCorrectAnswer3Index(parseInt(value));
                         }}
                         className="flex"
                       >
                         <RadioGroupItem
                           value={index.toString()}
                           id={`q3-option-${OPTIONS_LETTERS[index]}`}
-                          checked={index === correctAnswer3}
+                          checked={index === correctAnswer3Index}
                         />
                       </RadioGroup>
                       <Label
@@ -465,7 +426,7 @@ export default function Part3Dialog({
                         className="flex items-center gap-2 font-medium cursor-pointer"
                       >
                         {OPTIONS_LETTERS[index]}
-                        {index === correctAnswer3 && (
+                        {index === correctAnswer3Index && (
                           <span className="text-xs text-green-600 font-normal">
                             (Correct)
                           </span>
@@ -479,7 +440,7 @@ export default function Part3Dialog({
                       onChange={e => handleOption3Change(index, e.target.value)}
                       onClick={e => e.stopPropagation()}
                       className={
-                        index === correctAnswer3 ? 'border-green-500' : ''
+                        index === correctAnswer3Index ? 'border-green-500' : ''
                       }
                     />
                   </div>
