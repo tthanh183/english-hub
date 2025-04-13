@@ -3,7 +3,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useState, useEffect } from 'react';
 import MediaUploader from './MediaUploader';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '../Spinner';
 import { Save } from 'lucide-react';
 import { isAxiosError } from 'axios';
