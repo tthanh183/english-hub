@@ -80,7 +80,7 @@ export async function updateQuestion(
   exerciseId: string,
   questionId: string,
   question: QuestionUpdateRequest
-): Promise<QuestionResponse> {
+): Promise<QuestionResponse> {  
   const formData = new FormData();
   formData.append('title', question.title);
   formData.append('questionType', question.questionType);
@@ -97,7 +97,6 @@ export async function updateQuestion(
     formData.append('choiceD', question.choiceD);
   }
   formData.append('correctAnswer', question.correctAnswer);
-  console.log(formData);
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
     formData

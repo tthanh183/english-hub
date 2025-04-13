@@ -65,6 +65,13 @@ export default function QuestionDialog({
     }
   }, [question]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle('');
+      setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
+    }
+  }, [isOpen]);
+
   const getPartDescription = (part: string): string => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
