@@ -100,25 +100,9 @@ export async function updateQuestion(
   questionId: string,
   question: QuestionUpdateRequest
 ): Promise<QuestionResponse> {
-  const formData = new FormData();
-  formData.append('title', question.title);
-  formData.append('questionType', question.questionType);
-  if (question.image) {
-    formData.append('image', question.image);
-  }
-  if (question.audio) {
-    formData.append('audio', question.audio);
-  }
-  formData.append('choiceA', question.choiceA);
-  formData.append('choiceB', question.choiceB);
-  formData.append('choiceC', question.choiceC);
-  if (question.choiceD) {
-    formData.append('choiceD', question.choiceD);
-  }
-  formData.append('correctAnswer', question.correctAnswer);
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
-    formData
+    question
   );
   return response.data.result;
 }

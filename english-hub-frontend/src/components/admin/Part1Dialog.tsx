@@ -18,7 +18,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { PART1_OPTIONS } from '@/constants/options';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
-import { uploadFileToS3 } from '@/services/s3Service';
+import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 
 type Part1QuestionContentProps = {
   exerciseId?: string;
@@ -170,6 +170,15 @@ export default function Part1QuestionContent({
     if (!isEditMode && !audioFile) {
       showError('Please upload an audio file');
       return;
+    }
+
+    if (isEditMode) {
+      if (imageFile) {
+        deleteFileFromS3(question.imageUrl!);
+      }
+      if (audioFile) {
+        deleteFileFromS3(question.audioUrl!);
+      }
     }
 
     const audioUrl = await uploadFileToS3(audioFile!);
