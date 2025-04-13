@@ -100,6 +100,8 @@ export async function updateQuestion(
   questionId: string,
   question: QuestionUpdateRequest
 ): Promise<QuestionResponse> {
+  console.log('updateQuestion', question);
+  
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
     question

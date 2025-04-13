@@ -13,11 +13,13 @@ import {
   QuestionCreateRequest,
   QuestionResponse,
   QuestionType,
+  QuestionUpdateRequest,
 } from '@/types/questionType';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { PART2_OPTIONS } from '@/constants/options';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
+import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 
 type Part2DialogProps = {
   exerciseId?: string;
@@ -34,7 +36,7 @@ export default function Part2Dialog({
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(
-    question?.audioUrl || null 
+    question?.audioUrl || null
   );
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(
@@ -97,10 +99,14 @@ export default function Part2Dialog({
           data.courseId,
           data.exerciseId,
           question.id,
-          data.questionData
+          data.questionData as QuestionUpdateRequest
         );
       } else {
-        return addQuestion(data.courseId, data.exerciseId, data.questionData);
+        return addQuestion(
+          data.courseId,
+          data.exerciseId,
+          data.questionData as QuestionCreateRequest
+        );
       }
     },
     onSuccess: (_, variables) => {
@@ -157,24 +163,27 @@ export default function Part2Dialog({
     setOptions(newOptions);
   };
 
-  const handleSaveQuestion = () => {
+  const handleSaveQuestion = async () => {
     if (!isEditMode && !audioFile) {
       showError('Please upload an audio file');
       return;
     }
 
+    if (isEditMode && audioFile) {
+      await deleteFileFromS3(question.audioUrl!);
+    }
+
+    const audioUrl = await uploadFileToS3(audioFile!);
+
     const questionData: QuestionCreateRequest = {
       title: questionTitle,
       questionType: QuestionType.PART_2_QUESTION_RESPONSES,
+      audioUrl: audioUrl,
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
       correctAnswer: indexToLetter(correctAnswerIndex),
     };
-
-    if (audioFile) {
-      questionData.audio = audioFile;
-    }
 
     saveMutation.mutate({
       courseId: courseId || '',

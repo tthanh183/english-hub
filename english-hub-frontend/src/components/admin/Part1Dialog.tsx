@@ -7,6 +7,7 @@ import {
   QuestionCreateRequest,
   QuestionResponse,
   QuestionType,
+  QuestionUpdateRequest,
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
@@ -79,10 +80,14 @@ export default function Part1QuestionContent({
           data.courseId,
           data.exerciseId,
           question.id,
-          data.questionData
+          data.questionData as QuestionUpdateRequest
         );
       } else {
-        return addQuestion(data.courseId, data.exerciseId, data.questionData);
+        return addQuestion(
+          data.courseId,
+          data.exerciseId,
+          data.questionData as QuestionCreateRequest
+        );
       }
     },
     onSuccess: (_, variables) => {
@@ -174,10 +179,10 @@ export default function Part1QuestionContent({
 
     if (isEditMode) {
       if (imageFile) {
-        deleteFileFromS3(question.imageUrl!);
+        await deleteFileFromS3(question.imageUrl!);
       }
       if (audioFile) {
-        deleteFileFromS3(question.audioUrl!);
+        await deleteFileFromS3(question.audioUrl!);
       }
     }
 

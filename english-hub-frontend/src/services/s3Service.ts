@@ -15,7 +15,7 @@ export async function uploadFileToS3(file: File): Promise<string> {
 
 export async function deleteFileFromS3(fileUrl: string): Promise<string> {
   const response = await axiosInstance.delete('/s3/delete', {
-    data: { fileName: fileUrl.substring(fileUrl.indexOf('/') + 1) },
+    data: { fileName: fileUrl.substring(fileUrl.lastIndexOf('/') + 1) },
   });
 
   return response.data.message;
