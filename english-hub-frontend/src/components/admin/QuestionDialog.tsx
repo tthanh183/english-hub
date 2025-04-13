@@ -65,18 +65,11 @@ export default function QuestionDialog({
     }
   }, [question]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setTitle('');
-      setSelectedPart(QuestionType.PART_1_PHOTOGRAPHS);
-    }
-  }, [isOpen]);
-
   const getPartDescription = (part: string): string => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
         return 'Upload a photograph, audio file, and create four answer options';
-      case QuestionType.PART_2_QUESTIONS_RESPONSES:
+      case QuestionType.PART_2_QUESTION_RESPONSES:
         return 'Upload an audio file with a question and create three answer options';
       case QuestionType.PART_3_CONVERSATIONS:
         return 'Upload an audio conversation and create multiple questions with options';
@@ -104,8 +97,8 @@ export default function QuestionDialog({
           />
         );
 
-      case QuestionType.PART_2_QUESTIONS_RESPONSES:
-        return <Part2Dialog exerciseId={exerciseId} questionTitle={title} />;
+      case QuestionType.PART_2_QUESTION_RESPONSES:
+        return <Part2Dialog exerciseId={exerciseId} questionTitle={title} question={question} />;
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (

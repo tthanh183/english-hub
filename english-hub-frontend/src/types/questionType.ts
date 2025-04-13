@@ -1,6 +1,6 @@
 export enum QuestionType {
   PART_1_PHOTOGRAPHS = 'PART_1_PHOTOGRAPHS',
-  PART_2_QUESTIONS_RESPONSES = 'PART_2_QUESTIONS_RESPONSES',
+  PART_2_QUESTION_RESPONSES = 'PART_2_QUESTION_RESPONSES',
   PART_3_CONVERSATIONS = 'PART_3_CONVERSATIONS',
   PART_4_TALKS = 'PART_4_TALKS',
   PART_5_INCOMPLETE_SENTENCES = 'PART_5_INCOMPLETE_SENTENCES',
@@ -10,7 +10,7 @@ export enum QuestionType {
 
 export const QUESTION_TYPE_DISPLAY = {
   [QuestionType.PART_1_PHOTOGRAPHS]: 'Part 1: Photographs',
-  [QuestionType.PART_2_QUESTIONS_RESPONSES]: 'Part 2: Questions & Responses',
+  [QuestionType.PART_2_QUESTION_RESPONSES]: 'Part 2: Questions & Responses',
   [QuestionType.PART_3_CONVERSATIONS]: 'Part 3: Conversations',
   [QuestionType.PART_4_TALKS]: 'Part 4: Talks',
   [QuestionType.PART_5_INCOMPLETE_SENTENCES]: 'Part 5: Incomplete Sentences',

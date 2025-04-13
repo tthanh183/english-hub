@@ -32,9 +32,9 @@ export default function Part2Dialog({
 }: Part2DialogProps) {
   const isEditMode = !!question;
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    question?.imageUrl || null
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioPreview, setAudioPreview] = useState<string | null>(
+    question?.audioUrl || null 
   );
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(
@@ -57,10 +57,10 @@ export default function Part2Dialog({
   useEffect(() => {
     if (
       question &&
-      question.questionType === QuestionType.PART_2_QUESTIONS_RESPONSES
+      question.questionType === QuestionType.PART_2_QUESTION_RESPONSES
     ) {
-      if (question.imageUrl) {
-        setImagePreview(question.imageUrl);
+      if (question.audioUrl) {
+        setAudioPreview(question.audioUrl);
       }
 
       setOptions([
@@ -80,11 +80,11 @@ export default function Part2Dialog({
 
   useEffect(() => {
     return () => {
-      if (imagePreview && !imagePreview.startsWith('http')) {
-        URL.revokeObjectURL(imagePreview);
+      if (audioPreview && !audioPreview.startsWith('http')) {
+        URL.revokeObjectURL(audioPreview);
       }
     };
-  }, [imagePreview]);
+  }, [audioPreview]);
 
   const saveMutation = useMutation({
     mutationFn: (data: {
@@ -126,29 +126,29 @@ export default function Part2Dialog({
   });
 
   const resetContentState = () => {
-    if (imagePreview && !imagePreview.startsWith('http')) {
-      URL.revokeObjectURL(imagePreview);
+    if (audioPreview && !audioPreview.startsWith('http')) {
+      URL.revokeObjectURL(audioPreview);
     }
-    setImageFile(null);
-    setImagePreview(null);
+    setAudioFile(null);
+    setAudioPreview(null);
     setOptions(['', '', '']);
     setCorrectAnswerIndex(0);
   };
 
-  const handleImageChange = (file: File | null) => {
-    setImageFile(file);
+  const handleAudioChange = (file: File | null) => {
+    setAudioFile(file);
     if (file) {
       const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+      setAudioPreview(previewUrl);
     }
   };
 
-  const handleImageClear = () => {
-    if (imagePreview && !imagePreview.startsWith('http')) {
-      URL.revokeObjectURL(imagePreview);
+  const handleAudioClear = () => {
+    if (audioPreview && !audioPreview.startsWith('http')) {
+      URL.revokeObjectURL(audioPreview);
     }
-    setImageFile(null);
-    setImagePreview(null);
+    setAudioFile(null);
+    setAudioPreview(null);
   };
 
   const handleOptionChange = (index: number, value: string) => {
@@ -158,27 +158,22 @@ export default function Part2Dialog({
   };
 
   const handleSaveQuestion = () => {
-    if (!isEditMode && !imageFile) {
-      showError('Please upload an image');
-      return;
-    }
-
-    if (options.some(opt => !opt.trim())) {
-      showError('Please fill in all answer options');
+    if (!isEditMode && !audioFile) {
+      showError('Please upload an audio file');
       return;
     }
 
     const questionData: QuestionCreateRequest = {
       title: questionTitle,
-      questionType: QuestionType.PART_2_QUESTIONS_RESPONSES,
+      questionType: QuestionType.PART_2_QUESTION_RESPONSES,
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
       correctAnswer: indexToLetter(correctAnswerIndex),
     };
 
-    if (imageFile) {
-      questionData.image = imageFile;
+    if (audioFile) {
+      questionData.audio = audioFile;
     }
 
     saveMutation.mutate({
@@ -193,11 +188,11 @@ export default function Part2Dialog({
       <div className="mb-6">
         <div className="w-full max-w-md mx-auto">
           <MediaUploader
-            type="image"
-            value={imagePreview}
-            onChange={handleImageChange}
-            onClear={handleImageClear}
-            label="Photograph"
+            type="audio"
+            value={audioPreview}
+            onChange={handleAudioChange}
+            onClear={handleAudioClear}
+            label="Audio File"
             className="max-h-[250px]"
           />
         </div>
@@ -268,7 +263,7 @@ export default function Part2Dialog({
           Reset
         </Button>
         <Button
-          className="gap-1 min-w-[120px]"
+          className="gap-1 w-[150px]"
           onClick={handleSaveQuestion}
           disabled={saveMutation.isPending}
         >
