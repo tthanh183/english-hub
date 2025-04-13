@@ -40,6 +40,10 @@ export default function Part3Dialog({
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
 
+  const [title1, setTitle1] = useState('');
+  const [title2, setTitle2] = useState('');
+  const [title3, setTitle3] = useState('');
+
   const [options1, setOptions1] = useState<string[]>(['', '', '', '']);
   const [correctAnswer1Index, setCorrectAnswer1Index] = useState<number>(0);
 
@@ -262,12 +266,16 @@ export default function Part3Dialog({
         </div>
       </div>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-lg">Question 1</CardTitle>
-        </CardHeader>
+      <Card className="mt-6">        
         <CardContent>
           <div className="space-y-4">
+            <Label htmlFor="q1-title">Title</Label>
+            <Input
+              id="q1-title"
+              value={title1}
+              onChange={e => setTitle1(e.target.value)}
+              placeholder="Enter title"
+            />
             <div>
               <Label>Answer Options</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
@@ -331,6 +339,13 @@ export default function Part3Dialog({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            <Label htmlFor="q1-title">Title</Label>
+            <Input
+              id="q1-title"
+              value={title1}
+              onChange={e => setTitle1(e.target.value)}
+              placeholder="Enter title"
+            />
             <div>
               <Label>Answer Options</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">

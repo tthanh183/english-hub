@@ -1,4 +1,3 @@
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -11,27 +10,23 @@ import {
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Input } from '@/components/ui/input';
 import { addQuestion, updateQuestion } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
-import { PART1_OPTIONS } from '@/constants/options';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
+import QuestionCard from './QuestionCard';
 
-type Part1QuestionContentProps = {
+type Part1DialogProps = {
   exerciseId?: string;
-  questionTitle: string;
   question?: QuestionResponse;
 };
 
-export default function Part1QuestionContent({
+export default function Part1Dialog({
   exerciseId,
-  questionTitle,
   question,
-}: Part1QuestionContentProps) {
+}: Part1DialogProps) {
   const isEditMode = !!question;
 
   const [imageFile, setImageFile] = useState<File | null>();
@@ -46,9 +41,11 @@ export default function Part1QuestionContent({
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(0);
   const [options, setOptions] = useState<string[]>(['', '', '', '']);
+  const [title, setTitle] = useState<string>('');
 
   useEffect(() => {
     if (question && question.questionType === QuestionType.PART_1_PHOTOGRAPHS) {
+      setTitle(question.title || '');
       if (question.imageUrl) setImagePreview(question.imageUrl);
       if (question.audioUrl) setAudioPreview(question.audioUrl);
 
@@ -121,6 +118,7 @@ export default function Part1QuestionContent({
     setAudioPreview(null);
     setOptions(['', '', '', '']);
     setCorrectAnswerIndex(0);
+    setTitle(''); // Reset title when content is reset
   };
 
   const handleImageChange = (file: File | null) => {
@@ -155,14 +153,8 @@ export default function Part1QuestionContent({
     setAudioPreview(null);
   };
 
-  const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
-
   const handleSaveQuestion = async () => {
-    if (!questionTitle) {
+    if (!title) {
       showError('Please enter a question title');
       return;
     }
@@ -190,10 +182,10 @@ export default function Part1QuestionContent({
     const imageUrl = await uploadFileToS3(imageFile!);
 
     const questionData: QuestionCreateRequest = {
-      title: questionTitle,
+      title,
       questionType: QuestionType.PART_1_PHOTOGRAPHS,
-      audioUrl: audioUrl,
-      imageUrl: imageUrl,
+      audioUrl,
+      imageUrl,
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],
@@ -240,59 +232,14 @@ export default function Part1QuestionContent({
         />
       </div>
 
-      <div className="mt-6">
-        <Label>Answer Options</Label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-          {PART1_OPTIONS.map(({ letter, index }) => (
-            <div
-              key={letter}
-              className={`border rounded-md p-4 transition-colors ${
-                index === correctAnswerIndex
-                  ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                  : ''
-              }`}
-              onClick={() => setCorrectAnswerIndex(index)}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <RadioGroup
-                  value={correctAnswerIndex.toString()}
-                  onValueChange={value => {
-                    setCorrectAnswerIndex(parseInt(value));
-                  }}
-                  className="flex"
-                >
-                  <RadioGroupItem
-                    value={index.toString()}
-                    id={`option-${letter}`}
-                    checked={index === correctAnswerIndex}
-                  />
-                </RadioGroup>
-                <Label
-                  htmlFor={`option-${letter}`}
-                  className="flex items-center gap-2 font-medium cursor-pointer"
-                >
-                  {letter}
-                  {index === correctAnswerIndex && (
-                    <span className="text-xs text-green-600 font-normal">
-                      (Correct)
-                    </span>
-                  )}
-                </Label>
-              </div>
-              <Input
-                id={`option-${letter}-text`}
-                placeholder={`Enter option ${letter}`}
-                value={options[index]}
-                onChange={e => handleOptionChange(index, e.target.value)}
-                onClick={e => e.stopPropagation()}
-                className={
-                  index === correctAnswerIndex ? 'border-green-500' : ''
-                }
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <QuestionCard
+        title={title}
+        setTitle={setTitle}
+        options={options}
+        setOptions={setOptions}
+        correctAnswerIndex={correctAnswerIndex}
+        setCorrectAnswerIndex={setCorrectAnswerIndex}
+      />
 
       <div className="flex justify-end gap-3 mt-8">
         <Button variant="outline" onClick={() => resetContentState()}>
