@@ -18,6 +18,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { PART1_OPTIONS } from '@/constants/options';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
+import { uploadFileToS3 } from '@/services/s3Service';
 
 type Part1QuestionContentProps = {
   exerciseId?: string;
@@ -155,7 +156,7 @@ export default function Part1QuestionContent({
     setOptions(newOptions);
   };
 
-  const handleSaveQuestion = () => {
+  const handleSaveQuestion = async () => {
     if (!questionTitle) {
       showError('Please enter a question title');
       return;
@@ -171,11 +172,14 @@ export default function Part1QuestionContent({
       return;
     }
 
+    const audioUrl = await uploadFileToS3(audioFile!);
+    const imageUrl = await uploadFileToS3(imageFile!);
+
     const questionData: QuestionCreateRequest = {
       title: questionTitle,
       questionType: QuestionType.PART_1_PHOTOGRAPHS,
-      audio: audioFile,
-      image: imageFile,
+      audioUrl: audioUrl,
+      imageUrl: imageUrl,
       choiceA: options[0],
       choiceB: options[1],
       choiceC: options[2],

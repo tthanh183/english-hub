@@ -21,8 +21,8 @@ export const QUESTION_TYPE_DISPLAY = {
 export type QuestionCreateRequest = {
   title: string;
   questionType: QuestionType;
-  audio?: File | null;
-  image?: File | null;
+  audioUrl: string;
+  imageUrl: string;
   passage?: string;
   choiceA: string;
   choiceB: string;

@@ -51,36 +51,55 @@ export async function addQuestion(
   exerciseId: string,
   question: QuestionCreateRequest
 ): Promise<QuestionResponse> {
-  const formData = new FormData();
-  formData.append('title', question.title);
-  formData.append('questionType', question.questionType);
-  if (question.image) {
-    formData.append('image', question.image);
-  }
-  if (question.audio) {
-    formData.append('audio', question.audio);
-  }
-  formData.append('choiceA', question.choiceA);
-  formData.append('choiceB', question.choiceB);
-  formData.append('choiceC', question.choiceC);
-  if (question.choiceD) {
-    formData.append('choiceD', question.choiceD);
-  }
-  formData.append('correctAnswer', question.correctAnswer);
-
   const response = await axiosInstance.post(
-    `/courses/${courseId}/exercises/${exerciseId}/questions`,
-    formData
+    `/courses/${courseId}/exercises/${exerciseId}/question`,
+    question
   );
   return response.data.result;
 }
+
+// export async function addQuestions(
+//   courseId: string,
+//   exerciseId: string,
+//   questions: QuestionCreateRequest[]
+// ): Promise<QuestionResponse[]> {
+//   const formData = new FormData();
+
+//   questions.forEach((question, index) => {
+//     formData.append(`questions[${index}].title`, question.title);
+//     formData.append(`questions[${index}].questionType`, question.questionType);
+//     formData.append(`questions[${index}].choiceA`, question.choiceA);
+//     formData.append(`questions[${index}].choiceB`, question.choiceB);
+//     formData.append(`questions[${index}].choiceC`, question.choiceC);
+//     formData.append(`questions[${index}].choiceD`, question.choiceD ?? '');
+//     formData.append(
+//       `questions[${index}].correctAnswer`,
+//       question.correctAnswer
+//     );
+//     if (question.audio) {
+//       formData.append(`questions[${index}].audio`, question.audio);
+//     }
+//     if (question.image) {
+//       formData.append(`questions[${index}].image`, question.image);
+//     }
+//     if (question.passage) {
+//       formData.append(`questions[${index}].passage`, question.passage);
+//     }
+//   });
+
+//   const response = await axiosInstance.post(
+//     `/courses/${courseId}/exercises/${exerciseId}/questions`,
+//     formData
+//   );
+//   return response.data.result;
+// }
 
 export async function updateQuestion(
   courseId: string,
   exerciseId: string,
   questionId: string,
   question: QuestionUpdateRequest
-): Promise<QuestionResponse> {  
+): Promise<QuestionResponse> {
   const formData = new FormData();
   formData.append('title', question.title);
   formData.append('questionType', question.questionType);

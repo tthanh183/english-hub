@@ -33,6 +33,7 @@ import {
 } from '@/types/questionType';
 import Part1Dialog from '@/components/admin/Part1Dialog';
 import Part2Dialog from './Part2Dialog';
+import Part3Dialog from './Part3Dialog';
 
 type QuestionDialogProps = {
   isOpen: boolean;
@@ -115,177 +116,11 @@ export default function QuestionDialog({
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Audio Conversation</Label>
-                <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 text-center aspect-square max-h-60">
-                  <Mic className="h-8 w-8 text-gray-400" />
-                  <div className="text-sm text-gray-500">
-                    Drag and drop an audio file, or click to browse
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Upload Audio
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="p3-transcript">Conversation Transcript</Label>
-                <Textarea
-                  id="p3-transcript"
-                  placeholder="Enter the transcript of the conversation"
-                  rows={10}
-                  className="h-full min-h-[200px]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <Label className="text-base font-medium">Questions</Label>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Plus className="h-4 w-4" /> Add Question
-                </Button>
-              </div>
-
-              {/* Question 1 */}
-              <Card className="mb-4">
-                <CardHeader className="py-3 px-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">Question 1</CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive"
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="py-3 px-4">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="p3-q1">Question Text</Label>
-                      <Input id="p3-q1" placeholder="Enter the question" />
-                    </div>
-
-                    <div>
-                      <Label className="mb-2 block">Answer Options</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[1, 2, 3, 4].map(num => (
-                          <div
-                            key={num}
-                            className={`border rounded-md p-3 ${
-                              num === 1
-                                ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                                : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <RadioGroup
-                                defaultValue="q1-option1"
-                                className="flex"
-                              >
-                                <RadioGroupItem
-                                  value={`q1-option${num}`}
-                                  id={`q1-option${num}`}
-                                  checked={num === 1}
-                                />
-                              </RadioGroup>
-                              <Label
-                                htmlFor={`q1-option${num}`}
-                                className="flex items-center gap-2"
-                              >
-                                Option {String.fromCharCode(64 + num)}
-                                {num === 1 && (
-                                  <span className="text-xs text-green-600 font-normal">
-                                    (Correct)
-                                  </span>
-                                )}
-                              </Label>
-                            </div>
-                            <Input
-                              id={`q1-option${num}-text`}
-                              placeholder={`Enter option ${num}`}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Question 2 */}
-              <Card>
-                <CardHeader className="py-3 px-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">Question 2</CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive"
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="py-3 px-4">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="p3-q2">Question Text</Label>
-                      <Input id="p3-q2" placeholder="Enter the question" />
-                    </div>
-
-                    <div>
-                      <Label className="mb-2 block">Answer Options</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[1, 2, 3, 4].map(num => (
-                          <div
-                            key={num}
-                            className={`border rounded-md p-3 ${
-                              num === 1
-                                ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                                : ''
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <RadioGroup
-                                defaultValue="q2-option1"
-                                className="flex"
-                              >
-                                <RadioGroupItem
-                                  value={`q2-option${num}`}
-                                  id={`q2-option${num}`}
-                                  checked={num === 1}
-                                />
-                              </RadioGroup>
-                              <Label
-                                htmlFor={`q2-option${num}`}
-                                className="flex items-center gap-2"
-                              >
-                                Option {String.fromCharCode(64 + num)}
-                                {num === 1 && (
-                                  <span className="text-xs text-green-600 font-normal">
-                                    (Correct)
-                                  </span>
-                                )}
-                              </Label>
-                            </div>
-                            <Input
-                              id={`q2-option${num}-text`}
-                              placeholder={`Enter option ${num}`}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+          <Part3Dialog
+            exerciseId={exerciseId}
+            questionTitle={title}
+            question={question}
+          />
         );
 
       case QuestionType.PART_4_TALKS:
