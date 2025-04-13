@@ -2,8 +2,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '../ui/input';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-
-const OPTIONS_LETTERS = ['A', 'B', 'C', 'D'];
+import {
+  PART1_OPTIONS,
+  PART2_OPTIONS,
+  PART3_OPTIONS,
+  PART4_OPTIONS,
+} from '@/constants/options';
 
 type QuestionCardProps = {
   title: string;
@@ -12,6 +16,14 @@ type QuestionCardProps = {
   setOptions: (options: string[]) => void;
   correctAnswerIndex: number;
   setCorrectAnswerIndex: (index: number) => void;
+  part: 'part1' | 'part2' | 'part3' | 'part4';
+};
+
+const PART_OPTIONS = {
+  part1: PART1_OPTIONS,
+  part2: PART2_OPTIONS,
+  part3: PART3_OPTIONS,
+  part4: PART4_OPTIONS,
 };
 
 export default function QuestionCard({
@@ -21,12 +33,15 @@ export default function QuestionCard({
   setOptions,
   correctAnswerIndex,
   setCorrectAnswerIndex,
+  part,
 }: QuestionCardProps) {
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
     newOptions[index] = value;
     setOptions(newOptions);
   };
+
+  const optionsList = PART_OPTIONS[part];
 
   return (
     <Card className="mt-6">
@@ -43,9 +58,9 @@ export default function QuestionCard({
           <div>
             <Label>Answer Options</Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-              {[0, 1, 2, 3].map(index => (
+              {optionsList.map(({ letter, index }) => (
                 <div
-                  key={index}
+                  key={letter}
                   className={`border rounded-md p-4 transition-colors ${
                     index === correctAnswerIndex
                       ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
@@ -63,15 +78,15 @@ export default function QuestionCard({
                     >
                       <RadioGroupItem
                         value={index.toString()}
-                        id={`q1-option-${OPTIONS_LETTERS[index]}`}
+                        id={`option-${letter}`}
                         checked={index === correctAnswerIndex}
                       />
                     </RadioGroup>
                     <Label
-                      htmlFor={`q1-option-${OPTIONS_LETTERS[index]}`}
+                      htmlFor={`option-${letter}`}
                       className="flex items-center gap-2 font-medium cursor-pointer"
                     >
-                      {OPTIONS_LETTERS[index]}
+                      {letter}
                       {index === correctAnswerIndex && (
                         <span className="text-xs text-green-600 font-normal">
                           (Correct)
@@ -80,8 +95,8 @@ export default function QuestionCard({
                     </Label>
                   </div>
                   <Input
-                    id={`q1-option-${OPTIONS_LETTERS[index]}-text`}
-                    placeholder={`Enter option ${OPTIONS_LETTERS[index]}`}
+                    id={`option-${letter}-text`}
+                    placeholder={`Enter option ${letter}`}
                     value={options[index]}
                     onChange={e => handleOptionChange(index, e.target.value)}
                     onClick={e => e.stopPropagation()}

@@ -118,7 +118,7 @@ export default function Part1Dialog({
     setAudioPreview(null);
     setOptions(['', '', '', '']);
     setCorrectAnswerIndex(0);
-    setTitle(''); // Reset title when content is reset
+    setTitle(''); 
   };
 
   const handleImageChange = (file: File | null) => {
@@ -239,6 +239,7 @@ export default function Part1Dialog({
         setOptions={setOptions}
         correctAnswerIndex={correctAnswerIndex}
         setCorrectAnswerIndex={setCorrectAnswerIndex}
+        part='part1'
       />
 
       <div className="flex justify-end gap-3 mt-8">
