@@ -85,18 +85,6 @@ export async function addQuestions(
   return response.data.result;
 }
 
-export async function updateQuestions(
-  courseId: string,
-  exerciseId: string,
-  questions: QuestionUpdateRequest[]
-): Promise<QuestionResponse[]> {
-  const response = await axiosInstance.put(
-    `/courses/${courseId}/exercises/${exerciseId}/questions`,
-    questions
-  );
-  return response.data.result;
-}
-
 export async function getQuestionsFromExercise(
   courseId: string,
   exerciseId: string

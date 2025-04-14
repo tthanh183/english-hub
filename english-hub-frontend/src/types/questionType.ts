@@ -56,4 +56,5 @@ export type QuestionResponse = {
   choiceC?: string;
   choiceD?: string;
   correctAnswer: string;
+  groupId: string;
 };

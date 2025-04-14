@@ -1,15 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   QuestionCreateRequest,
   QuestionResponse,
   QuestionType,
+  QuestionUpdateRequest,
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { addQuestions, updateQuestions } from '@/services/exerciseService';
+import { addQuestions, updateQuestion } from '@/services/exerciseService';
+import { getAllQuestionByGroupId } from '@/services/questionService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
@@ -19,21 +21,20 @@ import QuestionCard from './QuestionCard';
 
 type Part3DialogProps = {
   exerciseId?: string;
-  questionTitle: string;
-  questions?: QuestionResponse[];
+  question?: QuestionResponse;
 };
 
 export default function Part3Dialog({
   exerciseId,
-  questionTitle,
-  questions,
+  question,
 }: Part3DialogProps) {
-  const isEditMode = !!questions;
+  const isEditMode = !!question;
   const { courseId } = useParams();
   const queryClient = useQueryClient();
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   const [title1, setTitle1] = useState('');
   const [title2, setTitle2] = useState('');
@@ -49,34 +50,71 @@ export default function Part3Dialog({
   const [correctAnswer3Index, setCorrectAnswer3Index] = useState<number>(0);
 
   useEffect(() => {
-    if (isEditMode && questions?.length === 3) {
-      if (questions[0].audioUrl) setAudioPreview(questions[0].audioUrl);
+    if (isEditMode && question?.groupId) {
+      console.log('Group ID:', question.groupId);
+      
+      setGroupId(question.groupId);
+    }
+  }, [isEditMode, question]);
+
+  const groupQuestionsQuery = useQuery({
+    queryKey: ['groupQuestions', groupId],
+    queryFn: async () => {
+      if (!isEditMode || !groupId || !exerciseId || !courseId) return null;
+      return getAllQuestionByGroupId(groupId);
+    },
+    enabled: !!isEditMode && !!groupId && !!exerciseId && !!courseId,
+  });
+
+  useEffect(() => {
+    if (
+      isEditMode &&
+      groupQuestionsQuery.data &&
+      groupQuestionsQuery.data.length === 3
+    ) {
+      const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
+        (a.title || '').localeCompare(b.title || '')
+      );
+
+      if (sortedQuestions[0].audioUrl) {
+        setAudioPreview(sortedQuestions[0].audioUrl);
+      }
+
+      setTitle1(sortedQuestions[0].title || '');
+      setTitle2(sortedQuestions[1].title || '');
+      setTitle3(sortedQuestions[2].title || '');
 
       setOptions1([
-        questions[0].choiceA || '',
-        questions[0].choiceB || '',
-        questions[0].choiceC || '',
-        questions[0].choiceD || '',
+        sortedQuestions[0].choiceA || '',
+        sortedQuestions[0].choiceB || '',
+        sortedQuestions[0].choiceC || '',
+        sortedQuestions[0].choiceD || '',
       ]);
-      setCorrectAnswer1Index(letterToIndex(questions[0].correctAnswer));
+      if (sortedQuestions[0].correctAnswer) {
+        setCorrectAnswer1Index(letterToIndex(sortedQuestions[0].correctAnswer));
+      }
 
       setOptions2([
-        questions[1].choiceA || '',
-        questions[1].choiceB || '',
-        questions[1].choiceC || '',
-        questions[1].choiceD || '',
+        sortedQuestions[1].choiceA || '',
+        sortedQuestions[1].choiceB || '',
+        sortedQuestions[1].choiceC || '',
+        sortedQuestions[1].choiceD || '',
       ]);
-      setCorrectAnswer2Index(letterToIndex(questions[1].correctAnswer));
+      if (sortedQuestions[1].correctAnswer) {
+        setCorrectAnswer2Index(letterToIndex(sortedQuestions[1].correctAnswer));
+      }
 
       setOptions3([
-        questions[2].choiceA || '',
-        questions[2].choiceB || '',
-        questions[2].choiceC || '',
-        questions[2].choiceD || '',
+        sortedQuestions[2].choiceA || '',
+        sortedQuestions[2].choiceB || '',
+        sortedQuestions[2].choiceC || '',
+        sortedQuestions[2].choiceD || '',
       ]);
-      setCorrectAnswer3Index(letterToIndex(questions[2].correctAnswer));
+      if (sortedQuestions[2].correctAnswer) {
+        setCorrectAnswer3Index(letterToIndex(sortedQuestions[2].correctAnswer));
+      }
     }
-  }, [questions, isEditMode]);
+  }, [isEditMode, groupQuestionsQuery.data]);
 
   const saveMutation = useMutation({
     mutationFn: async (data: {
@@ -84,7 +122,7 @@ export default function Part3Dialog({
       exerciseId: string;
       questionData: QuestionCreateRequest[];
     }) => {
-      if (isEditMode && questions) {
+      if (isEditMode && groupQuestionsQuery.data) {
         return handleUpdateQuestion(data);
       } else {
         return handleAddQuestion(data);
@@ -95,10 +133,16 @@ export default function Part3Dialog({
         queryKey: ['questions', variables.exerciseId],
       });
 
+      if (groupId) {
+        queryClient.invalidateQueries({
+          queryKey: ['groupQuestions', groupId],
+        });
+      }
+
       showSuccess(
         isEditMode
-          ? 'Question updated successfully'
-          : 'Question added successfully'
+          ? 'Questions updated successfully'
+          : 'Questions added successfully'
       );
     },
     onError: error => {
@@ -116,8 +160,16 @@ export default function Part3Dialog({
   });
 
   const resetContentState = () => {
+    if (audioPreview && !audioPreview.startsWith('http')) {
+      URL.revokeObjectURL(audioPreview);
+    }
+
     setAudioFile(null);
     setAudioPreview(null);
+
+    setTitle1('');
+    setTitle2('');
+    setTitle3('');
 
     setOptions1(['', '', '', '']);
     setCorrectAnswer1Index(0);
@@ -146,62 +198,84 @@ export default function Part3Dialog({
   };
 
   const handleSaveQuestion = async () => {
-    if (!questionTitle) {
-      showError('Please enter a question title');
-      return;
-    }
-
-    if (!isEditMode && !audioFile) {
-      showError('Please upload an audio file');
-      return;
-    }
-
-    if (isEditMode) {
-      if (audioFile) {
-        await deleteFileFromS3(questions[0].audioUrl!);
+    try {
+      if (!title1 || !title2 || !title3) {
+        showError('Please enter titles for all questions');
+        return;
       }
+
+      if (!isEditMode && !audioFile && !audioPreview) {
+        showError('Please upload an audio file');
+        return;
+      }
+
+      let audioUrl = audioPreview || '';
+
+      if (audioFile) {
+        if (isEditMode && audioPreview && audioPreview.startsWith('http')) {
+          try {
+            await deleteFileFromS3(audioPreview);
+          } catch (error) {
+            console.error('Failed to delete old audio file', error);
+          }
+        }
+
+        audioUrl = await uploadFileToS3(audioFile);
+      }
+
+      const question1: QuestionCreateRequest = {
+        title: title1,
+        questionType: QuestionType.PART_3_CONVERSATIONS,
+        audioUrl: audioUrl,
+        choiceA: options1[0],
+        choiceB: options1[1],
+        choiceC: options1[2],
+        choiceD: options1[3],
+        correctAnswer: indexToLetter(correctAnswer1Index),
+      };
+
+      const question2: QuestionCreateRequest = {
+        title: title2,
+        questionType: QuestionType.PART_3_CONVERSATIONS,
+        audioUrl: audioUrl,
+        choiceA: options2[0],
+        choiceB: options2[1],
+        choiceC: options2[2],
+        choiceD: options2[3],
+        correctAnswer: indexToLetter(correctAnswer2Index),
+      };
+
+      const question3: QuestionCreateRequest = {
+        title: title3,
+        questionType: QuestionType.PART_3_CONVERSATIONS,
+        audioUrl: audioUrl,
+        choiceA: options3[0],
+        choiceB: options3[1],
+        choiceC: options3[2],
+        choiceD: options3[3],
+        correctAnswer: indexToLetter(correctAnswer3Index),
+      };
+
+      // // Nếu đang edit, thêm ID vào mỗi câu hỏi
+      // if (isEditMode && groupQuestionsQuery.data) {
+      //   const sortedQuestions = [...groupQuestionsQuery.data].sort(
+      //     (a, b) => (a.title || '').localeCompare(b.title || '')
+      //   );
+
+      //   if (sortedQuestions[0]?.id) question1.id = sortedQuestions[0].id;
+      //   if (sortedQuestions[1]?.id) question2.id = sortedQuestions[1].id;
+      //   if (sortedQuestions[2]?.id) question3.id = sortedQuestions[2].id;
+      // }
+
+      saveMutation.mutate({
+        courseId: courseId || '',
+        exerciseId: exerciseId || '',
+        questionData: [question1, question2, question3],
+      });
+    } catch (error) {
+      console.error('Error during save operation:', error);
+      showError('Failed to save questions');
     }
-
-    const audioUrl = await uploadFileToS3(audioFile!);
-
-    const question1: QuestionCreateRequest = {
-      title: questionTitle,
-      questionType: QuestionType.PART_3_CONVERSATIONS,
-      audioUrl: audioUrl,
-      choiceA: options1[0],
-      choiceB: options1[1],
-      choiceC: options1[2],
-      choiceD: options1[3],
-      correctAnswer: indexToLetter(correctAnswer1Index),
-    };
-
-    const question2: QuestionCreateRequest = {
-      title: questionTitle,
-      questionType: QuestionType.PART_3_CONVERSATIONS,
-      audioUrl: audioUrl,
-      choiceA: options2[0],
-      choiceB: options2[1],
-      choiceC: options2[2],
-      choiceD: options2[3],
-      correctAnswer: indexToLetter(correctAnswer2Index),
-    };
-
-    const question3: QuestionCreateRequest = {
-      title: questionTitle,
-      questionType: QuestionType.PART_3_CONVERSATIONS,
-      audioUrl: audioUrl,
-      choiceA: options3[0],
-      choiceB: options3[1],
-      choiceC: options3[2],
-      choiceD: options3[3],
-      correctAnswer: indexToLetter(correctAnswer3Index),
-    };
-
-    saveMutation.mutate({
-      courseId: courseId || '',
-      exerciseId: exerciseId || '',
-      questionData: [question1, question2, question3],
-    });
   };
 
   const handleAddQuestion = async (data: {
@@ -215,9 +289,39 @@ export default function Part3Dialog({
   const handleUpdateQuestion = async (data: {
     courseId: string;
     exerciseId: string;
-    questionData: QuestionCreateRequest[];
+    questionData: QuestionUpdateRequest[];
   }) => {
-    return updateQuestions(data.courseId, data.exerciseId, data.questionData);
+    if (!groupQuestionsQuery.data || groupQuestionsQuery.data.length !== 3) {
+      throw new Error('Cannot update: Missing question data');
+    }
+
+    const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
+      (a.title || '').localeCompare(b.title || '')
+    );
+
+    const updatedQuestions = [
+      { ...data.questionData[0], id: sortedQuestions[0].id },
+      { ...data.questionData[1], id: sortedQuestions[1].id },
+      { ...data.questionData[2], id: sortedQuestions[2].id },
+    ];
+
+    const results = [];
+    for (const question of updatedQuestions) {
+      if (!question.id) {
+        throw new Error('Missing question ID for update');
+      }
+
+      results.push(
+        await updateQuestion(
+          data.courseId,
+          data.exerciseId,
+          question.id,
+          question
+        )
+      );
+    }
+
+    return results;
   };
 
   useEffect(() => {
@@ -228,6 +332,30 @@ export default function Part3Dialog({
     };
   }, [audioPreview]);
 
+  if (isEditMode && groupQuestionsQuery.isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Spinner />
+        <span className="ml-2">Loading questions...</span>
+      </div>
+    );
+  }
+
+  if (isEditMode && groupQuestionsQuery.isError) {
+    return (
+      <div className="text-center py-10 text-red-500">
+        <p>Failed to load questions in this group.</p>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => groupQuestionsQuery.refetch()}
+        >
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="mb-10">
@@ -237,9 +365,12 @@ export default function Part3Dialog({
             value={audioPreview}
             onChange={handleAudioChange}
             onClear={handleAudioClear}
-            label="Audio File"
+            label="Audio for all 3 questions"
             className="max-h-[250px]"
           />
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            Upload a single audio file that will be used for all three questions
+          </p>
         </div>
       </div>
 
@@ -250,7 +381,7 @@ export default function Part3Dialog({
         setOptions={setOptions1}
         correctAnswerIndex={correctAnswer1Index}
         setCorrectAnswerIndex={setCorrectAnswer1Index}
-        part="part1"
+        part="part3"
       />
 
       <QuestionCard
@@ -272,7 +403,7 @@ export default function Part3Dialog({
         setCorrectAnswerIndex={setCorrectAnswer3Index}
         part="part3"
       />
-      
+
       <div className="flex justify-end gap-3 mt-8">
         <Button variant="outline" onClick={() => resetContentState()}>
           Cancel
@@ -287,7 +418,7 @@ export default function Part3Dialog({
           ) : (
             <>
               <Save className="h-4 w-4 mr-1" />
-              {isEditMode ? 'Update Question' : 'Save Question'}
+              {isEditMode ? 'Update Questions' : 'Save Questions'}
             </>
           )}
         </Button>
