@@ -9,7 +9,6 @@ import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExerciseService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -86,17 +85,18 @@ public class ExerciseController {
         .build();
   }
 
-    @PutMapping("/{exerciseId}/questions/{questionId}")
-    public ApiResponse<QuestionResponse> updateQuestionInExercise(
-        @PathVariable String exerciseId,
-        @PathVariable String questionId,
-        @RequestBody QuestionUpdateRequest questionUpdateRequest) {
-        return ApiResponse.<QuestionResponse>builder()
-            .result(
-                exerciseService.updateQuestionInExercise(
-                    UUID.fromString(exerciseId),
-                    UUID.fromString(questionId),
-                    questionUpdateRequest))
-            .build();
-    }
+  @PutMapping("/{exerciseId}/questions/{questionId}")
+  public ApiResponse<QuestionResponse> updateQuestionInExercise(
+      @PathVariable String exerciseId,
+      @PathVariable String questionId,
+      @RequestBody QuestionUpdateRequest questionUpdateRequest) {
+      return ApiResponse.<QuestionResponse>builder()
+          .result(
+              exerciseService.updateQuestionInExercise(
+                  UUID.fromString(exerciseId),
+                  UUID.fromString(questionId),
+                  questionUpdateRequest))
+          .build();
+  }
+
 }
