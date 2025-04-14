@@ -14,6 +14,7 @@ import com.example.englishhubbackend.service.QuestionService;
 import com.example.englishhubbackend.service.QuestionTypeService;
 import com.example.englishhubbackend.service.S3Service;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import com.example.englishhubbackend.util.S3Util;
@@ -152,6 +153,15 @@ public class QuestionServiceImpl implements QuestionService {
     return questionRepository.save(question);
   }
 
+  @Override
+  public List<QuestionResponse> getQuestionsByGroupId(UUID groupId) {
+    return questionRepository.findAllByGroupId(groupId)
+            .stream()
+            .map(this::mapQuestionToResponse)
+            .toList();
+  }
+
+
 
   public QuestionResponse mapQuestionToResponse(Question question) {
     if (question instanceof ListeningQuestion listeningQuestion) {
@@ -162,4 +172,5 @@ public class QuestionServiceImpl implements QuestionService {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }
   }
+
 }
