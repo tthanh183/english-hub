@@ -21,4 +21,5 @@ public class QuestionResponse {
   String choiceC;
   String choiceD;
   String correctAnswer;
+  UUID groupID;
 }
