@@ -11,14 +11,14 @@ export default function HomePage() {
       description: 'Improve your English listening skills effectively',
       icon: Headphones,
       color: 'bg-blue-100 text-blue-700',
-      slug: 'listening',
+      slug: 'listening-reading',
     },
     {
       title: 'Reading Practice',
       description: 'Enhance your English reading comprehension',
       icon: BookOpen,
       color: 'bg-indigo-100 text-indigo-700',
-      slug: 'reading',
+      slug: 'listening-reading',
     },
     {
       title: 'Vocabulary',

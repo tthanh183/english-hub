@@ -27,6 +27,8 @@ function App() {
         {/* Home Layout */}
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />
+          <Route path={ROUTES.HOME_PRACTICE_LISTENING} element={<HomePage />} />
+          <Route path={ROUTES.HOME_PRACTICE_READING} element={<HomePage />} />
         </Route>
 
         {/* Admin Routes */}

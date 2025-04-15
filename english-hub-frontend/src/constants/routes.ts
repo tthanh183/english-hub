@@ -8,4 +8,8 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_COURSES: '/admin/courses',
   ADMIN_COURSES_DETAIL: '/admin/courses/:courseId',
+
+  HOME_PRACTICE: '/practice',
+  HOME_PRACTICE_LISTENING: '/practice/listening-reading',
+  HOME_PRACTICE_READING: '/practice/listening-reading',
 };
