@@ -9,23 +9,27 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import UserManagement from '@/pages/admin/UserManagement';
-import CourseManagement from './pages/admin/CourseManagement';
-import CourseDetail from './pages/admin/CourseDetail';
+import CourseManagement from '@/pages/admin/CourseManagement';
+import CourseDetail from '@/pages/admin/CourseDetail';
 import { ROUTES } from './constants/routes';
+import HomeLayout from './layouts/HomeLayout';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path={ROUTES.HOME} element={<HomePage />} />
+        {/* Public Routes */}
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route path={ROUTES.VERIFY} element={<VerifyPage />} />
-        <Route
-          path={ROUTES.FORGOT_PASSWORD}
-          element={<div>Forgot Password</div>}
-        />
+        {/* <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} /> */}
 
+        {/* Home Layout */}
+        <Route path={ROUTES.HOME} element={<HomeLayout />}>
+          <Route index element={<HomePage />} />
+        </Route>
+
+        {/* Admin Routes */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
           <Route path={ROUTES.ADMIN} element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />
