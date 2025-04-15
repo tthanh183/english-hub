@@ -11,7 +11,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import CourseDialog from '@/components/admin/CourseDialog';
 import { Button } from '@/components/ui/button';
 
-export default function CourseManagement() {
+export default function CourseManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddCourseOpen, setIsAddCourseOpen] = useState<boolean>(false);
   const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(

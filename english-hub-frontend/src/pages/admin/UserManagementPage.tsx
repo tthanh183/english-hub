@@ -32,7 +32,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import UserDialog from '@/components/admin/UserDialog';
 
-export default function UserManagement() {
+export default function UserManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddUserOpen, setIsAddUserOpen] = useState<boolean>(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
