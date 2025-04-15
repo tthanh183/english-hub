@@ -13,6 +13,7 @@ import CourseManagement from '@/pages/admin/CourseManagement';
 import CourseDetail from '@/pages/admin/CourseDetail';
 import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
+import ListeningReadingPage from './pages/home/ListeningReadingPage';
 
 function App() {
   return (
@@ -27,8 +28,14 @@ function App() {
         {/* Home Layout */}
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />
-          <Route path={ROUTES.HOME_PRACTICE_LISTENING} element={<HomePage />} />
-          <Route path={ROUTES.HOME_PRACTICE_READING} element={<HomePage />} />
+          <Route
+            path={ROUTES.HOME_PRACTICE_LISTENING}
+            element={<ListeningReadingPage />}
+          />
+          <Route
+            path={ROUTES.HOME_PRACTICE_READING}
+            element={<ListeningReadingPage />}
+          />
         </Route>
 
         {/* Admin Routes */}
