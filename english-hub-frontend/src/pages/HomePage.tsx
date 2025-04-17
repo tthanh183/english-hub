@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CategoryCard } from '@/components/home/category-card';
-import { PracticeCard } from '@/components/home/practice-card';
+import { CategoryCard } from '@/components/home/CategoryCard';
+import { PracticeCard } from '@/components/home/PracticeCard';
 import { BookOpen, Headphones, MessageSquare, FileText } from 'lucide-react';
 
 export default function HomePage() {
@@ -85,12 +85,12 @@ export default function HomePage() {
               exercises to help you master English.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/practice/toeic">
+              <Link to="/">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                   Start Learning for Free
                 </Button>
               </Link>
-              <Link to="/practice/listening-reading">
+              <Link to="/">
                 <Button
                   size="lg"
                   variant="outline"

@@ -4,12 +4,16 @@ export const ROUTES = {
   REGISTER: '/register',
   VERIFY: '/verify',
   FORGOT_PASSWORD: '/forgot-password',
+
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',
   ADMIN_COURSES: '/admin/courses',
   ADMIN_COURSES_DETAIL: '/admin/courses/:courseId',
 
-  HOME_PRACTICE: '/practice',
-  HOME_PRACTICE_LISTENING: '/practice/listening-reading',
-  HOME_PRACTICE_READING: '/practice/listening-reading',
+  COURSES: '/courses',
+  COURSES_LISTENING_READING: '/courses/listening-reading',
+  COURSES_GRAMMAR: '/courses/grammar',
+  COURSES_VOCABULARY: '/courses/vocabulary',
+
+  COURSE_DETAIL: '/courses/:category/:partId',
 };

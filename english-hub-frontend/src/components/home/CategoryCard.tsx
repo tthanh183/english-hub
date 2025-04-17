@@ -26,7 +26,7 @@ export function CategoryCard({
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-600 mb-4">{description}</p>
-      <Link to={`/practice/${slug}`}>
+      <Link to={`/courses/${slug}`}>
         <Button
           variant="outline"
           className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"

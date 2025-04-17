@@ -14,6 +14,7 @@ import CourseDetail from '@/pages/admin/CourseDetailPage';
 import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
+import CourseDetailPage from './pages/home/CourseDetailPage';
 
 function App() {
   return (
@@ -27,13 +28,10 @@ function App() {
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />
           <Route
-            path={ROUTES.HOME_PRACTICE_LISTENING}
+            path={ROUTES.COURSES_LISTENING_READING}
             element={<ListeningReadingPage />}
           />
-          <Route
-            path={ROUTES.HOME_PRACTICE_READING}
-            element={<ListeningReadingPage />}
-          />
+          <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetailPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

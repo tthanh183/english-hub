@@ -7,8 +7,8 @@ export default function Header() {
   const menuItems = [
     { title: 'TOEIC® Test Pro', href: '/toeic-test-pro' },
     { title: 'Learning Path', href: '/learning-path' },
-    { title: 'Practice L&R', href: '/practice/listening-reading' },
-    { title: 'Practice S&W', href: '/practice/speaking-writing' },
+    { title: 'Practice L&R', href: '/courses/listening-reading' },
+    { title: 'Practice S&W', href: '/courses/speaking-writing' },
     { title: 'Mock Tests', href: '/mock-tests' },
     { title: 'Grammar', href: '/grammar' },
     { title: 'Vocabulary', href: '/vocabulary' },
