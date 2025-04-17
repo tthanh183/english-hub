@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
           return axiosInstance(originalRequest);
         } else {
-          window.location.href = '/login'; 
+          window.location.href = '/home'; 
         }
       } catch (err) {
         localStorage.removeItem('accessToken');

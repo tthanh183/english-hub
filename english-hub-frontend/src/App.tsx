@@ -19,13 +19,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route path={ROUTES.VERIFY} element={<VerifyPage />} />
         {/* <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} /> */}
 
-        {/* Home Layout */}
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />
           <Route
@@ -38,7 +36,6 @@ function App() {
           />
         </Route>
 
-        {/* Admin Routes */}
         <Route element={<ProtectedRoute adminRequired={true} />}>
           <Route path={ROUTES.ADMIN} element={<AdminDashboardLayout />}>
             <Route index element={<AdminDashboard />} />

@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 export default function HomeLayout() {
   return (
-    <div lang="vi" className="flex flex-col min-h-screen bg-gray-50">
+    <div lang="en" className="flex flex-col min-h-screen bg-gray-50">
       <Header />
       <main className="flex-grow">
         <Outlet />
