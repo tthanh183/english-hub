@@ -15,5 +15,5 @@ export const ROUTES = {
   COURSES_GRAMMAR: '/courses/grammar',
   COURSES_VOCABULARY: '/courses/vocabulary',
 
-  COURSE_DETAIL: '/courses/:category/:partId',
+  COURSE_DETAIL: '/courses/:courseId',
 };
