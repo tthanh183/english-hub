@@ -15,6 +15,7 @@ import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import CourseDetailPage from './pages/home/CourseDetailPage';
+import LessonPage from './pages/home/LessonPage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             element={<ListeningReadingPage />}
           />
           <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetailPage />} />
+          <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

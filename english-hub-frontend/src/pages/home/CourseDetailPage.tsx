@@ -79,7 +79,7 @@ export default function CourseDetailPage() {
                   lessons.map((lesson, index) => (
                     <Link
                       key={lesson.id}
-                      to={`/courses/listening/${courseId}/lesson/${lesson.id}`}
+                      to={`/courses/${courseId}/lessons/${lesson.id}`}
                       className="flex items-center p-4 border rounded-lg hover:bg-gray-50 group"
                     >
                       <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full mr-4">
@@ -114,7 +114,7 @@ export default function CourseDetailPage() {
                   exercises.map((exercise, index) => (
                     <Link
                       key={exercise.id}
-                      to={`/courses/${courseId}/exercise/${exercise.id}`}
+                      to={`/courses/${courseId}/exercises/${exercise.id}`}
                       className="flex items-center p-4 border rounded-lg hover:bg-gray-50 group"
                     >
                       <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full mr-4">
