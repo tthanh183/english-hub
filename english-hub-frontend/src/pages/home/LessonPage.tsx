@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllLessons, getLessonById } from '@/services/lessonService';
+import { getLessonById } from '@/services/lessonService';
 import { useEffect, useState } from 'react';
 import { CourseResponse } from '@/types/courseType';
 import { getCourseById } from '@/services/courseService';
