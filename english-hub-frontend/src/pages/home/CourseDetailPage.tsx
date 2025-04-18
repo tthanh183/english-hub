@@ -1,10 +1,10 @@
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronRight, Check } from 'lucide-react';
+import {  Check } from 'lucide-react';
 import Breadcrumb from '@/components/home/Breadcrumb';
 import { useQuery } from '@tanstack/react-query';
-import { getAllCourses, getCourseById } from '@/services/courseService';
+import { getAllCourses } from '@/services/courseService';
 import OtherCourses from '@/components/home/OtherCourses';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
@@ -134,14 +134,14 @@ export default function CourseDetailPage() {
                     </Link>
                   ))}
 
-                {/* <div className="text-center mt-6">
+                <div className="text-center mt-6">
                   <Button
                     variant="outline"
                     className="text-blue-600 border-blue-600 hover:bg-blue-50"
                   >
                     Show More 17 Practice Tests
                   </Button>
-                </div> */}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
