@@ -5,7 +5,11 @@ services:
       - '6379:6379'
     networks:
       - 'mynetwork'
+    volumes:
+      - redis_data:/data
 
 networks:
   mynetwork:
 
+volumes:
+  redis_data:

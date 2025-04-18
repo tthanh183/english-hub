@@ -14,4 +14,6 @@ public interface LessonService {
   LessonResponse updateLesson(UUID lessonId, LessonUpdateRequest lessonUpdateRequest);
 
   void deleteLesson(UUID lessonId);
+
+  LessonResponse getLessonById(UUID courseId, UUID lessonId);
 }

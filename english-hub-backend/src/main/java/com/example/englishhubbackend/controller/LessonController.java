@@ -34,6 +34,14 @@ public class LessonController {
         .build();
   }
 
+  @GetMapping("/{lessonId}")
+    public ApiResponse<LessonResponse> getLesson(
+        @PathVariable String courseId, @PathVariable String lessonId) {
+        return ApiResponse.<LessonResponse>builder()
+            .result(lessonService.getLessonById(UUID.fromString(courseId), UUID.fromString(lessonId)))
+            .build();
+    }
+
   @PutMapping("/{lessonId}")
   public ApiResponse<LessonResponse> updateLesson(
       @PathVariable String lessonId, @RequestBody LessonUpdateRequest lessonUpdateRequest) {
