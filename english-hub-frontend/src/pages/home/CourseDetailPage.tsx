@@ -4,28 +4,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Check } from 'lucide-react';
 import Breadcrumb from '@/components/home/Breadcrumb';
 import { useQuery } from '@tanstack/react-query';
-import { getAllCourses } from '@/services/courseService';
+import { getAllCourses, getCourseById } from '@/services/courseService';
 import OtherCourses from '@/components/home/OtherCourses';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
 import { getAllExercises } from '@/services/exerciseService';
-
-const breadcrumbData = [
-  {
-    name: 'Home',
-    link: '/',
-  },
-  {
-    name: 'Listening and Reading',
-    link: '/courses/listening-reading',
-  },
-  {
-    name: 'Part 1: Photographs',
-    link: `/courses/listening-reading/`,
-  },
-];
+import { CourseResponse } from '@/types/courseType';
+import { useEffect, useState } from 'react';
 
 export default function CourseDetailPage() {
+  const [course, setCourse] = useState<CourseResponse>();
+
   const { data: courses, isLoading: isCoursesLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,
@@ -44,6 +33,30 @@ export default function CourseDetailPage() {
     queryFn: () => getAllExercises(courseId as string),
     enabled: !!courseId,
   });
+
+  useEffect(() => {
+    if (courseId) {
+      (async () => {
+        const courseData = await getCourseById(courseId);
+        setCourse(courseData);
+      })();
+    }
+  }, [courseId]);
+
+  const breadcrumbData = [
+    {
+      name: 'Home',
+      link: '/',
+    },
+    {
+      name: 'Listening and Reading',
+      link: '/courses/listening-reading',
+    },
+    {
+      name: `${course?.title || 'Course Details'}`,
+      link: `/courses/${courseId}`,
+    },
+  ];
 
   if (isCoursesLoading || isLessonsLoading || isExercisesLoading) {
     return <GlobalSkeleton />;

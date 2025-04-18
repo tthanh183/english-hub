@@ -12,6 +12,16 @@ export async function getAllLessons(
   return response.data.result;
 }
 
+export async function getLessonById(
+  courseId: string,
+  lessonId: string
+): Promise<LessonResponse> {
+  const response = await axiosInstance.get(
+    `/courses/${courseId}/lessons/${lessonId}`
+  );
+  return response.data.result;
+}
+
 export async function createLesson(
   courseId: string,
   lesson: LessonCreateRequest
