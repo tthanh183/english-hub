@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {  Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import Breadcrumb from '@/components/home/Breadcrumb';
 import { useQuery } from '@tanstack/react-query';
 import { getAllCourses } from '@/services/courseService';
@@ -53,7 +53,7 @@ export default function CourseDetailPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Luyện nghe TOEIC® Part 1 online miễn phí
+          TOEIC® Listening Practice Part 1 - Free Online
         </h1>
         <Breadcrumb breadcrumbData={breadcrumbData} />
       </div>
