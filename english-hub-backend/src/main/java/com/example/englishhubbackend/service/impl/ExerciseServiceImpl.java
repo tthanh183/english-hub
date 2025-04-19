@@ -5,6 +5,7 @@ import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
+import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -155,6 +157,44 @@ public class ExerciseServiceImpl implements ExerciseService {
     Question question = questionService.updateQuestionEntity(questionId, questionUpdateRequest);
     question.setExercise(exercise);
     return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
+  }
+
+  @Override
+  public List<QuestionGroupResponse> getQuestionGroupsFromExercise(UUID exerciseId) {
+    Exercise exercise = exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+
+    List<Question> questions = exercise.getQuestions();
+
+    // Nhóm câu hỏi theo groupId
+    Map<UUID, List<Question>> grouped = questions.stream()
+            .collect(Collectors.groupingBy(Question::getGroupId));
+
+    List<QuestionGroupResponse> response = new ArrayList<>();
+
+    for (Map.Entry<UUID, List<Question>> entry : grouped.entrySet()) {
+      UUID groupId = entry.getKey();
+      List<Question> groupQuestions = entry.getValue();
+
+      QuestionGroupResponse groupResponse = new QuestionGroupResponse();
+      groupResponse.setGroupId(groupId);
+      groupResponse.setQuestions(groupQuestions.stream()
+              .map(questionService::mapQuestionToResponse)
+              .toList());
+
+      Question first = groupQuestions.get(0);
+      if (first instanceof ListeningQuestion listening) {
+        groupResponse.setAudioUrl(listening.getAudio().getUrl());
+        groupResponse.setImageUrl(listening.getImageUrl());
+      } else if (first instanceof ReadingQuestion reading) {
+        groupResponse.setPassage(reading.getPassage().getContent());
+      }
+
+      response.add(groupResponse);
+    }
+
+    return response;
   }
 
 }

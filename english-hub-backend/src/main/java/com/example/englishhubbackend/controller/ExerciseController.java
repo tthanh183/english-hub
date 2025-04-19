@@ -6,6 +6,7 @@ import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
+import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExerciseService;
 
@@ -106,5 +107,13 @@ public class ExerciseController {
                   questionUpdateRequest))
           .build();
   }
+
+  @GetMapping("/{exerciseId}/questions/groups")
+    public ApiResponse<List<QuestionGroupResponse>> getQuestionGroupsFromExercise(
+        @PathVariable String exerciseId) {
+        return ApiResponse.<List<QuestionGroupResponse>>builder()
+            .result(exerciseService.getQuestionGroupsFromExercise(UUID.fromString(exerciseId)))
+            .build();
+    }
 
 }

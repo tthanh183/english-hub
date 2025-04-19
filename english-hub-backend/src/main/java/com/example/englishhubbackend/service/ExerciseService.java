@@ -5,6 +5,7 @@ import com.example.englishhubbackend.dto.request.ExerciseUpdateRequest;
 import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
 import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ExerciseResponse;
+import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import java.util.List;
 import java.util.UUID;
@@ -29,5 +30,7 @@ public interface ExerciseService {
   QuestionResponse updateQuestionInExercise(
       UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest);
 
-    ExerciseResponse getExerciseById(UUID courseId, UUID exerciseId);
+  ExerciseResponse getExerciseById(UUID courseId, UUID exerciseId);
+
+  List<QuestionGroupResponse> getQuestionGroupsFromExercise(UUID exerciseId);
 }
