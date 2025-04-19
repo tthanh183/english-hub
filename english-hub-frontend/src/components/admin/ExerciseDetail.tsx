@@ -61,7 +61,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
   const getQuestionTypeDisplay = (question: QuestionResponse): string => {
     const typeMappings: Record<string, string> = {
       [QuestionType.PART_1_PHOTOGRAPHS]: 'Part 1',
-      [QuestionType.PART_2_QUESTIONS_RESPONSES]: 'Part 2',
+      [QuestionType.PART_2_QUESTION_RESPONSES]: 'Part 2',
       [QuestionType.PART_3_CONVERSATIONS]: 'Part 3',
       [QuestionType.PART_4_TALKS]: 'Part 4',
       [QuestionType.PART_5_INCOMPLETE_SENTENCES]: 'Part 5',
