@@ -1,31 +1,20 @@
-import { Play, Pause, X } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
 type AudioPlayerProps = {
   src: string | null;
-  fileName?: string;
-  fileSize?: number;
-  onRemove?: () => void;
-  editable?: boolean;
   className?: string;
 };
 
-export default function AudioPlayer({
-  src,
-  fileName,
-  fileSize,
-  onRemove,
-  editable = false,
-  className = '',
-}: AudioPlayerProps) {
+export default function AudioPlayer({ src, className = '' }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const togglePlayPause = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const togglePlayPause = () => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
@@ -54,6 +43,14 @@ export default function AudioPlayer({
     if (audioRef.current) {
       audioRef.current.currentTime = newTime;
       setCurrentTime(newTime);
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
     }
   };
 
@@ -109,61 +106,22 @@ export default function AudioPlayer({
   if (!src) return null;
 
   return (
-    <div className={`p-4 ${className}`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div
-            className={`h-10 w-10 ${
-              isPlaying ? 'bg-primary' : 'bg-primary/10'
-            } rounded-md flex items-center justify-center cursor-pointer`}
-            onClick={togglePlayPause}
-          >
-            {isPlaying ? (
-              <Pause
-                className={`h-5 w-5 ${
-                  isPlaying ? 'text-primary-foreground' : 'text-primary'
-                }`}
-              />
-            ) : (
-              <Play
-                className={`h-5 w-5 ${
-                  isPlaying ? 'text-primary-foreground' : 'text-primary'
-                }`}
-              />
-            )}
-          </div>
-
-          {fileName && (
-            <div className="flex flex-col">
-              <span className="text-sm font-medium truncate max-w-[200px]">
-                {fileName}
-              </span>
-              {fileSize !== undefined && (
-                <span className="text-xs text-muted-foreground">
-                  {(fileSize / 1024 / 1024).toFixed(2)} MB
-                </span>
-              )}
-            </div>
+    <div className={`bg-gray-50 px-2 py-1 rounded-lg shadow-sm ${className}`}>
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-blue-600"
+          onClick={togglePlayPause}
+        >
+          {isPlaying ? (
+            <Pause className="h-6 w-6" />
+          ) : (
+            <Play className="h-6 w-6" />
           )}
-        </div>
+        </Button>
 
-        {editable && onRemove && (
-          <Button
-            variant="destructive"
-            size="sm"
-            className="h-8 w-8 rounded-full p-0"
-            onClick={e => {
-              e.stopPropagation();
-              onRemove();
-            }}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
+        <div className="flex-1">
           <input
             type="range"
             min="0"
@@ -171,13 +129,31 @@ export default function AudioPlayer({
             value={currentTime}
             onChange={handleSeek}
             step="0.01"
-            className="w-full h-2 rounded-md appearance-none bg-primary/20 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
+            className="w-full h-2 rounded-md appearance-none bg-gray-200 hover:bg-gray-300 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600"
           />
         </div>
 
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+        <div className="text-sm text-gray-500">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon">
+            {volume === 0 ? (
+              <VolumeX className="h-5 w-5 text-gray-500" />
+            ) : (
+              <Volume2 className="h-5 w-5 text-gray-500" />
+            )}
+          </Button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+            className="w-20 h-2 rounded-md appearance-none bg-gray-200 hover:bg-gray-300 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600"
+          />
         </div>
       </div>
 

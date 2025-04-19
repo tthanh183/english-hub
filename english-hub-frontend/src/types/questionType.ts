@@ -58,3 +58,11 @@ export type QuestionResponse = {
   correctAnswer: string;
   groupId: string;
 };
+
+export type QuestionGroupResponse = {
+  id: string;
+  audioUrl?: string;
+  imageUrl?: string;
+  passage?: string;
+  questions: QuestionResponse[];
+};

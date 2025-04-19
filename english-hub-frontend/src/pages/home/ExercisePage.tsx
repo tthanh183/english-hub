@@ -1,35 +1,57 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Play, Volume2, RotateCcw, Flag } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
+import { Flag } from 'lucide-react';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import {
-  getExerciseById,
-  getQuestionsFromExercise,
-} from '@/services/exerciseService';
+import { getQuestionGroupsFromExercise } from '@/services/exerciseService';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import AudioPlayer from '@/components/AudioPlayer';
+import { QuestionGroupResponse } from '@/types/questionType';
 
 export default function ExercisePage() {
   const { courseId, exerciseId } = useParams();
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, string>
+  >({});
 
-  const { data: exercise, isLoading: isExerciseLoading } = useQuery({
-    queryKey: ['exercise'],
-    queryFn: () => getExerciseById(courseId as string, exerciseId as string),
-    enabled: !!exerciseId,
-  });
-
-  const { data: quesitons, isLoading: isQuestionsLoading } = useQuery({
+  const { data: questionGroups, isLoading: isQuestionsLoading } = useQuery<
+    QuestionGroupResponse[]
+  >({
     queryKey: ['questions', exerciseId],
     queryFn: () =>
-      getQuestionsFromExercise(courseId as string, exerciseId as string),
+      getQuestionGroupsFromExercise(courseId as string, exerciseId as string),
     enabled: !!exerciseId,
   });
 
-  if (isExerciseLoading || isQuestionsLoading) {
+  if (isQuestionsLoading) {
     return <GlobalSkeleton />;
   }
+
+  const currentGroup = questionGroups?.[currentGroupIndex];
+  const questions = currentGroup?.questions || [];
+
+  const handleGroupNext = () => {
+    if (currentGroupIndex < (questionGroups?.length || 0) - 1) {
+      setCurrentGroupIndex(prev => prev + 1);
+    }
+  };
+
+  const handleGroupPrevious = () => {
+    if (currentGroupIndex > 0) {
+      setCurrentGroupIndex(prev => prev - 1);
+    }
+  };
+
+  const handleFlagQuestion = (questionId: string) => {
+    console.log(`Question ${questionId} flagged for review.`);
+  };
+
+  const handleAnswerChange = (questionId: string, value: string) => {
+    setSelectedAnswers(prev => ({ ...prev, [questionId]: value }));
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -41,77 +63,81 @@ export default function ExercisePage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">{exercise?.title}</h2>
+        <div className="mb-4">
+          {currentGroup?.audioUrl && (
+            <AudioPlayer src={currentGroup.audioUrl} />
+          )}
 
-          {/* Audio Player */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-6">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-blue-600">
-                <Play className="h-5 w-5" />
-              </Button>
-              <div className="flex-1">
-                <Slider
-                  defaultValue={[20]}
-                  max={100}
-                  step={1}
-                  className="h-2"
-                />
-              </div>
-              <div className="text-sm text-gray-500">00:00 / 00:19</div>
-              <Button variant="ghost" size="icon">
-                <Volume2 className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-              <div className="text-sm">1x</div>
+          {currentGroup?.imageUrl && (
+            <div className="flex justify-center my-4">
+              <img
+                src={currentGroup.imageUrl}
+                alt="TOEIC question"
+                width={200}
+                height={200}
+                className="rounded-lg"
+              />
             </div>
-          </div>
+          )}
 
-          {/* Image */}
-          <div className="flex justify-center mb-6">
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Mn4MGGRLigONWEKwfmItEHcmyGuAns.png"
-              alt="TOEIC question"
-              width={400}
-              height={300}
-              className="rounded-lg"
-            />
-          </div>
-
-          {/* Answer Options */}
-          <RadioGroup className="space-y-3">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="A" id="option-A" />
-              <Label htmlFor="option-A">(A)</Label>
+          {currentGroup?.passage && (
+            <div className="bg-gray-50 p-4 rounded-lg my-6">
+              <p>{currentGroup.passage}</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="B" id="option-B" />
-              <Label htmlFor="option-B">(B)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="C" id="option-C" />
-              <Label htmlFor="option-C">(C)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="D" id="option-D" />
-              <Label htmlFor="option-D">(D)</Label>
-            </div>
-          </RadioGroup>
+          )}
         </div>
 
-        <div className="flex justify-between mt-8">
-          <Button variant="outline" disabled>
-            Previous
+        {/* Questions in group */}
+        <div className="space-y-10">
+          {questions.map((question, index) => (
+            <div key={question.id} className="border-t pt-6">
+              <h3 className="text-lg font-semibold mb-3">
+                {question.title || `Question ${index + 1}`}
+              </h3>
+              <RadioGroup
+                value={selectedAnswers[question.id] || ''}
+                onValueChange={value => handleAnswerChange(question.id, value)}
+                className="space-y-3"
+              >
+                {['A', 'B', 'C', 'D'].map(option => {
+                  const value =
+                    question[`choice${option}` as keyof typeof question];
+
+                  if (value === null) return null;
+
+                  return (
+                    <div key={option} className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value={option}
+                        id={`${question.id}-${option}`}
+                      />
+                      <Label htmlFor={`${question.id}-${option}`}>
+                        {`${option}. ${value || ''}`}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </RadioGroup>
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between mt-10">
+          <Button
+            variant="outline"
+            onClick={handleGroupPrevious}
+            disabled={currentGroupIndex === 0}
+          >
+            Previous Group
           </Button>
-          <Button variant="outline" className="text-blue-600 border-blue-600">
-            <Flag className="h-4 w-4 mr-2" />
-            Flag for review
+          <Button
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={handleGroupNext}
+            disabled={currentGroupIndex === (questionGroups?.length || 0) - 1}
+          >
+            Next Group
           </Button>
-          <Link to="/practice/listening/part-1/test-1/question-2">
-            <Button className="bg-blue-600 hover:bg-blue-700">Next</Button>
-          </Link>
         </div>
       </div>
     </div>

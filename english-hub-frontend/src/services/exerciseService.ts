@@ -2,6 +2,7 @@ import { ExerciseCreateRequest, ExerciseResponse } from '@/types/exerciseType';
 import axiosInstance from './axiosInstance';
 import {
   QuestionCreateRequest,
+  QuestionGroupResponse,
   QuestionResponse,
   QuestionUpdateRequest,
 } from '@/types/questionType';
@@ -102,5 +103,17 @@ export async function getQuestionsFromExercise(
   const response = await axiosInstance.get(
     `/courses/${courseId}/exercises/${exerciseId}/questions`
   );
+  return response.data.result;
+}
+
+export async function getQuestionGroupsFromExercise(
+  courseId: string,
+  exerciseId: string
+): Promise<QuestionGroupResponse[]> {
+  const response = await axiosInstance.get(
+    `/courses/${courseId}/exercises/${exerciseId}/questions/groups`
+  );
+  console.log('getQuestionGroupsFromExercise', response.data.result);
+
   return response.data.result;
 }
