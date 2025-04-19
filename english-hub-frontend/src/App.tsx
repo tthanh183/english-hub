@@ -16,6 +16,7 @@ import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import CourseDetailPage from './pages/home/CourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
+import ExercisePage from './pages/home/ExercisePage';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           />
           <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetailPage />} />
           <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
+          <Route path={ROUTES.EXERCISE_DETAIL} element={<ExercisePage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

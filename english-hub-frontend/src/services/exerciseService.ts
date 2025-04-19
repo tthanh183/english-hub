@@ -13,6 +13,16 @@ export async function getAllExercises(
   return response.data.result;
 }
 
+export async function getExerciseById(
+  courseId: string,
+  exerciseId: string
+): Promise<ExerciseResponse> {
+  const response = await axiosInstance.get(
+    `/courses/${courseId}/exercises/${exerciseId}`
+  );
+  return response.data.result;
+}
+
 export async function createExercise(
   courseId: string,
   exercise: ExerciseCreateRequest

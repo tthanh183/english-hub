@@ -17,4 +17,5 @@ export const ROUTES = {
 
   COURSE_DETAIL: '/courses/:courseId',
   LESSON_DETAIL: '/courses/:courseId/lessons/:lessonId',
+  EXERCISE_DETAIL: '/courses/:courseId/exercises/:exerciseId',
 };
