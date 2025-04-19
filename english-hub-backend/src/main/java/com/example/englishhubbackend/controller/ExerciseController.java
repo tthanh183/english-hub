@@ -38,6 +38,14 @@ public class ExerciseController {
         .build();
   }
 
+  @GetMapping("/{exerciseId}")
+    public ApiResponse<ExerciseResponse> getExercise(
+        @PathVariable String courseId, @PathVariable String exerciseId) {
+        return ApiResponse.<ExerciseResponse>builder()
+            .result(exerciseService.getExerciseById(UUID.fromString(courseId), UUID.fromString(exerciseId)))
+            .build();
+    }
+
   @PutMapping("{exerciseId}")
     public ApiResponse<ExerciseResponse> updateExercise(
         @PathVariable String exerciseId,

@@ -29,4 +29,5 @@ public interface ExerciseService {
   QuestionResponse updateQuestionInExercise(
       UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest);
 
+    ExerciseResponse getExerciseById(UUID courseId, UUID exerciseId);
 }

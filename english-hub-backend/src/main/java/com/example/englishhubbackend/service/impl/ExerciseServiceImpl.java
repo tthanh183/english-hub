@@ -59,6 +59,18 @@ public class ExerciseServiceImpl implements ExerciseService {
   }
 
   @Override
+  public ExerciseResponse getExerciseById(UUID courseId, UUID exerciseId) {
+    Course course = courseService.getCourseEntityById(courseId);
+    if (course == null) {
+      throw new AppException(ErrorCode.COURSE_NOT_FOUND);
+    }
+    Exercise exercise = exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+    return exerciseMapper.toExerciseResponse(exercise);
+  }
+
+  @Override
   public ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
     Exercise exercise = exerciseRepository
             .findById(exerciseId)

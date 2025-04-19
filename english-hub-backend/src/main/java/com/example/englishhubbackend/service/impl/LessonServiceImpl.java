@@ -38,6 +38,18 @@ public class LessonServiceImpl implements LessonService {
   }
 
   @Override
+  public LessonResponse getLessonById(UUID courseId, UUID lessonId) {
+    Course course = courseService.getCourseEntityById(courseId);
+    if (course == null) {
+      throw new AppException(ErrorCode.COURSE_NOT_FOUND);
+    }
+    return lessonRepository
+            .findById(lessonId)
+            .map(lessonMapper::toLessonResponse)
+            .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+  }
+
+  @Override
   public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
     Course course = courseService.getCourseEntityById(courseId);
     if (course == null) {
@@ -68,15 +80,4 @@ public class LessonServiceImpl implements LessonService {
     lessonRepository.delete(lesson);
   }
 
-  @Override
-  public LessonResponse getLessonById(UUID courseId, UUID lessonId) {
-    Course course = courseService.getCourseEntityById(courseId);
-    if (course == null) {
-      throw new AppException(ErrorCode.COURSE_NOT_FOUND);
-    }
-    return lessonRepository
-        .findById(lessonId)
-        .map(lessonMapper::toLessonResponse)
-        .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
-  }
 }
