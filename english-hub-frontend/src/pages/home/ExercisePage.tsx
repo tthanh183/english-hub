@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Flag } from 'lucide-react';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getQuestionGroupsFromExercise } from '@/services/exerciseService';
 import { useQuery } from '@tanstack/react-query';
@@ -43,10 +42,6 @@ export default function ExercisePage() {
     if (currentGroupIndex > 0) {
       setCurrentGroupIndex(prev => prev - 1);
     }
-  };
-
-  const handleFlagQuestion = (questionId: string) => {
-    console.log(`Question ${questionId} flagged for review.`);
   };
 
   const handleAnswerChange = (questionId: string, value: string) => {
