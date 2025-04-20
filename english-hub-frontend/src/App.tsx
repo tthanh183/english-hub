@@ -7,16 +7,16 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
-import AdminDashboard from '@/pages/admin/AdminDashboardPage';
-import UserManagement from '@/pages/admin/UserManagementPage';
-import CourseManagement from '@/pages/admin/CourseManagementPage';
-import CourseDetail from '@/pages/admin/CourseDetailPage';
+import CourseManagementPage from '@/pages/admin/CourseManagementPage';
 import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import CourseDetailPage from './pages/home/CourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
+import UserManagementPage from '@/pages/admin/UserManagementPage';
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
+import TestManagementPage from './pages/admin/TestManagementPage';
 
 function App() {
   return (
@@ -40,13 +40,17 @@ function App() {
 
         <Route element={<ProtectedRoute adminRequired={true} />}>
           <Route path={ROUTES.ADMIN} element={<AdminDashboardLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path={ROUTES.ADMIN_USERS} element={<UserManagement />} />
-            <Route path={ROUTES.ADMIN_COURSES} element={<CourseManagement />} />
+            <Route index element={<AdminDashboardPage />} />
+            <Route path={ROUTES.ADMIN_USERS} element={<UserManagementPage />} />
+            <Route
+              path={ROUTES.ADMIN_COURSES}
+              element={<CourseManagementPage />}
+            />
             <Route
               path={ROUTES.ADMIN_COURSES_DETAIL}
-              element={<CourseDetail />}
+              element={<CourseDetailPage />}
             />
+            <Route path={ROUTES.ADMIN_TESTS} element={<TestManagementPage />} />
           </Route>
         </Route>
       </Routes>

@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { BarChart, BookOpen, Home, LogOut, Menu, Users, X } from 'lucide-react';
+import {
+  BarChart,
+  BookOpen,
+  ClipboardList,
+  Home,
+  LogOut,
+  Menu,
+  Users,
+  X,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useMobile } from '@/hooks/useMobile';
@@ -9,18 +18,18 @@ import { cn } from '@/lib/utils';
 export default function DashboardLayout() {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const { pathname } = useLocation(); 
+  const { pathname } = useLocation();
 
   const navItems = [
     { name: 'Dashboard', href: '/admin', icon: Home },
     { name: 'User Management', href: '/admin/users', icon: Users },
     { name: 'Course Management', href: '/admin/courses', icon: BookOpen },
+    { name: 'Test Management', href: '/admin/tests', icon: ClipboardList },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      {/* Mobile sidebar toggle */}
       {isMobile && (
         <Button
           variant="ghost"
@@ -36,7 +45,6 @@ export default function DashboardLayout() {
         </Button>
       )}
 
-      {/* Sidebar */}
       <div
         className={cn(
           'w-64 bg-muted/40 border-r shrink-0 overflow-y-auto h-full flex flex-col',
@@ -76,7 +84,6 @@ export default function DashboardLayout() {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
