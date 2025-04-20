@@ -92,7 +92,7 @@ export default function ExercisePage() {
           {questions.map((question, index) => {
             const isAnswered = !!selectedAnswers[question.id];
             const isCorrect =
-              selectedAnswers[question.id] === question.correctAnswer; 
+              selectedAnswers[question.id] === question.correctAnswer;
 
             return (
               <div key={question.id} className="border-t pt-6">
@@ -111,13 +111,13 @@ export default function ExercisePage() {
                       question[`choice${option}` as keyof typeof question];
                     if (value === null) return null;
 
-                    const isSelected = selectedAnswers[question.id] === option; 
-                    const isCorrectOption = question.correctAnswer === option; 
+                    const isSelected = selectedAnswers[question.id] === option;
+                    const isCorrectOption = question.correctAnswer === option;
 
                     return (
                       <div
                         key={option}
-                        className={`flex items-center space-x-4 p-3 rounded-lg ${
+                        className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 ${
                           isAnswered
                             ? isCorrectOption
                               ? 'bg-green-100 border border-green-500'
@@ -131,7 +131,7 @@ export default function ExercisePage() {
                           <RadioGroupItem
                             value={option}
                             id={`${question.id}-${option}`}
-                            disabled={isAnswered} 
+                            disabled={isAnswered}
                             className="h-5 w-5"
                           />
                         </div>
