@@ -20,7 +20,7 @@ public class CourseController {
   CourseService courseService;
 
   @PostMapping("")
-  public ApiResponse<CourseResponse> createCourse(@ModelAttribute CourseCreateRequest request) {
+  public ApiResponse<CourseResponse> createCourse(@RequestBody CourseCreateRequest request) {
     return ApiResponse.<CourseResponse>builder()
         .result(courseService.createCourse(request))
         .build();
@@ -42,7 +42,7 @@ public class CourseController {
 
   @PutMapping("/{courseId}")
   public ApiResponse<CourseResponse> updateCourse(
-      @PathVariable String courseId, @ModelAttribute CourseUpdateRequest courseUpdateRequest) {
+      @PathVariable String courseId, @RequestBody CourseUpdateRequest courseUpdateRequest) {
     return ApiResponse.<CourseResponse>builder()
         .result(courseService.updateCourse(UUID.fromString(courseId), courseUpdateRequest))
         .build();

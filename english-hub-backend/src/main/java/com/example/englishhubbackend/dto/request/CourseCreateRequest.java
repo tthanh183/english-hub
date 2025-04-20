@@ -12,5 +12,5 @@ import org.springframework.web.multipart.MultipartFile;
 public class CourseCreateRequest {
   String title;
   String description;
-  MultipartFile image;
+  String imageUrl;
 }
