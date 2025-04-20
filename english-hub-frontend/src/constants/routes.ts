@@ -9,8 +9,8 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_COURSES: '/admin/courses',
   ADMIN_COURSES_DETAIL: '/admin/courses/:courseId',
-  ADMIN_TESTS: '/admin/tests',
-  ADMIN_TESTS_DETAIL: '/admin/tests/:testId',
+  ADMIN_EXAMS: '/admin/exams',
+  ADMIN_EXAM_QUESTIONS: '/admin/exams/:examId/questions',
 
   COURSES: '/courses',
   COURSES_LISTENING_READING: '/courses/listening-reading',

@@ -24,7 +24,7 @@ export default function DashboardLayout() {
     { name: 'Dashboard', href: '/admin', icon: Home },
     { name: 'User Management', href: '/admin/users', icon: Users },
     { name: 'Course Management', href: '/admin/courses', icon: BookOpen },
-    { name: 'Test Management', href: '/admin/tests', icon: ClipboardList },
+    { name: 'Exam Management', href: '/admin/exams', icon: ClipboardList },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 

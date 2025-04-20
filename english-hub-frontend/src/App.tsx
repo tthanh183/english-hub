@@ -16,7 +16,8 @@ import LessonPage from './pages/home/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
 import UserManagementPage from '@/pages/admin/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
-import TestManagementPage from './pages/admin/TestManagementPage';
+import ExamManagementPage from '@/pages/admin/ExamManagementPage';
+import ExamQuestionsManagementPage from './pages/admin/ExamQuestionsManagementPage';
 
 function App() {
   return (
@@ -50,7 +51,11 @@ function App() {
               path={ROUTES.ADMIN_COURSES_DETAIL}
               element={<CourseDetailPage />}
             />
-            <Route path={ROUTES.ADMIN_TESTS} element={<TestManagementPage />} />
+            <Route path={ROUTES.ADMIN_EXAMS} element={<ExamManagementPage />} />
+            <Route
+              path={ROUTES.ADMIN_EXAM_QUESTIONS}
+              element={<ExamQuestionsManagementPage />}
+            />
           </Route>
         </Route>
       </Routes>
