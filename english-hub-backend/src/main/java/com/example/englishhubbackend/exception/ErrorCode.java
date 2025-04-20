@@ -75,7 +75,9 @@ public enum ErrorCode {
       HttpStatus.BAD_REQUEST),
     QUESTION_NOT_FOUND(1020,
             "Question not found. Please check the question ID and try again.",
-            HttpStatus.NOT_FOUND),;
+            HttpStatus.NOT_FOUND),
+  EXAM_NOT_FOUND(
+      1021, "Exam not found. Please check the exam ID and try again.", HttpStatus.NOT_FOUND);
 
   private int code;
   private String message;

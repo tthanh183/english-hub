@@ -1,6 +1,8 @@
 package com.example.englishhubbackend.models;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.*;
@@ -19,6 +21,9 @@ public class Exam {
 
   String title;
   int duration;
+
+  @Column(name = "created_at")
+  LocalDateTime createdDate;
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "exam")
   List<Result> results;
