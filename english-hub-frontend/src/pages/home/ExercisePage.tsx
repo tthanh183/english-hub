@@ -64,13 +64,19 @@ export default function ExercisePage() {
           )}
 
           {currentGroup?.imageUrl && (
-            <div className="flex justify-center my-4">
+            <div
+              className="flex justify-center items-center my-2"
+              style={{ height: '400px' }}
+            >
               <img
                 src={currentGroup.imageUrl}
                 alt="TOEIC question"
-                width={200}
-                height={200}
-                className="rounded-lg"
+                className="rounded-lg shadow-sm"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain',
+                }}
               />
             </div>
           )}
@@ -82,56 +88,95 @@ export default function ExercisePage() {
           )}
         </div>
 
-        {/* Questions in group */}
         <div className="space-y-10">
-          {questions.map((question, index) => (
-            <div key={question.id} className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-3">
-                {question.title || `Question ${index + 1}`}
-              </h3>
-              <RadioGroup
-                value={selectedAnswers[question.id] || ''}
-                onValueChange={value => handleAnswerChange(question.id, value)}
-                className="space-y-3"
-              >
-                {['A', 'B', 'C', 'D'].map(option => {
-                  const value =
-                    question[`choice${option}` as keyof typeof question];
+          {questions.map((question, index) => {
+            const isAnswered = !!selectedAnswers[question.id];
+            const isCorrect =
+              selectedAnswers[question.id] === question.correctAnswer; 
 
-                  if (value === null) return null;
+            return (
+              <div key={question.id} className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-3">
+                  {question.title || `Question ${index + 1}`}
+                </h3>
+                <RadioGroup
+                  value={selectedAnswers[question.id] || ''}
+                  onValueChange={value =>
+                    handleAnswerChange(question.id, value)
+                  }
+                  className="space-y-3"
+                >
+                  {['A', 'B', 'C', 'D'].map(option => {
+                    const value =
+                      question[`choice${option}` as keyof typeof question];
+                    if (value === null) return null;
 
-                  return (
-                    <div key={option} className="flex items-center space-x-2">
-                      <RadioGroupItem
-                        value={option}
-                        id={`${question.id}-${option}`}
-                      />
-                      <Label htmlFor={`${question.id}-${option}`}>
-                        {`${option}. ${value || ''}`}
-                      </Label>
-                    </div>
-                  );
-                })}
-              </RadioGroup>
-            </div>
-          ))}
+                    const isSelected = selectedAnswers[question.id] === option; 
+                    const isCorrectOption = question.correctAnswer === option; 
+
+                    return (
+                      <div
+                        key={option}
+                        className={`flex items-center space-x-4 p-3 rounded-lg ${
+                          isAnswered
+                            ? isCorrectOption
+                              ? 'bg-green-100 border border-green-500'
+                              : isSelected
+                              ? 'bg-red-100 border border-red-500'
+                              : 'bg-gray-100'
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex-shrink-0">
+                          <RadioGroupItem
+                            value={option}
+                            id={`${question.id}-${option}`}
+                            disabled={isAnswered} 
+                            className="h-5 w-5"
+                          />
+                        </div>
+
+                        <Label
+                          htmlFor={`${question.id}-${option}`}
+                          className="flex-1 text-gray-700"
+                        >
+                          {`${option}. ${value || ''}`}
+                        </Label>
+
+                        {isAnswered && isSelected && (
+                          <span className="text-sm flex-shrink-0">
+                            {isCorrect ? '✅ Correct' : '❌ Incorrect'}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </RadioGroup>
+
+                {isAnswered && !isCorrect && (
+                  <div className="mt-2 text-sm text-green-600">
+                    Correct Answer: {question.correctAnswer}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Navigation */}
         <div className="flex justify-between mt-10">
           <Button
             variant="outline"
             onClick={handleGroupPrevious}
             disabled={currentGroupIndex === 0}
           >
-            Previous Group
+            Previous Question
           </Button>
           <Button
             className="bg-blue-600 hover:bg-blue-700"
             onClick={handleGroupNext}
             disabled={currentGroupIndex === (questionGroups?.length || 0) - 1}
           >
-            Next Group
+            Next Question
           </Button>
         </div>
       </div>
