@@ -10,11 +10,11 @@ export type CourseResponse = {
 export type CourseCreateRequest = {
   title: string;
   description: string;
-  image: File | null;
+  imageUrl: string;
 };
 
 export type CourseUpdateRequest = {
   title: string;
   description: string;
-  image: File | null;
+  imageUrl: string;
 };

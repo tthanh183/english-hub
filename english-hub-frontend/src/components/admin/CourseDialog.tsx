@@ -23,11 +23,13 @@ import {
 import { createCourse, updateCourse } from '@/services/courseService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
+import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
+import GlobalSkeleton from '../GlobalSkeleton';
 
 type CourseDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  course?: CourseResponse | null; 
+  course?: CourseResponse | null;
 };
 
 export default function CourseDialog({
@@ -42,10 +44,10 @@ export default function CourseDialog({
   >({
     title: '',
     description: '',
-    image: null,
+    imageUrl: '',
   });
 
-  const [image, setImage] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -56,16 +58,16 @@ export default function CourseDialog({
         setCourseData({
           title: course.title,
           description: course.description,
-          image: null,
+          imageUrl: course.imageUrl,
         });
         setPreviewUrl(course.imageUrl);
       } else {
         setCourseData({
           title: '',
           description: '',
-          image: null,
+          imageUrl: '',
         });
-        setImage(null);
+        setImageFile(null);
         setPreviewUrl(null);
       }
     }
@@ -79,9 +81,9 @@ export default function CourseDialog({
         (oldCourses = []) => [...oldCourses, response]
       );
       showSuccess('Course added successfully');
+      onOpenChange(false);
     },
     onError: handleError,
-    onSettled: handleSettled,
   });
 
   const updateCourseMutation = useMutation({
@@ -101,21 +103,17 @@ export default function CourseDialog({
             : [response]
       );
       showSuccess('Course updated successfully');
+      onOpenChange(false);
     },
     onError: handleError,
-    onSettled: handleSettled,
   });
 
   function handleError(error: unknown) {
     if (isAxiosError(error)) {
-      showError(error.response?.data.message);
+      showError(error.response?.data.message || 'An error occurred');
     } else {
       showError('Something went wrong');
     }
-  }
-
-  function handleSettled() {
-    onOpenChange(false);
   }
 
   const handleSubmit = async () => {
@@ -124,24 +122,29 @@ export default function CourseDialog({
       return;
     }
 
-    if (!isEditMode && !image) {
-      showError('Please select an image file');
-      return;
+    let imageUrl = courseData.imageUrl;
+
+    if (isEditMode) {
+      if (imageFile) {
+        await deleteFileFromS3(course.imageUrl!);
+      }
     }
+
+    imageUrl = await uploadFileToS3(imageFile!);
 
     if (isEditMode && course) {
       updateCourseMutation.mutate({
         courseId: course.id,
         courseData: {
-          ...(courseData as CourseUpdateRequest),
-          image: image,
-        },
+          ...courseData,
+          imageUrl,
+        } as CourseUpdateRequest,
       });
     } else {
       createCourseMutation.mutate({
-        ...(courseData as CourseCreateRequest),
-        image: image!,
-      });
+        ...courseData,
+        imageUrl,
+      } as CourseCreateRequest);
     }
   };
 
@@ -157,7 +160,7 @@ export default function CourseDialog({
         return;
       }
 
-      setImage(file);
+      setImageFile(file);
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -170,6 +173,10 @@ export default function CourseDialog({
   const isPending = isEditMode
     ? updateCourseMutation.isPending
     : createCourseMutation.isPending;
+
+  if (isPending) {
+    return <GlobalSkeleton />;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -229,7 +236,7 @@ export default function CourseDialog({
                   alt="Preview"
                   className="mt-2 h-32 w-32 object-cover rounded-md"
                 />
-                {isEditMode && !image && (
+                {isEditMode && !imageFile && (
                   <p className="text-xs text-muted-foreground mt-1">
                     Current image will be used unless you select a new one.
                   </p>
