@@ -18,17 +18,17 @@ import com.example.englishhubbackend.service.ExerciseService;
 import com.example.englishhubbackend.service.QuestionService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -129,7 +129,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     Question question = questionService.createQuestionEntity(questionCreateRequest);
     UUID groupId = UUID.randomUUID();
     question.setGroupId(groupId);
-    question.setCreatedAt(LocalDate.now());
+    question.setCreatedAt(LocalDateTime.now());
     question.setExercise(exercise);
     return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
@@ -165,12 +165,16 @@ public class ExerciseServiceImpl implements ExerciseService {
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
 
-    List<Question> questions = exercise.getQuestions();
+    List<Question> questions = exercise.getQuestions().stream()
+            .sorted(Comparator.comparing(Question::getCreatedAt))
+            .toList();
 
-    // Nhóm câu hỏi theo groupId
     Map<UUID, List<Question>> grouped = questions.stream()
-            .collect(Collectors.groupingBy(Question::getGroupId));
-
+            .collect(Collectors.groupingBy(
+                    Question::getGroupId,
+                    LinkedHashMap::new,
+                    Collectors.toList()
+            ));
     List<QuestionGroupResponse> response = new ArrayList<>();
 
     for (Map.Entry<UUID, List<Question>> entry : grouped.entrySet()) {
@@ -183,7 +187,7 @@ public class ExerciseServiceImpl implements ExerciseService {
               .map(questionService::mapQuestionToResponse)
               .toList());
 
-      Question first = groupQuestions.get(0);
+      Question first = groupQuestions.getFirst();
       if (first instanceof ListeningQuestion listening) {
         groupResponse.setAudioUrl(listening.getAudio().getUrl());
         groupResponse.setImageUrl(listening.getImageUrl());
@@ -193,7 +197,6 @@ public class ExerciseServiceImpl implements ExerciseService {
 
       response.add(groupResponse);
     }
-
     return response;
   }
 

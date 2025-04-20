@@ -1,5 +1,6 @@
 package com.example.englishhubbackend.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,6 +14,7 @@ public class QuestionResponse {
   UUID id;
   String title;
   String questionType;
+  LocalDateTime createdAt;
   String imageUrl;
   String audioUrl;
   String passage;

@@ -2,6 +2,7 @@ package com.example.englishhubbackend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,7 @@ public abstract class Question {
   QuestionType questionType;
 
   @Column(name = "created_at")
-  LocalDate createdAt;
+  LocalDateTime createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "exercise_id", nullable = true)

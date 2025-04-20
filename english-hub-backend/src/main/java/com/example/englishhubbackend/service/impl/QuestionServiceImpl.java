@@ -14,6 +14,7 @@ import com.example.englishhubbackend.service.QuestionService;
 import com.example.englishhubbackend.service.QuestionTypeService;
 import com.example.englishhubbackend.service.S3Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,7 +88,7 @@ public class QuestionServiceImpl implements QuestionService {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }
 
-    question.setCreatedAt(LocalDate.now());
+    question.setCreatedAt(LocalDateTime.now());
     return question;
   }
 
@@ -160,8 +161,6 @@ public class QuestionServiceImpl implements QuestionService {
             .map(this::mapQuestionToResponse)
             .toList();
   }
-
-
 
   public QuestionResponse mapQuestionToResponse(Question question) {
     if (question instanceof ListeningQuestion listeningQuestion) {
