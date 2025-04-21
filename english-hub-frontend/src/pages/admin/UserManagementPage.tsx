@@ -37,6 +37,9 @@ export default function UserManagementPage() {
   const [isAddUserOpen, setIsAddUserOpen] = useState<boolean>(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserResponse | null>(null);
+  const [openDropdownUserId, setOpenDropdownUserId] = useState<string | null>(
+    null
+  );
 
   const queryClient = useQueryClient();
   const { data: users = [], isLoading } = useQuery({
@@ -178,7 +181,12 @@ export default function UserManagementPage() {
                   {format(new Date(user.joinDate), 'yyyy-MM-dd')}
                 </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
+                  <DropdownMenu
+                    open={openDropdownUserId === user.id}
+                    onOpenChange={isOpen => {
+                      setOpenDropdownUserId(isOpen ? user.id : null);
+                    }}
+                  >
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
                         <span className="sr-only">Open menu</span>
@@ -188,9 +196,13 @@ export default function UserManagementPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setIsEditUserOpen(true);
+                        onSelect={e => {
+                          e.preventDefault();
+                          setOpenDropdownUserId(null);
+                          setTimeout(() => {
+                            setSelectedUser(user);
+                            setIsEditUserOpen(true);
+                          }, 100);
                         }}
                       >
                         Edit

@@ -30,8 +30,9 @@ export default function ExamManagementPage() {
   const [isAddExamOpen, setIsAddExamOpen] = useState<boolean>(false);
   const [isEditExamOpen, setIsEditExamOpen] = useState<boolean>(false);
   const [selectedExam, setSelectedExam] = useState<ExamResponse | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [openDropdownExamId, setOpenDropdownExamId] = useState<string | null>(
+    null
+  );
   const { data: exams, isLoading } = useQuery<ExamResponse[]>({
     queryKey: ['exams'],
     queryFn: () => getAllExams(),
@@ -92,8 +93,10 @@ export default function ExamManagementPage() {
                 <TableCell>{exam.duration} min</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu
-                    open={isDropdownOpen}
-                    onOpenChange={setIsDropdownOpen}
+                    open={openDropdownExamId === exam.id}
+                    onOpenChange={isOpen => {
+                      setOpenDropdownExamId(isOpen ? exam.id : null);
+                    }}
                   >
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0">
@@ -106,11 +109,11 @@ export default function ExamManagementPage() {
                       <DropdownMenuItem
                         onSelect={e => {
                           e.preventDefault();
-                          setIsDropdownOpen(false); 
+                          setOpenDropdownExamId(null);
                           setTimeout(() => {
                             setSelectedExam(exam);
                             setIsEditExamOpen(true);
-                          }, 100); 
+                          }, 100);
                         }}
                       >
                         Edit
