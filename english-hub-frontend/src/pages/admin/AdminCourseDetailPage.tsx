@@ -18,7 +18,7 @@ import LessonDialog from '@/components/admin/LessonDialog';
 import { getCourseById } from '@/services/courseService';
 import ExerciseDialog from '@/components/admin/ExerciseDialog';
 
-export default function CourseDetailPage() {
+export default function AdminCourseDetailPage() {
   const [activeTab, setActiveTab] = useState('lessons');
   const [isAddLessonOpen, setIsAddLessonOpen] = useState<boolean>(false);
   const [isEditLessonOpen, setIsEditLessonOpen] = useState<boolean>(false);

@@ -12,7 +12,7 @@ import { getAllExercises } from '@/services/exerciseService';
 import { CourseResponse } from '@/types/courseType';
 import { useEffect, useState } from 'react';
 
-export default function CourseDetailPage() {
+export default function HomeCourseDetailPage() {
   const [course, setCourse] = useState<CourseResponse>();
 
   const { data: courses, isLoading: isCoursesLoading } = useQuery({

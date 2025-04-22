@@ -75,7 +75,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Questions List</h2>\
+        <h2 className="text-xl font-bold">Questions List</h2>
         <Button size="sm" onClick={handleAddQuestion}>
           <Plus className="h-4 w-4 mr-2" />
           Add Question

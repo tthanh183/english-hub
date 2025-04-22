@@ -11,7 +11,8 @@ import CourseManagementPage from '@/pages/admin/CourseManagementPage';
 import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
-import CourseDetailPage from './pages/home/CourseDetailPage';
+import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';
+import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
 import UserManagementPage from '@/pages/admin/UserManagementPage';
@@ -34,7 +35,7 @@ function App() {
             path={ROUTES.COURSES_LISTENING_READING}
             element={<ListeningReadingPage />}
           />
-          <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetailPage />} />
+          <Route path={ROUTES.COURSE_DETAIL} element={<HomeCourseDetailPage />} />
           <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
           <Route path={ROUTES.EXERCISE_DETAIL} element={<ExercisePage />} />
         </Route>
@@ -49,7 +50,7 @@ function App() {
             />
             <Route
               path={ROUTES.ADMIN_COURSES_DETAIL}
-              element={<CourseDetailPage />}
+              element={<AdminCourseDetailPage />}
             />
             <Route path={ROUTES.ADMIN_EXAMS} element={<ExamManagementPage />} />
             <Route

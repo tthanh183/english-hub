@@ -358,9 +358,6 @@ export default function ExamQuestionsPage() {
           <TabsTrigger value="reading-part5">Part 5</TabsTrigger>
           <TabsTrigger value="reading-part6">Part 6</TabsTrigger>
           <TabsTrigger value="reading-part7">Part 7</TabsTrigger>
-          <TabsTrigger value="easy">Easy</TabsTrigger>
-          <TabsTrigger value="medium">Medium</TabsTrigger>
-          <TabsTrigger value="hard">Hard</TabsTrigger>
         </TabsList>
       </Tabs>
 
