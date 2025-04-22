@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
-  Download,
+  Eye,
   FileSpreadsheet,
+  FileText,
+  Pencil,
   Plus,
   Search,
-  Upload,
+  Trash2,
 } from 'lucide-react';
 import {
   Table,
@@ -26,13 +28,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,7 +40,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { QuestionResponse, QuestionType } from '@/types/questionType';
+import QuestionDialog from '@/components/admin/QuestionDialog';
+import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
 
 type Question = {
   id: string;
@@ -66,13 +63,12 @@ type ExamDetails = {
 
 export default function ExamQuestionsPage() {
   const { examId } = useParams();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('all');
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState<boolean>(false);
+  const [isQuestionDialogOpen, setIsQuestionDialogOpen] =
+    useState<boolean>(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
-  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
-  const [selectAll, setSelectAll] = useState(false);
 
   // Mock exam details
   const [examDetails] = useState<ExamDetails>({
@@ -95,7 +91,7 @@ export default function ExamQuestionsPage() {
         D: 'Cooking dinner',
       },
       correctAnswer: 'B',
-      type: 'listening-part1',
+      type: QuestionType.PART_1_PHOTOGRAPHS,
       difficulty: 'easy',
     },
     {
@@ -172,18 +168,6 @@ export default function ExamQuestionsPage() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    if (activeTab === 'all') return matchesSearch;
-    if (activeTab === 'listening')
-      return matchesSearch && question.type.startsWith('listening');
-    if (activeTab === 'reading')
-      return matchesSearch && question.type.startsWith('reading');
-    if (activeTab === 'easy')
-      return matchesSearch && question.difficulty === 'easy';
-    if (activeTab === 'medium')
-      return matchesSearch && question.difficulty === 'medium';
-    if (activeTab === 'hard')
-      return matchesSearch && question.difficulty === 'hard';
-
     return matchesSearch && question.type === activeTab;
   });
 
@@ -224,77 +208,27 @@ export default function ExamQuestionsPage() {
     setIsQuestionDialogOpen(false);
   };
 
-  const handleDeleteQuestion = (id: string) => {
+  const handlePreview = (question: Question) => {
+    // Implement preview functionality
+    console.log('Preview question:', question);
+  };
+
+  const handleDelete = (id: string) => {
     setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
-  const handleDeleteSelected = () => {
-    setQuestions(prev => prev.filter(q => !selectedQuestions.includes(q.id)));
-    setSelectedQuestions([]);
-    setSelectAll(false);
-  };
+  const getQuestionTypeDisplay = (question: QuestionResponse): string => {
+    const typeMappings: Record<string, string> = {
+      [QuestionType.PART_1_PHOTOGRAPHS]: 'Part 1',
+      [QuestionType.PART_2_QUESTION_RESPONSES]: 'Part 2',
+      [QuestionType.PART_3_CONVERSATIONS]: 'Part 3',
+      [QuestionType.PART_4_TALKS]: 'Part 4',
+      [QuestionType.PART_5_INCOMPLETE_SENTENCES]: 'Part 5',
+      [QuestionType.PART_6_TEXT_COMPLETION]: 'Part 6',
+      [QuestionType.PART_7_READING_COMPREHENSION]: 'Part 7',
+    };
 
-  const handleSelectQuestion = (id: string, checked: boolean) => {
-    if (checked) {
-      setSelectedQuestions(prev => [...prev, id]);
-    } else {
-      setSelectedQuestions(prev => prev.filter(itemId => itemId !== id));
-    }
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    setSelectAll(checked);
-    if (checked) {
-      setSelectedQuestions(filteredQuestions.map(q => q.id));
-    } else {
-      setSelectedQuestions([]);
-    }
-  };
-
-  const getQuestionTypeBadge = (type: string) => {
-    if (type.startsWith('listening-part1'))
-      return <Badge className="bg-blue-500">Listening Part 1</Badge>;
-    if (type.startsWith('listening-part2'))
-      return <Badge className="bg-blue-500">Listening Part 2</Badge>;
-    if (type.startsWith('listening-part3'))
-      return <Badge className="bg-blue-500">Listening Part 3</Badge>;
-    if (type.startsWith('listening-part4'))
-      return <Badge className="bg-blue-500">Listening Part 4</Badge>;
-    if (type.startsWith('reading-part5'))
-      return <Badge className="bg-purple-500">Reading Part 5</Badge>;
-    if (type.startsWith('reading-part6'))
-      return <Badge className="bg-purple-500">Reading Part 6</Badge>;
-    if (type.startsWith('reading-part7'))
-      return <Badge className="bg-purple-500">Reading Part 7</Badge>;
-    return <Badge>{type}</Badge>;
-  };
-
-  const getDifficultyBadge = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy':
-        return (
-          <Badge variant="outline" className="border-green-500 text-green-500">
-            Easy
-          </Badge>
-        );
-      case 'medium':
-        return (
-          <Badge
-            variant="outline"
-            className="border-yellow-500 text-yellow-500"
-          >
-            Medium
-          </Badge>
-        );
-      case 'hard':
-        return (
-          <Badge variant="outline" className="border-red-500 text-red-500">
-            Hard
-          </Badge>
-        );
-      default:
-        return null;
-    }
+    return typeMappings[question.questionType] || question.questionType;
   };
 
   return (
@@ -314,27 +248,6 @@ export default function ExamQuestionsPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={handleAddQuestion}>
-            <Plus className="mr-2 h-4 w-4" /> Add Question
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsImportDialogOpen(true)}
-          >
-            <FileSpreadsheet className="mr-2 h-4 w-4" /> Import from Excel
-          </Button>
-          {selectedQuestions.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDeleteSelected}
-            >
-              Delete Selected ({selectedQuestions.length})
-            </Button>
-          )}
-        </div>
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -344,13 +257,19 @@ export default function ExamQuestionsPage() {
             onChange={e => setSearchTerm(e.target.value)}
           />
         </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsImportDialogOpen(true)}
+          >
+            <FileSpreadsheet className="mr-2 h-4 w-4" /> Import from Excel
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-wrap">
-          <TabsTrigger value="all">All Questions</TabsTrigger>
-          <TabsTrigger value="listening">Listening</TabsTrigger>
-          <TabsTrigger value="reading">Reading</TabsTrigger>
+        <TabsList className="flex flex-wrap w-full">
           <TabsTrigger value="listening-part1">Part 1</TabsTrigger>
           <TabsTrigger value="listening-part2">Part 2</TabsTrigger>
           <TabsTrigger value="listening-part3">Part 3</TabsTrigger>
@@ -361,101 +280,93 @@ export default function ExamQuestionsPage() {
         </TabsList>
       </Tabs>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Questions</CardTitle>
-          <CardDescription>
-            {filteredQuestions.length} question
-            {filteredQuestions.length !== 1 ? 's' : ''} in this exam.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">
-                  <Checkbox
-                    checked={selectAll}
-                    onCheckedChange={handleSelectAll}
-                    aria-label="Select all questions"
-                  />
-                </TableHead>
-                <TableHead>Question</TableHead>
-                <TableHead className="hidden md:table-cell">Type</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Difficulty
-                </TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Correct Answer
-                </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredQuestions.length === 0 ? (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-bold">Questions List</h2>
+          <Button size="sm" onClick={handleAddQuestion}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Question
+          </Button>
+          <QuestionDialog
+            isOpen={isQuestionDialogOpen}
+            onOpenChange={setIsQuestionDialogOpen}
+            examId={examId || ''}
+          />
+        </div>
+
+        {filteredQuestions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center border rounded-md">
+            <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium">No questions yet</h3>
+            <p className="text-muted-foreground mb-4">
+              This exam doesn't have any questions. Add your first question to
+              get started.
+            </p>
+            <Button onClick={handleAddQuestion}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add First Question
+            </Button>
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    No questions found. Add a new question or adjust your
-                    search.
-                  </TableCell>
+                  <TableHead className="w-12">#</TableHead>
+                  <TableHead>Question</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead className="w-[140px] text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
-              ) : (
-                filteredQuestions.map(question => (
+              </TableHeader>
+              <TableBody>
+                {filteredQuestions.map((question, index) => (
                   <TableRow key={question.id}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedQuestions.includes(question.id)}
-                        onCheckedChange={checked =>
-                          handleSelectQuestion(question.id, !!checked)
-                        }
-                        aria-label={`Select question ${question.id}`}
-                      />
-                    </TableCell>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell>
                       <div className="font-medium truncate max-w-[300px]">
                         {question.title}
                       </div>
-                      <div className="flex items-center gap-2 md:hidden mt-1">
-                        {getQuestionTypeBadge(question.type)}
-                        {getDifficultyBadge(question.difficulty)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-normal">
+                        {getQuestionTypeDisplay(question)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handlePreview(question)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditQuestion(question)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={() => handleDelete(question.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {getQuestionTypeBadge(question.type)}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {getDifficultyBadge(question.difficulty)}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {question.correctAnswer}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditQuestion(question)}
-                        className="mr-2"
-                      >
-                        View / Edit
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteQuestion(question.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
 
       {/* Dialog for View/Edit Question */}
       <Dialog
@@ -617,45 +528,10 @@ export default function ExamQuestionsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog for Import from Excel */}
-      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-        <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
-            <DialogTitle>Import Questions from Excel</DialogTitle>
-            <DialogDescription>
-              Upload an Excel file to import questions for this exam.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-8 text-center">
-              <FileSpreadsheet className="h-10 w-10 text-muted-foreground mb-4" />
-              <h3 className="font-medium mb-2">Upload Questions Excel File</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop your Excel file here, or click to browse
-              </p>
-              <Input
-                type="file"
-                accept=".xlsx,.xls"
-                className="hidden"
-                id="question-file-upload"
-              />
-              <label htmlFor="question-file-upload">
-                <Button variant="outline" className="cursor-pointer">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Select File
-                </Button>
-              </label>
-            </div>
-            <div className="flex justify-between items-center">
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Template
-              </Button>
-              <Button size="sm">Upload and Process</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ExcelImportDialog
+        isImportDialogOpen={isImportDialogOpen}
+        setIsImportDialogOpen={setIsImportDialogOpen}
+      />
     </div>
   );
 }

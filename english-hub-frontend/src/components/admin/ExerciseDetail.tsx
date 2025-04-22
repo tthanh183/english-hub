@@ -93,7 +93,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
         </div>
       ) : questions.length > 0 ? (
         <div className="rounded-md border">
-          <Table>
+          <Table className="">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">#</TableHead>

@@ -4,6 +4,7 @@ import {
   ExamUpdateRequest,
 } from '@/types/examType';
 import axiosInstance from './axiosInstance';
+import { QuestionResponse } from '@/types/questionType';
 
 export async function getAllExams(): Promise<ExamResponse[]> {
   const response = await axiosInstance.get('/exams');
@@ -33,4 +34,11 @@ export async function updateExam(
 export async function deleteExam(examId: string): Promise<string> {
   const response = await axiosInstance.delete(`/exams/${examId}`);
   return response.data.message;
+}
+
+export async function getQuestionsFromExam(
+  examId: string
+): Promise<QuestionResponse[]> {
+  const response = await axiosInstance.get(`/exams/${examId}/questions`);
+  return response.data.result;
 }
