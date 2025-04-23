@@ -19,27 +19,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';;
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
 import QuestionDialog from '@/components/admin/QuestionDialog';
 import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
@@ -188,25 +170,6 @@ export default function ExamQuestionsPage() {
     setIsQuestionDialogOpen(true);
   };
 
-  const handleUpdateQuestion = () => {
-    if (!editingQuestion) return;
-
-    if (editingQuestion.id) {
-      // Update existing question
-      setQuestions(prev =>
-        prev.map(q => (q.id === editingQuestion.id ? editingQuestion : q))
-      );
-    } else {
-      // Add new question
-      const newId = (
-        Math.max(...questions.map(q => Number.parseInt(q.id))) + 1
-      ).toString();
-      setQuestions(prev => [...prev, { ...editingQuestion, id: newId }]);
-    }
-
-    setEditingQuestion(null);
-    setIsQuestionDialogOpen(false);
-  };
 
   const handlePreview = (question: Question) => {
     // Implement preview functionality
@@ -367,166 +330,6 @@ export default function ExamQuestionsPage() {
           </div>
         )}
       </div>
-
-      {/* Dialog for View/Edit Question */}
-      <Dialog
-        open={isQuestionDialogOpen}
-        onOpenChange={setIsQuestionDialogOpen}
-      >
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>
-              {editingQuestion?.id ? 'Edit Question' : 'Add New Question'}
-            </DialogTitle>
-            <DialogDescription>
-              {editingQuestion?.id
-                ? 'Update the question details below.'
-                : 'Fill in the details to create a new question.'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <label htmlFor="question-type" className="text-sm font-medium">
-                Question Type
-              </label>
-              <Select
-                value={editingQuestion?.type || 'listening-part1'}
-                onValueChange={value =>
-                  setEditingQuestion(prev =>
-                    prev ? { ...prev, type: value } : null
-                  )
-                }
-              >
-                <SelectTrigger id="question-type">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="listening-part1">
-                    Listening - Part 1
-                  </SelectItem>
-                  <SelectItem value="listening-part2">
-                    Listening - Part 2
-                  </SelectItem>
-                  <SelectItem value="listening-part3">
-                    Listening - Part 3
-                  </SelectItem>
-                  <SelectItem value="listening-part4">
-                    Listening - Part 4
-                  </SelectItem>
-                  <SelectItem value="reading-part5">
-                    Reading - Part 5
-                  </SelectItem>
-                  <SelectItem value="reading-part6">
-                    Reading - Part 6
-                  </SelectItem>
-                  <SelectItem value="reading-part7">
-                    Reading - Part 7
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <label
-                htmlFor="question-difficulty"
-                className="text-sm font-medium"
-              >
-                Difficulty
-              </label>
-              <Select
-                value={editingQuestion?.difficulty || 'medium'}
-                onValueChange={(value: 'easy' | 'medium' | 'hard') =>
-                  setEditingQuestion(prev =>
-                    prev ? { ...prev, difficulty: value } : null
-                  )
-                }
-              >
-                <SelectTrigger id="question-difficulty">
-                  <SelectValue placeholder="Select difficulty" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="easy">Easy</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="hard">Hard</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="question-title" className="text-sm font-medium">
-                Question Text
-              </label>
-              <Textarea
-                id="question-title"
-                placeholder="Enter question text"
-                value={editingQuestion?.title || ''}
-                onChange={e =>
-                  setEditingQuestion(prev =>
-                    prev ? { ...prev, title: e.target.value } : null
-                  )
-                }
-                rows={3}
-              />
-            </div>
-            <div className="space-y-4">
-              <label className="text-sm font-medium">Answer Choices</label>
-              {['A', 'B', 'C', 'D'].map(choice => (
-                <div key={choice} className="flex items-center gap-2">
-                  <div className="w-8 h-8 flex items-center justify-center bg-muted rounded-md">
-                    {choice}
-                  </div>
-                  <Input
-                    placeholder={`Choice ${choice}`}
-                    value={editingQuestion?.choices[choice] || ''}
-                    onChange={e =>
-                      setEditingQuestion(prev =>
-                        prev
-                          ? {
-                              ...prev,
-                              choices: {
-                                ...prev.choices,
-                                [choice]: e.target.value,
-                              },
-                            }
-                          : null
-                      )
-                    }
-                    className="flex-1"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Correct Answer</label>
-              <RadioGroup
-                value={editingQuestion?.correctAnswer || ''}
-                onValueChange={value =>
-                  setEditingQuestion(prev =>
-                    prev ? { ...prev, correctAnswer: value } : null
-                  )
-                }
-                className="flex space-x-4"
-              >
-                {['A', 'B', 'C', 'D'].map(choice => (
-                  <div key={choice} className="flex items-center space-x-2">
-                    <RadioGroupItem value={choice} id={`choice-${choice}`} />
-                    <Label htmlFor={`choice-${choice}`}>{choice}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsQuestionDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleUpdateQuestion}>
-              {editingQuestion?.id ? 'Update' : 'Add'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <ExcelImportDialog
         isImportDialogOpen={isImportDialogOpen}

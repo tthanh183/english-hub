@@ -39,6 +39,7 @@ type QuestionDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   exerciseId?: string;
+  examId?: string;
   question?: QuestionResponse;
 };
 
@@ -46,6 +47,7 @@ export default function QuestionDialog({
   isOpen,
   onOpenChange,
   exerciseId,
+  examId,
   question,
 }: QuestionDialogProps) {
   const isEditMode = !!question;
