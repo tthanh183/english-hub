@@ -14,10 +14,7 @@ import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import QuestionCard from './QuestionCard';
 
 type Part5DialogProps = {
   exerciseId?: string;
@@ -106,7 +103,7 @@ export default function Part5Dialog({
   };
 
   const handleSaveQuestion = async () => {
-    if (!sentence) {
+    if (!sentence.trim()) {
       showError('Please enter the incomplete sentence.');
       return;
     }
@@ -137,68 +134,15 @@ export default function Part5Dialog({
   return (
     <>
       <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="p5-sentence">Incomplete Sentence</Label>
-          <Textarea
-            id="p5-sentence"
-            placeholder="Enter the incomplete sentence (use '____' to indicate the blank)"
-            rows={3}
-            value={sentence}
-            onChange={e => setSentence(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <Label>Answer Options</Label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-            {options.map((option, index) => (
-              <div
-                key={index}
-                className={`border rounded-md p-4 ${
-                  index === correctAnswerIndex
-                    ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                    : ''
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <RadioGroup
-                    value={indexToLetter(correctAnswerIndex)}
-                    onValueChange={value =>
-                      setCorrectAnswerIndex(letterToIndex(value))
-                    }
-                    className="flex"
-                  >
-                    <RadioGroupItem
-                      value={indexToLetter(index)}
-                      id={`p5-option${index}`}
-                    />
-                  </RadioGroup>
-                  <Label
-                    htmlFor={`p5-option${index}`}
-                    className="flex items-center gap-2 font-medium"
-                  >
-                    Option {String.fromCharCode(65 + index)}
-                    {index === correctAnswerIndex && (
-                      <span className="text-xs text-green-600 font-normal">
-                        (Correct)
-                      </span>
-                    )}
-                  </Label>
-                </div>
-                <Input
-                  id={`p5-option${index}-text`}
-                  placeholder={`Enter option ${index + 1}`}
-                  value={option}
-                  onChange={e => {
-                    const newOptions = [...options];
-                    newOptions[index] = e.target.value;
-                    setOptions(newOptions);
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <QuestionCard
+          title={sentence}
+          setTitle={setSentence}
+          options={options}
+          setOptions={setOptions}
+          correctAnswerIndex={correctAnswerIndex}
+          setCorrectAnswerIndex={setCorrectAnswerIndex}
+          part="part5"
+        />
       </div>
 
       <div className="flex justify-end gap-3 mt-8">
