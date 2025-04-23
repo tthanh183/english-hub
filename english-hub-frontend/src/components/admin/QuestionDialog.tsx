@@ -35,6 +35,7 @@ import Part1Dialog from '@/components/admin/Part1Dialog';
 import Part2Dialog from './Part2Dialog';
 import Part3Dialog from './Part3Dialog';
 import Part4Dialog from './Part4Dialog';
+import Part5Dialog from './Part5Dialog';
 
 type QuestionDialogProps = {
   isOpen: boolean;
@@ -107,68 +108,7 @@ export default function QuestionDialog({
         return <Part4Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_5_INCOMPLETE_SENTENCES:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="p5-sentence">Incomplete Sentence</Label>
-              <Textarea
-                id="p5-sentence"
-                placeholder="Enter the incomplete sentence (use '____' to indicate the blank)"
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <Label>Answer Options</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[1, 2, 3, 4].map(num => (
-                  <div
-                    key={num}
-                    className={`border rounded-md p-4 ${
-                      num === 1
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup defaultValue="option1" className="flex">
-                        <RadioGroupItem
-                          value={`option${num}`}
-                          id={`p5-option${num}`}
-                          checked={num === 1}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`p5-option${num}`}
-                        className="flex items-center gap-2 font-medium"
-                      >
-                        Option {String.fromCharCode(64 + num)}
-                        {num === 1 && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`p5-option${num}-text`}
-                      placeholder={`Enter option ${num}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="p5-explanation">Explanation (Optional)</Label>
-              <Textarea
-                id="p5-explanation"
-                placeholder="Explain why the correct answer is correct"
-                rows={3}
-              />
-            </div>
-          </div>
-        );
+        return <Part5Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_6_TEXT_COMPLETION:
         return (
