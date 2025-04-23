@@ -36,6 +36,7 @@ import Part2Dialog from './Part2Dialog';
 import Part3Dialog from './Part3Dialog';
 import Part4Dialog from './Part4Dialog';
 import Part5Dialog from './Part5Dialog';
+import Part6Dialog from './Part6Dialog';
 
 type QuestionDialogProps = {
   isOpen: boolean;
@@ -111,110 +112,7 @@ export default function QuestionDialog({
         return <Part5Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_6_TEXT_COMPLETION:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="p6-passage">Text Passage</Label>
-              <Textarea
-                id="p6-passage"
-                placeholder="Enter the passage with blanks (use '[____]' to indicate blanks)"
-                rows={6}
-              />
-            </div>
-
-            <div className="border rounded-md p-4 mt-4">
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">Blank 1</Label>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[1, 2, 3, 4].map(num => (
-                  <div
-                    key={num}
-                    className={`border rounded-md p-4 ${
-                      num === 1
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup defaultValue="option1" className="flex">
-                        <RadioGroupItem
-                          value={`b1-option${num}`}
-                          id={`b1-option${num}`}
-                          checked={num === 1}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`b1-option${num}`}
-                        className="flex items-center gap-2 font-medium"
-                      >
-                        Option {String.fromCharCode(64 + num)}
-                        {num === 1 && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`b1-option${num}-text`}
-                      placeholder={`Enter option ${num}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="border rounded-md p-4">
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-base font-medium">Blank 2</Label>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                {[1, 2, 3, 4].map(num => (
-                  <div
-                    key={num}
-                    className={`border rounded-md p-4 ${
-                      num === 2
-                        ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <RadioGroup defaultValue="option2" className="flex">
-                        <RadioGroupItem
-                          value={`b2-option${num}`}
-                          id={`b2-option${num}`}
-                          checked={num === 2}
-                        />
-                      </RadioGroup>
-                      <Label
-                        htmlFor={`b2-option${num}`}
-                        className="flex items-center gap-2 font-medium"
-                      >
-                        Option {String.fromCharCode(64 + num)}
-                        {num === 2 && (
-                          <span className="text-xs text-green-600 font-normal">
-                            (Correct)
-                          </span>
-                        )}
-                      </Label>
-                    </div>
-                    <Input
-                      id={`b2-option${num}-text`}
-                      placeholder={`Enter option ${num}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Button variant="outline" size="sm" className="gap-1 mt-2">
-              <Plus className="h-4 w-4" /> Add Another Blank
-            </Button>
-          </div>
-        );
+        return <Part6Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_7_READING_COMPREHENSION:
         return (

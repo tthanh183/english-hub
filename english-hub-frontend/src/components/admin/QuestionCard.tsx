@@ -7,6 +7,9 @@ import {
   PART2_OPTIONS,
   PART3_OPTIONS,
   PART4_OPTIONS,
+  PART5_OPTIONS,
+  PART6_OPTIONS,
+  PART7_OPTIONS,
 } from '@/constants/options';
 
 type QuestionCardProps = {
@@ -16,7 +19,7 @@ type QuestionCardProps = {
   setOptions: (options: string[]) => void;
   correctAnswerIndex: number;
   setCorrectAnswerIndex: (index: number) => void;
-  part: 'part1' | 'part2' | 'part3' | 'part4';
+  part: 'part1' | 'part2' | 'part3' | 'part4' | 'part5' | 'part6';
 };
 
 const PART_OPTIONS = {
@@ -24,6 +27,9 @@ const PART_OPTIONS = {
   part2: PART2_OPTIONS,
   part3: PART3_OPTIONS,
   part4: PART4_OPTIONS,
+  part5: PART5_OPTIONS,
+  part6: PART6_OPTIONS,
+  part7: PART7_OPTIONS,
 };
 
 export default function QuestionCard({
