@@ -52,7 +52,7 @@ export default function Part3Dialog({
   useEffect(() => {
     if (isEditMode && question?.groupId) {
       console.log('Group ID:', question.groupId);
-      
+
       setGroupId(question.groupId);
     }
   }, [isEditMode, question]);
@@ -365,12 +365,9 @@ export default function Part3Dialog({
             value={audioPreview}
             onChange={handleAudioChange}
             onClear={handleAudioClear}
-            label="Audio for all 3 questions"
+            label="Audio File"
             className="max-h-[250px]"
           />
-          <p className="text-sm text-muted-foreground mt-2 text-center">
-            Upload a single audio file that will be used for all three questions
-          </p>
         </div>
       </div>
 
