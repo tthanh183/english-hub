@@ -10,7 +10,10 @@ import {
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { addQuestions, updateQuestion } from '@/services/exerciseService';
+import {
+  addQuestionsToExercise,
+  updateQuestionInExercise,
+} from '@/services/exerciseService';
 import { getAllQuestionByGroupId } from '@/services/questionService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -275,7 +278,7 @@ export default function Part4Dialog({
     examId?: string;
     questionData: QuestionCreateRequest[];
   }) => {
-    return addQuestions(
+    return addQuestionsToExercise(
       data.courseId,
       data.exerciseId || data.examId || '',
       data.questionData
@@ -309,7 +312,7 @@ export default function Part4Dialog({
       }
 
       results.push(
-        await updateQuestion(
+        await updateQuestionInExercise(
           data.courseId,
           data.exerciseId || data.examId || '',
           question.id,

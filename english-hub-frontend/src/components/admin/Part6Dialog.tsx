@@ -11,7 +11,7 @@ import {
   QuestionType,
   QuestionUpdateRequest,
 } from '@/types/questionType';
-import { addQuestions, updateQuestion } from '@/services/exerciseService';
+import { addQuestionsToExercise, updateQuestionInExercise } from '@/services/exerciseService';
 import { getAllQuestionByGroupId } from '@/services/questionService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -135,7 +135,7 @@ export default function Part6Dialog({
     examId?: string;
     questionData: QuestionCreateRequest[];
   }) => {
-    return addQuestions(
+    return addQuestionsToExercise(
       data.courseId,
       data.exerciseId || data.examId || '',
       data.questionData
@@ -168,7 +168,7 @@ export default function Part6Dialog({
       }
 
       results.push(
-        await updateQuestion(
+        await updateQuestionInExercise(
           data.courseId,
           data.exerciseId || data.examId || '',
           question.id,

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -6,7 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -15,8 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Trash, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import {
   Dialog,
@@ -25,7 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   QUESTION_TYPE_DISPLAY,
   QuestionResponse,
@@ -98,7 +93,13 @@ export default function QuestionDialog({
   const renderPartContent = (part: string) => {
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
-        return <Part1Dialog exerciseId={exerciseId} question={question} />;
+        return (
+          <Part1Dialog
+            exerciseId={exerciseId}
+            examId={examId}
+            question={question}
+          />
+        );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
         return <Part2Dialog exerciseId={exerciseId} question={question} />;

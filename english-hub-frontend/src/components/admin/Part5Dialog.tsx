@@ -9,7 +9,10 @@ import {
   QuestionUpdateRequest,
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
-import { addQuestion, updateQuestion } from '@/services/exerciseService';
+import {
+  addQuestionToExercise,
+  updateQuestionInExercise,
+} from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
@@ -58,14 +61,14 @@ export default function Part5Dialog({
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        return updateQuestion(
+        return updateQuestionInExercise(
           data.courseId,
           data.exerciseId || data.examId || '',
           question.id,
           data.questionData as QuestionUpdateRequest
         );
       } else {
-        return addQuestion(
+        return addQuestionToExercise(
           data.courseId,
           data.exerciseId || data.examId || '',
           data.questionData as QuestionCreateRequest

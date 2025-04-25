@@ -35,7 +35,7 @@ export type QuestionUpdateRequest = {
   title: string;
   questionType: QuestionType;
   audioUrl?: string;
-  image?: string;
+  imageUrl?: string;
   passage?: string;
   choiceA: string;
   choiceB: string;

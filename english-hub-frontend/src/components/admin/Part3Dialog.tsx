@@ -10,7 +10,7 @@ import {
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { addQuestions, updateQuestion } from '@/services/exerciseService';
+import { addQuestionsToExercise , updateQuestionInExercise } from '@/services/exerciseService';
 import { getAllQuestionByGroupId } from '@/services/questionService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
@@ -283,7 +283,7 @@ export default function Part3Dialog({
     exerciseId: string;
     questionData: QuestionCreateRequest[];
   }) => {
-    return addQuestions(data.courseId, data.exerciseId, data.questionData);
+    return addQuestionsToExercise(data.courseId, data.exerciseId, data.questionData);
   };
 
   const handleUpdateQuestion = async (data: {
@@ -312,7 +312,7 @@ export default function Part3Dialog({
       }
 
       results.push(
-        await updateQuestion(
+        await updateQuestionInExercise(
           data.courseId,
           data.exerciseId,
           question.id,

@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
-  Eye,
   FileSpreadsheet,
   FileText,
   Pencil,
@@ -19,130 +18,47 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';;
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
 import QuestionDialog from '@/components/admin/QuestionDialog';
 import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
+import { useQuery } from '@tanstack/react-query';
+import { getExamById, getQuestionsFromExam } from '@/services/examService';
+import { Spinner } from '@/components/Spinner';
+import { ExamResponse } from '@/types/examType';
 
-type Question = {
-  id: string;
-  title: string;
-  choices: { [key: string]: string };
-  correctAnswer: string;
-  type: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-};
-
-type ExamDetails = {
-  id: string;
-  name: string;
-  description: string;
-  type: string;
-  questionCount: number;
-};
-
-export default function ExamQuestionsPage() {
+export default function ExamQuestionsManagementPage() {
   const { examId } = useParams();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
   const [isImportDialogOpen, setIsImportDialogOpen] = useState<boolean>(false);
-  const [isQuestionDialogOpen, setIsQuestionDialogOpen] =
-    useState<boolean>(false);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
+  const [isEditQuestionOpen, setIsEditQuestionOpen] = useState<boolean>(false);
+  const [selectedQuestion, setSelectedQuestion] =
+    useState<QuestionResponse | null>(null);
+  const [exam, setExam] = useState<ExamResponse | null>(null);
 
-  // Mock exam details
-  const [examDetails] = useState<ExamDetails>({
-    id: examId,
-    name: 'TOEIC Full Test 1',
-    description: 'Complete TOEIC test with Listening and Reading sections',
-    type: 'toeic',
-    questionCount: 200,
+  useEffect(() => {
+    const fetchExam = async () => {
+      if (examId) {
+        try {
+          const exam = await getExamById(examId);
+          setExam(exam);
+        } catch (error) {
+          console.error('Failed to fetch exam:', error);
+        }
+      }
+    };
+
+    fetchExam();
+  }, [examId]);
+
+  const { data: questions = [], isLoading } = useQuery<QuestionResponse[]>({
+    queryKey: ['questions', examId],
+    queryFn: () => getQuestionsFromExam(examId || ''),
   });
-
-  // Mock questions data
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: '1',
-      title: 'What is the woman probably doing?',
-      choices: {
-        A: 'Reading a book',
-        B: 'Taking a photo',
-        C: 'Writing a letter',
-        D: 'Cooking dinner',
-      },
-      correctAnswer: 'B',
-      type: QuestionType.PART_1_PHOTOGRAPHS,
-      difficulty: 'easy',
-    },
-    {
-      id: '2',
-      title: 'Where does this conversation take place?',
-      choices: {
-        A: 'At a restaurant',
-        B: 'At an office',
-        C: 'At a hotel',
-        D: 'At a store',
-      },
-      correctAnswer: 'C',
-      type: 'listening-part3',
-      difficulty: 'medium',
-    },
-    {
-      id: '3',
-      title: 'What will the man probably do next?',
-      choices: {
-        A: 'Go to a meeting',
-        B: 'Call a client',
-        C: 'Check his email',
-        D: 'Leave the office',
-      },
-      correctAnswer: 'D',
-      type: 'listening-part3',
-      difficulty: 'medium',
-    },
-    {
-      id: '4',
-      title: 'What is the purpose of the announcement?',
-      choices: {
-        A: 'To introduce a new employee',
-        B: 'To announce a schedule change',
-        C: 'To remind about a deadline',
-        D: 'To inform about a new policy',
-      },
-      correctAnswer: 'B',
-      type: 'listening-part4',
-      difficulty: 'hard',
-    },
-    {
-      id: '5',
-      title: "The word 'essential' in paragraph 2 is closest in meaning to...",
-      choices: {
-        A: 'Important',
-        B: 'Interesting',
-        C: 'Unusual',
-        D: 'Complicated',
-      },
-      correctAnswer: 'A',
-      type: 'reading-part5',
-      difficulty: 'medium',
-    },
-    {
-      id: '6',
-      title:
-        'According to the passage, what is the main purpose of the meeting?',
-      choices: {
-        A: 'To discuss a new project',
-        B: 'To review quarterly results',
-        C: 'To introduce new team members',
-        D: 'To announce company changes',
-      },
-      correctAnswer: 'D',
-      type: 'reading-part7',
-      difficulty: 'hard',
-    },
-  ]);
 
   // Filter questions based on search term and active tab
   const filteredQuestions = questions.filter(question => {
@@ -150,30 +66,17 @@ export default function ExamQuestionsPage() {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    return matchesSearch && question.type === activeTab;
+    return matchesSearch;
   });
 
-  const handleEditQuestion = (question: Question) => {
-    setEditingQuestion(question);
-    setIsQuestionDialogOpen(true);
+  const handleEditQuestion = (question: QuestionResponse) => {
+    setSelectedQuestion(question);
+    setIsEditQuestionOpen(true);
   };
 
   const handleAddQuestion = () => {
-    setEditingQuestion({
-      id: '',
-      title: '',
-      choices: { A: '', B: '', C: '', D: '' },
-      correctAnswer: '',
-      type: 'listening-part1',
-      difficulty: 'medium',
-    });
-    setIsQuestionDialogOpen(true);
-  };
-
-
-  const handlePreview = (question: Question) => {
-    // Implement preview functionality
-    console.log('Preview question:', question);
+    setSelectedQuestion(null);
+    setIsAddQuestionOpen(true);
   };
 
   const handleDelete = (id: string) => {
@@ -203,10 +106,8 @@ export default function ExamQuestionsPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {examDetails.name}
-          </h1>
-          <p className="text-muted-foreground">{examDetails.description}</p>
+          <h1 className="text-3xl font-bold tracking-tight">{exam?.title}</h1>
+          <p className="text-muted-foreground">{exam?.duration}</p>
         </div>
       </div>
 
@@ -251,13 +152,18 @@ export default function ExamQuestionsPage() {
             Add Question
           </Button>
           <QuestionDialog
-            isOpen={isQuestionDialogOpen}
-            onOpenChange={setIsQuestionDialogOpen}
+            isOpen={isAddQuestionOpen}
+            onOpenChange={setIsAddQuestionOpen}
             examId={examId || ''}
           />
         </div>
 
-        {filteredQuestions.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Spinner />
+            <span className="ml-2">Loading questions...</span>
+          </div>
+        ) : filteredQuestions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center border rounded-md">
             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium">No questions yet</h3>
@@ -302,13 +208,6 @@ export default function ExamQuestionsPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handlePreview(question)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
                           onClick={() => handleEditQuestion(question)}
                         >
                           <Pencil className="h-4 w-4" />
@@ -330,6 +229,15 @@ export default function ExamQuestionsPage() {
           </div>
         )}
       </div>
+
+      {selectedQuestion && (
+        <QuestionDialog
+          isOpen={isEditQuestionOpen}
+          onOpenChange={setIsEditQuestionOpen}
+          examId={examId || ''}
+          question={selectedQuestion}
+        />
+      )}
 
       <ExcelImportDialog
         isImportDialogOpen={isImportDialogOpen}

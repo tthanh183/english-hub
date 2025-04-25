@@ -57,7 +57,7 @@ export async function deleteExercise(
   return response.data.message;
 }
 
-export async function addQuestion(
+export async function addQuestionToExercise(
   courseId: string,
   exerciseId: string,
   question: QuestionCreateRequest
@@ -69,7 +69,7 @@ export async function addQuestion(
   return response.data.result;
 }
 
-export async function updateQuestion(
+export async function updateQuestionInExercise(
   courseId: string,
   exerciseId: string,
   questionId: string,
@@ -84,7 +84,7 @@ export async function updateQuestion(
   return response.data.result;
 }
 
-export async function addQuestions(
+export async function addQuestionsToExercise(
   courseId: string,
   exerciseId: string,
   questions: QuestionCreateRequest[]

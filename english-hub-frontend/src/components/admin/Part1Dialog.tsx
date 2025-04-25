@@ -10,21 +10,30 @@ import {
 } from '@/types/questionType';
 import { Spinner } from '../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
-import { addQuestion, updateQuestion } from '@/services/exerciseService';
+import {
+  addQuestionToExercise,
+  updateQuestionInExercise,
+} from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 import QuestionCard from './QuestionCard';
+import {
+  addQuestionToExam,
+  updateQuestionInExam,
+} from '@/services/examService';
 
 type Part1DialogProps = {
   exerciseId?: string;
+  examId?: string;
   question?: QuestionResponse;
 };
 
 export default function Part1Dialog({
   exerciseId,
+  examId,
   question,
 }: Part1DialogProps) {
   const isEditMode = !!question;
@@ -60,6 +69,8 @@ export default function Part1Dialog({
         const index = letterToIndex(question.correctAnswer);
         setCorrectAnswerIndex(index);
       }
+    } else {
+      resetContentState();
     }
   }, [question]);
 
@@ -67,29 +78,46 @@ export default function Part1Dialog({
 
   const queryClient = useQueryClient();
   const saveMutation = useMutation({
-    mutationFn: (data: {
+    mutationFn: async (data: {
       courseId: string;
-      exerciseId: string;
+      exerciseId?: string;
+      examId?: string;
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        return updateQuestion(
-          data.courseId,
-          data.exerciseId,
-          question.id,
-          data.questionData as QuestionUpdateRequest
-        );
+        if (data.exerciseId) {
+          return updateQuestionInExercise(
+            data.courseId,
+            data.exerciseId,
+            question.id,
+            data.questionData as QuestionUpdateRequest
+          );
+        } else if (data.examId) {
+          return updateQuestionInExam(
+            data.examId,
+            question.id,
+            data.questionData as QuestionUpdateRequest
+          );
+        }
       } else {
-        return addQuestion(
-          data.courseId,
-          data.exerciseId,
-          data.questionData as QuestionCreateRequest
-        );
+        if (data.exerciseId) {
+          return addQuestionToExercise(
+            data.courseId,
+            data.exerciseId,
+            data.questionData as QuestionCreateRequest
+          );
+        } else if (data.examId) {
+          return addQuestionToExam(
+            data.examId,
+            data.questionData as QuestionCreateRequest
+          );
+        }
       }
+      throw new Error('Either exerciseId or examId must be provided.');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId],
+        queryKey: ['questions', variables.exerciseId || variables.examId],
       });
       if (isEditMode) {
         showSuccess('Question updated successfully');
@@ -118,7 +146,7 @@ export default function Part1Dialog({
     setAudioPreview(null);
     setOptions(['', '', '', '']);
     setCorrectAnswerIndex(0);
-    setTitle(''); 
+    setTitle('');
   };
 
   const handleImageChange = (file: File | null) => {
@@ -169,17 +197,27 @@ export default function Part1Dialog({
       return;
     }
 
+    let imageUrl = imagePreview || '';
+    let audioUrl = audioPreview || '';
+
     if (isEditMode) {
       if (imageFile) {
-        await deleteFileFromS3(question.imageUrl!);
+        if (question.imageUrl) {
+          await deleteFileFromS3(question.imageUrl);
+        }
+        imageUrl = await uploadFileToS3(imageFile);
       }
-      if (audioFile) {
-        await deleteFileFromS3(question.audioUrl!);
-      }
-    }
 
-    const audioUrl = await uploadFileToS3(audioFile!);
-    const imageUrl = await uploadFileToS3(imageFile!);
+      if (audioFile) {
+        if (question.audioUrl) {
+          await deleteFileFromS3(question.audioUrl);
+        }
+        audioUrl = await uploadFileToS3(audioFile);
+      }
+    } else {
+      imageUrl = await uploadFileToS3(imageFile!);
+      audioUrl = await uploadFileToS3(audioFile!);
+    }
 
     const questionData: QuestionCreateRequest = {
       title,
@@ -196,6 +234,7 @@ export default function Part1Dialog({
     saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
+      examId: examId || '',
       questionData,
     });
   };
@@ -239,7 +278,7 @@ export default function Part1Dialog({
         setOptions={setOptions}
         correctAnswerIndex={correctAnswerIndex}
         setCorrectAnswerIndex={setCorrectAnswerIndex}
-        part='part1'
+        part="part1"
       />
 
       <div className="flex justify-end gap-3 mt-8">

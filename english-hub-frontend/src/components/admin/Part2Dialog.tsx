@@ -5,7 +5,7 @@ import { Spinner } from '../Spinner';
 import { Save } from 'lucide-react';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { addQuestion, updateQuestion } from '@/services/exerciseService';
+import { addQuestionToExercise, updateQuestionInExercise } from '@/services/exerciseService';
 import {
   QuestionCreateRequest,
   QuestionResponse,
@@ -92,14 +92,14 @@ export default function Part2Dialog({
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        return updateQuestion(
+        return updateQuestionInExercise(
           data.courseId,
           data.exerciseId,
           question.id,
           data.questionData as QuestionUpdateRequest
         );
       } else {
-        return addQuestion(
+        return addQuestionToExercise(
           data.courseId,
           data.exerciseId,
           data.questionData as QuestionCreateRequest
@@ -160,11 +160,18 @@ export default function Part2Dialog({
       return;
     }
 
-    if (isEditMode && audioFile) {
-      await deleteFileFromS3(question.audioUrl!);
-    }
+    let audioUrl = audioPreview || '';
 
-    const audioUrl = await uploadFileToS3(audioFile!);
+    if (isEditMode) {
+      if (audioFile) {
+        if (question.audioUrl) {
+          await deleteFileFromS3(question.audioUrl);
+        }
+        audioUrl = await uploadFileToS3(audioFile);
+      }
+    } else {
+      audioUrl = await uploadFileToS3(audioFile!);
+    }
 
     const questionData: QuestionCreateRequest = {
       title: title,
