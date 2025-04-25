@@ -2,8 +2,12 @@ package com.example.englishhubbackend.controller;
 
 import com.example.englishhubbackend.dto.request.ExamCreateRequest;
 import com.example.englishhubbackend.dto.request.ExamUpdateRequest;
+import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
 import com.example.englishhubbackend.dto.response.ExamResponse;
+import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
+import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExamService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -55,4 +59,51 @@ public class ExamController {
         return ApiResponse.<Void>builder().message("Exam deleted successfully").build();
 
     }
+
+    @PostMapping("/{examId}/question")
+    public ApiResponse<QuestionResponse> addQuestionToExam(
+            @PathVariable String examId, @RequestBody QuestionCreateRequest questionCreateRequest) {
+        return ApiResponse.<QuestionResponse>builder()
+                .result(examService.addQuestionToExam(UUID.fromString(examId), questionCreateRequest))
+                .build();
+    }
+
+    @PostMapping("/{examId}/questions")
+    public ApiResponse<List<QuestionResponse>> addQuestionsToExam(
+            @PathVariable String examId,
+            @RequestBody List<QuestionCreateRequest> questionCreateRequests) {
+        return ApiResponse.<List<QuestionResponse>>builder()
+                .result(examService.addQuestionsToExam(UUID.fromString(examId), questionCreateRequests))
+                .build();
+    }
+
+    @GetMapping("/{examId}/questions")
+    public ApiResponse<List<QuestionResponse>> getQuestionsFromExam(
+            @PathVariable String examId) {
+        return ApiResponse.<List<QuestionResponse>>builder()
+                .result(examService.getAllQuestionsFromExam(UUID.fromString(examId)))
+                .build();
+    }
+
+    @PutMapping("/{examId}/questions/{questionId}")
+    public ApiResponse<QuestionResponse> updateQuestionInExam(
+            @PathVariable String examId,
+            @PathVariable String questionId,
+            @RequestBody QuestionUpdateRequest questionUpdateRequest) {
+        return ApiResponse.<QuestionResponse>builder()
+                .result(examService.updateQuestionInExam(
+                        UUID.fromString(examId),
+                        UUID.fromString(questionId),
+                        questionUpdateRequest))
+                .build();
+    }
+
+    @GetMapping("/{examId}/questions/groups")
+    public ApiResponse<List<QuestionGroupResponse>> getQuestionGroupsFromExam(
+            @PathVariable String examId) {
+        return ApiResponse.<List<QuestionGroupResponse>>builder()
+                .result(examService.getQuestionGroupsFromExam(UUID.fromString(examId)))
+                .build();
+    }
+
 }

@@ -2,7 +2,11 @@ package com.example.englishhubbackend.service;
 
 import com.example.englishhubbackend.dto.request.ExamCreateRequest;
 import com.example.englishhubbackend.dto.request.ExamUpdateRequest;
+import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
+import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
 import com.example.englishhubbackend.dto.response.ExamResponse;
+import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
+import com.example.englishhubbackend.dto.response.QuestionResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,5 +21,15 @@ public interface ExamService {
     ExamResponse updateExam(UUID examId, ExamUpdateRequest examUpdateRequest);
 
     void deleteExam(UUID examId);
+
+    List<QuestionResponse> addQuestionsToExam(UUID examId, List<QuestionCreateRequest> questionCreateRequest);
+
+    QuestionResponse addQuestionToExam(UUID examId, QuestionCreateRequest questionCreateRequest);
+
+    List<QuestionResponse> getAllQuestionsFromExam(UUID examId);
+
+    QuestionResponse updateQuestionInExam(UUID examId, UUID questionId, QuestionUpdateRequest questionUpdateRequest);
+
+    List<QuestionGroupResponse> getQuestionGroupsFromExam(UUID examId);
 
 }
