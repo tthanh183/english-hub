@@ -51,9 +51,7 @@ export async function updateQuestionInExam(
   examId: string,
   questionId: string,
   question: QuestionUpdateRequest
-): Promise<QuestionResponse> {
-  console.log('Updating question in exam:', questionId);
-  
+): Promise<QuestionResponse> {  
   const response = await axiosInstance.put(
     `/exams/${examId}/questions/${questionId}`,
     question

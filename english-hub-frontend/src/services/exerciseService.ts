@@ -113,7 +113,5 @@ export async function getQuestionGroupsFromExercise(
   const response = await axiosInstance.get(
     `/courses/${courseId}/exercises/${exerciseId}/questions/groups`
   );
-  console.log('getQuestionGroupsFromExercise', response.data.result);
-
   return response.data.result;
 }
