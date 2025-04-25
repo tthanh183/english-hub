@@ -124,6 +124,7 @@ public class ExamServiceImpl implements ExamService {
 
         return exam.getQuestions()
                 .stream()
+                .sorted(Comparator.comparing(Question::getCreatedAt))
                 .map(questionService::mapQuestionToResponse)
                 .collect(Collectors.toList());
     }

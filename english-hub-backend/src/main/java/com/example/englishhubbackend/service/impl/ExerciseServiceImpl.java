@@ -142,8 +142,9 @@ public class ExerciseServiceImpl implements ExerciseService {
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     return exercise.getQuestions().stream()
-        .map(questionService::mapQuestionToResponse)
-        .collect(Collectors.toList());
+            .sorted(Comparator.comparing(Question::getCreatedAt))
+            .map(questionService::mapQuestionToResponse)
+            .collect(Collectors.toList());
   }
 
   @Override
