@@ -60,7 +60,7 @@ export default function ExercisePage() {
       <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
         <div className="mb-4">
           {currentGroup?.audioUrl && (
-            <AudioPlayer src={currentGroup.audioUrl} />
+            <AudioPlayer key={currentGroup.audioUrl} src={currentGroup.audioUrl} />
           )}
 
           {currentGroup?.imageUrl && (
