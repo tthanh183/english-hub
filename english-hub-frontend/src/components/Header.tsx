@@ -9,7 +9,7 @@ export default function Header() {
     { title: 'Learning Path', href: '/learning-path' },
     { title: 'Practice L&R', href: '/courses/listening-reading' },
     { title: 'Practice S&W', href: '/courses/speaking-writing' },
-    { title: 'Mock Tests', href: '/mock-tests' },
+    { title: 'Mock Tests', href: '/exams' },
     { title: 'Grammar', href: '/grammar' },
     { title: 'Vocabulary', href: '/vocabulary' },
     { title: 'Blog', href: '/blog' },

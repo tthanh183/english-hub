@@ -5,7 +5,6 @@ import { Spinner } from '../Spinner';
 import { Save } from 'lucide-react';
 import { isAxiosError } from 'axios';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { addQuestionToExercise, updateQuestionInExercise } from '@/services/exerciseService';
 import {
   QuestionCreateRequest,
   QuestionResponse,
@@ -17,29 +16,36 @@ import { useParams } from 'react-router-dom';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 import QuestionCard from './QuestionCard';
+import {
+  addQuestionToExercise,
+  updateQuestionInExercise,
+} from '@/services/exerciseService';
+import {
+  addQuestionToExam,
+  updateQuestionInExam,
+} from '@/services/examService';
 
 type Part2DialogProps = {
   exerciseId?: string;
+  examId?: string;
   question?: QuestionResponse;
 };
 
 export default function Part2Dialog({
   exerciseId,
+  examId,
   question,
 }: Part2DialogProps) {
   const isEditMode = !!question;
 
   const [title, setTitle] = useState<string>('');
-
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioPreview, setAudioPreview] = useState<string | null>(
     question?.audioUrl || null
   );
-
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState<number>(
     question?.correctAnswer ? letterToIndex(question.correctAnswer) : 0
   );
-
   const [options, setOptions] = useState<string[]>(
     isEditMode
       ? [
@@ -86,29 +92,46 @@ export default function Part2Dialog({
   }, [audioPreview]);
 
   const saveMutation = useMutation({
-    mutationFn: (data: {
+    mutationFn: async (data: {
       courseId: string;
-      exerciseId: string;
+      exerciseId?: string;
+      examId?: string;
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        return updateQuestionInExercise(
-          data.courseId,
-          data.exerciseId,
-          question.id,
-          data.questionData as QuestionUpdateRequest
-        );
+        if (data.exerciseId) {
+          return updateQuestionInExercise(
+            data.courseId,
+            data.exerciseId,
+            question.id,
+            data.questionData as QuestionUpdateRequest
+          );
+        } else if (data.examId) {
+          return updateQuestionInExam(
+            data.examId,
+            question.id,
+            data.questionData as QuestionUpdateRequest
+          );
+        }
       } else {
-        return addQuestionToExercise(
-          data.courseId,
-          data.exerciseId,
-          data.questionData as QuestionCreateRequest
-        );
+        if (data.exerciseId) {
+          return addQuestionToExercise(
+            data.courseId,
+            data.exerciseId,
+            data.questionData as QuestionCreateRequest
+          );
+        } else if (data.examId) {
+          return addQuestionToExam(
+            data.examId,
+            data.questionData as QuestionCreateRequest
+          );
+        }
       }
+      throw new Error('Either exerciseId or examId must be provided.');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId],
+        queryKey: ['questions', variables.exerciseId || variables.examId],
       });
       if (isEditMode) {
         showSuccess('Question updated successfully');
@@ -120,6 +143,7 @@ export default function Part2Dialog({
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
+        console.log(error);
         showError('Something went wrong');
       }
     },
@@ -155,6 +179,11 @@ export default function Part2Dialog({
   };
 
   const handleSaveQuestion = async () => {
+    if (!title) {
+      showError('Please enter a title');
+      return;
+    }
+
     if (!isEditMode && !audioFile) {
       showError('Please upload an audio file');
       return;
@@ -186,6 +215,7 @@ export default function Part2Dialog({
     saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
+      examId: examId || '',
       questionData,
     });
   };

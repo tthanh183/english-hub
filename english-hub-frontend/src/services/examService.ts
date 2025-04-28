@@ -44,6 +44,8 @@ export async function addQuestionToExam(
     `/exams/${examId}/question`,
     question
   );
+  console.log(response.data.result);
+  
   return response.data.result;
 }
 

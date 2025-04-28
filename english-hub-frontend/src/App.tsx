@@ -19,6 +19,8 @@ import UserManagementPage from '@/pages/admin/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import ExamManagementPage from '@/pages/admin/ExamManagementPage';
 import ExamQuestionsManagementPage from './pages/admin/ExamQuestionsManagementPage';
+import ExamPage from './pages/home/ExamPage';
+import ExamDetailPage from './pages/home/ExamDetailPage';
 
 function App() {
   return (
@@ -35,9 +37,15 @@ function App() {
             path={ROUTES.COURSES_LISTENING_READING}
             element={<ListeningReadingPage />}
           />
-          <Route path={ROUTES.COURSE_DETAIL} element={<HomeCourseDetailPage />} />
+          <Route
+            path={ROUTES.COURSE_DETAIL}
+            element={<HomeCourseDetailPage />}
+          />
           <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
           <Route path={ROUTES.EXERCISE_DETAIL} element={<ExercisePage />} />
+
+          <Route path={ROUTES.EXAM} element={<ExamPage />} />
+          <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

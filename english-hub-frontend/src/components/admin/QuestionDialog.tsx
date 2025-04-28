@@ -102,7 +102,13 @@ export default function QuestionDialog({
         );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
-        return <Part2Dialog exerciseId={exerciseId} question={question} />;
+        return (
+          <Part2Dialog
+            exerciseId={exerciseId}
+            question={question}
+            examId={examId}
+          />
+        );
 
       case QuestionType.PART_3_CONVERSATIONS:
         return <Part3Dialog exerciseId={exerciseId} question={question} />;
