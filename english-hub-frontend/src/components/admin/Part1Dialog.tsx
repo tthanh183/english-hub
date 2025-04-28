@@ -140,6 +140,9 @@ export default function Part1Dialog({
   });
 
   const resetContentState = () => {
+    if (audioPreview && !audioPreview.startsWith('http')) {
+      URL.revokeObjectURL(audioPreview);
+    }
     setImageFile(null);
     setImagePreview(null);
     setAudioFile(null);
