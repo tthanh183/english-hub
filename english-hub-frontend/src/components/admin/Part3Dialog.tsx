@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useParams } from 'react-router-dom';
 import { Save } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   QuestionCreateRequest,
@@ -21,9 +21,10 @@ import {
 } from '@/services/examService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
-import { indexToLetter } from '@/utils/questionUtil';
+import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 import QuestionCard from './QuestionCard';
+import { getAllQuestionByGroupId } from '@/services/questionService';
 
 type Part3DialogProps = {
   exerciseId?: string;
@@ -59,6 +60,67 @@ export default function Part3Dialog({
 
   const [options3, setOptions3] = useState<string[]>(['', '', '', '']);
   const [correctAnswer3Index, setCorrectAnswer3Index] = useState<number>(0);
+
+  const [groupQuestions, setGroupQuestions] = useState<QuestionResponse[]>([]);
+
+  useEffect(() => {
+    const fetchGroupQuestions = async () => {
+      if (isEditMode && question?.groupId) {
+        try {
+          const questions = await getAllQuestionByGroupId(question.groupId);
+          setGroupQuestions(questions);
+
+          if (questions.length >= 3) {
+            setAudioPreview(questions[0].audioUrl || null);
+            setImagePreview(questions[0].imageUrl || null);
+
+            setTitle1(questions[0].title || '');
+            setOptions1([
+              questions[0].choiceA || '',
+              questions[0].choiceB || '',
+              questions[0].choiceC || '',
+              questions[0].choiceD || '',
+            ]);
+            setCorrectAnswer1Index(
+              questions[0].correctAnswer
+                ? letterToIndex(questions[0].correctAnswer)
+                : 0
+            );
+
+            setTitle2(questions[1].title || '');
+            setOptions2([
+              questions[1].choiceA || '',
+              questions[1].choiceB || '',
+              questions[1].choiceC || '',
+              questions[1].choiceD || '',
+            ]);
+            setCorrectAnswer2Index(
+              questions[1].correctAnswer
+                ? letterToIndex(questions[1].correctAnswer)
+                : 0
+            );
+
+            setTitle3(questions[2].title || '');
+            setOptions3([
+              questions[2].choiceA || '',
+              questions[2].choiceB || '',
+              questions[2].choiceC || '',
+              questions[2].choiceD || '',
+            ]);
+            setCorrectAnswer3Index(
+              questions[2].correctAnswer
+                ? letterToIndex(questions[2].correctAnswer)
+                : 0
+            );
+          }
+        } catch (error) {
+          console.error('Failed to fetch group questions:', error);
+        }
+      }
+    };
+
+    fetchGroupQuestions();
+  }, [isEditMode, question]);
 
   const saveMutation = useMutation({
     mutationFn: async (data: {

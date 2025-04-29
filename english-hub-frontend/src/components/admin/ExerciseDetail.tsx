@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getQuestionsFromExercise } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
-import QuestionDialog from './QuestionDialog';
+import QuestionDialog from './exercise/ExerciseQuestionDialog';
 
 type ExerciseDetailCardProps = {
   selectedExercise?: ExerciseResponse;

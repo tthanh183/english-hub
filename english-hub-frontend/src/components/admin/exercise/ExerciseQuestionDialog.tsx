@@ -26,29 +26,27 @@ import {
   QuestionResponse,
   QuestionType,
 } from '@/types/questionType';
-import Part1Dialog from '@/components/admin/Part1Dialog';
-import Part2Dialog from './Part2Dialog';
-import Part3Dialog from './Part3Dialog';
-import Part4Dialog from './Part4Dialog';
-import Part5Dialog from './Part5Dialog';
-import Part6Dialog from './Part6Dialog';
-import Part7Dialog from './Part7Dialog';
+import ExercisePart1Dialog from './ExercisePart1Dialog';
+import Part2Dialog from '../Part2Dialog';
+import Part3Dialog from '../Part3Dialog';
+import Part4Dialog from '../Part4Dialog';
+import Part5Dialog from '../Part5Dialog';
+import Part6Dialog from '../Part6Dialog';
+import Part7Dialog from '../Part7Dialog';
 
-type QuestionDialogProps = {
+type ExerciseQuestionDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   exerciseId?: string;
-  examId?: string;
   question?: QuestionResponse;
 };
 
-export default function QuestionDialog({
+export default function ExerciseQuestionDialog({
   isOpen,
   onOpenChange,
   exerciseId,
-  examId,
   question,
-}: QuestionDialogProps) {
+}: ExerciseQuestionDialogProps) {
   const isEditMode = !!question;
 
   const [selectedPart, setSelectedPart] = useState<QuestionType>(
@@ -94,30 +92,14 @@ export default function QuestionDialog({
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
         return (
-          <Part1Dialog
-            exerciseId={exerciseId}
-            examId={examId}
-            question={question}
-          />
+          <ExercisePart1Dialog exerciseId={exerciseId} question={question} />
         );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
-        return (
-          <Part2Dialog
-            exerciseId={exerciseId}
-            question={question}
-            examId={examId}
-          />
-        );
+        return <Part2Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_3_CONVERSATIONS:
-        return (
-          <Part3Dialog
-            exerciseId={exerciseId}
-            question={question}
-            examId={examId}
-          />
-        );
+        return <Part3Dialog exerciseId={exerciseId} question={question} />;
 
       case QuestionType.PART_4_TALKS:
         return <Part4Dialog exerciseId={exerciseId} question={question} />;

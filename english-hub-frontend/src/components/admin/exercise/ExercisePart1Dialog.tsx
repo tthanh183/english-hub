@@ -8,7 +8,7 @@ import {
   QuestionType,
   QuestionUpdateRequest,
 } from '@/types/questionType';
-import { Spinner } from '../Spinner';
+import { Spinner } from '../../Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import {
   addQuestionToExercise,
@@ -19,23 +19,17 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
-import QuestionCard from './QuestionCard';
-import {
-  addQuestionToExam,
-  updateQuestionInExam,
-} from '@/services/examService';
+import QuestionCard from '../QuestionCard';
 
-type Part1DialogProps = {
+type ExercisePart1DialogProps = {
   exerciseId?: string;
-  examId?: string;
   question?: QuestionResponse;
 };
 
-export default function Part1Dialog({
+export default function ExercisePart1Dialog({
   exerciseId,
-  examId,
   question,
-}: Part1DialogProps) {
+}: ExercisePart1DialogProps) {
   const isEditMode = !!question;
 
   const [imageFile, setImageFile] = useState<File | null>();
@@ -80,44 +74,27 @@ export default function Part1Dialog({
   const saveMutation = useMutation({
     mutationFn: async (data: {
       courseId: string;
-      exerciseId?: string;
-      examId?: string;
+      exerciseId: string;
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        if (data.exerciseId) {
-          return updateQuestionInExercise(
-            data.courseId,
-            data.exerciseId,
-            question.id,
-            data.questionData as QuestionUpdateRequest
-          );
-        } else if (data.examId) {
-          return updateQuestionInExam(
-            data.examId,
-            question.id,
-            data.questionData as QuestionUpdateRequest
-          );
-        }
+        return updateQuestionInExercise(
+          data.courseId,
+          data.exerciseId,
+          question.id,
+          data.questionData as QuestionUpdateRequest
+        );
       } else {
-        if (data.exerciseId) {
-          return addQuestionToExercise(
-            data.courseId,
-            data.exerciseId,
-            data.questionData as QuestionCreateRequest
-          );
-        } else if (data.examId) {
-          return addQuestionToExam(
-            data.examId,
-            data.questionData as QuestionCreateRequest
-          );
-        }
+        return addQuestionToExercise(
+          data.courseId,
+          data.exerciseId,
+          data.questionData as QuestionCreateRequest
+        );
       }
-      throw new Error('Either exerciseId or examId must be provided.');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId || variables.examId],
+        queryKey: ['questions', variables.exerciseId],
       });
       if (isEditMode) {
         showSuccess('Question updated successfully');
@@ -237,7 +214,6 @@ export default function Part1Dialog({
     saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
-      examId: examId || '',
       questionData,
     });
   };
