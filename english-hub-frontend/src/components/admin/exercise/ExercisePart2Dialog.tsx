@@ -24,11 +24,13 @@ import { Spinner } from '@/components/Spinner';
 type ExercisePart2DialogProps = {
   exerciseId?: string;
   question?: QuestionResponse;
+  onClose: () => void;
 };
 
 export default function ExercisePart2Dialog({
   exerciseId,
   question,
+  onClose,
 }: ExercisePart2DialogProps) {
   const isEditMode = !!question;
 
@@ -77,7 +79,7 @@ export default function ExercisePart2Dialog({
     } else {
       resetContentState();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question]);
 
   useEffect(() => {
@@ -108,7 +110,6 @@ export default function ExercisePart2Dialog({
           data.questionData as QuestionCreateRequest
         );
       }
-      throw new Error('Either exerciseId or examId must be provided.');
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -130,6 +131,7 @@ export default function ExercisePart2Dialog({
     },
     onSettled: () => {
       resetContentState();
+      onClose();
     },
   });
 
@@ -226,8 +228,8 @@ export default function ExercisePart2Dialog({
       />
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button variant="outline" onClick={resetContentState}>
-          Reset
+        <Button variant="outline" onClick={onClose}>
+          Cancel
         </Button>
         <Button
           className="gap-1 w-[150px]"
