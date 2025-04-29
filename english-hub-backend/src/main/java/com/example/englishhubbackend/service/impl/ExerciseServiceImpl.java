@@ -193,9 +193,10 @@ public class ExerciseServiceImpl implements ExerciseService {
         groupResponse.setAudioUrl(listening.getAudio().getUrl());
         groupResponse.setImageUrl(listening.getImageUrl());
       } else if (first instanceof ReadingQuestion reading) {
-        groupResponse.setPassage(reading.getPassage().getContent());
+        if(reading.getPassage() != null) {
+          groupResponse.setPassage(reading.getPassage().getContent());
+        }
       }
-
       response.add(groupResponse);
     }
     return response;
