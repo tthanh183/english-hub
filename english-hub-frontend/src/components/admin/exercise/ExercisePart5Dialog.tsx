@@ -8,7 +8,7 @@ import {
   QuestionType,
   QuestionUpdateRequest,
 } from '@/types/questionType';
-import { Spinner } from '../Spinner';
+import { Spinner } from '@/components/Spinner';
 import {
   addQuestionToExercise,
   updateQuestionInExercise,
@@ -17,19 +17,19 @@ import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
-import QuestionCard from './QuestionCard';
+import QuestionCard from '@/components/admin/QuestionCard';
 
-type Part5DialogProps = {
+type ExercisePart5DialogProps = {
   exerciseId?: string;
-  examId?: string;
   question?: QuestionResponse;
+  onClose: () => void;
 };
 
-export default function Part5Dialog({
+export default function ExercisePart5Dialog({
   exerciseId,
-  examId,
   question,
-}: Part5DialogProps) {
+  onClose,
+}: ExercisePart5DialogProps) {
   const isEditMode = !!question;
   const { courseId } = useParams();
   const queryClient = useQueryClient();
@@ -56,28 +56,27 @@ export default function Part5Dialog({
   const saveMutation = useMutation({
     mutationFn: (data: {
       courseId: string;
-      exerciseId?: string;
-      examId?: string;
+      exerciseId: string;
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
         return updateQuestionInExercise(
           data.courseId,
-          data.exerciseId || data.examId || '',
+          data.exerciseId,
           question.id,
           data.questionData as QuestionUpdateRequest
         );
       } else {
         return addQuestionToExercise(
           data.courseId,
-          data.exerciseId || data.examId || '',
+          data.exerciseId,
           data.questionData as QuestionCreateRequest
         );
       }
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId || variables.examId],
+        queryKey: ['questions', variables.exerciseId],
       });
       if (isEditMode) {
         showSuccess('Question updated successfully');
@@ -93,9 +92,8 @@ export default function Part5Dialog({
       }
     },
     onSettled: () => {
-      if (!isEditMode) {
-        resetContentState();
-      }
+      resetContentState();
+      onClose();
     },
   });
 
@@ -129,7 +127,6 @@ export default function Part5Dialog({
     saveMutation.mutate({
       courseId: courseId || '',
       exerciseId: exerciseId || '',
-      examId: examId || '',
       questionData,
     });
   };
@@ -149,7 +146,7 @@ export default function Part5Dialog({
       </div>
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button variant="outline" onClick={() => resetContentState()}>
+        <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
         <Button

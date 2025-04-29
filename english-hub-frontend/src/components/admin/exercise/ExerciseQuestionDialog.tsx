@@ -27,12 +27,12 @@ import {
   QuestionType,
 } from '@/types/questionType';
 import ExercisePart1Dialog from './ExercisePart1Dialog';
-import Part5Dialog from '../Part5Dialog';
 import Part6Dialog from '../Part6Dialog';
 import Part7Dialog from '../Part7Dialog';
 import ExercisePart2Dialog from './ExercisePart2Dialog';
 import ExercisePart3Dialog from './ExercisePart3Dialog';
 import ExercisePart4Dialog from './ExercisePart4Dialog';
+import ExercisePart5Dialog from './ExercisePart5Dialog';
 
 type ExerciseQuestionDialogProps = {
   isOpen: boolean;
@@ -127,7 +127,13 @@ export default function ExerciseQuestionDialog({
         );
 
       case QuestionType.PART_5_INCOMPLETE_SENTENCES:
-        return <Part5Dialog exerciseId={exerciseId} question={question} />;
+        return (
+          <ExercisePart5Dialog
+            exerciseId={exerciseId}
+            question={question}
+            onClose={() => onOpenChange(false)}
+          />
+        );
 
       case QuestionType.PART_6_TEXT_COMPLETION:
         return <Part6Dialog exerciseId={exerciseId} question={question} />;
