@@ -60,13 +60,16 @@ export default function ExamQuestionsManagementPage() {
     queryFn: () => getQuestionsFromExam(examId || ''),
   });
 
-  // Filter questions based on search term and active tab
+  // Lọc câu hỏi dựa trên activeTab và searchTerm
   const filteredQuestions = questions.filter(question => {
     const matchesSearch = question.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-    return matchesSearch;
+    const matchesTab =
+      activeTab === 'all' || question.questionType === activeTab;
+
+    return matchesSearch && matchesTab;
   });
 
   const handleEditQuestion = (question: QuestionResponse) => {
@@ -134,13 +137,26 @@ export default function ExamQuestionsManagementPage() {
 
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex flex-wrap w-full">
-          <TabsTrigger value="listening-part1">Part 1</TabsTrigger>
-          <TabsTrigger value="listening-part2">Part 2</TabsTrigger>
-          <TabsTrigger value="listening-part3">Part 3</TabsTrigger>
-          <TabsTrigger value="listening-part4">Part 4</TabsTrigger>
-          <TabsTrigger value="reading-part5">Part 5</TabsTrigger>
-          <TabsTrigger value="reading-part6">Part 6</TabsTrigger>
-          <TabsTrigger value="reading-part7">Part 7</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_1_PHOTOGRAPHS}>
+            Part 1
+          </TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_2_QUESTION_RESPONSES}>
+            Part 2
+          </TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_3_CONVERSATIONS}>
+            Part 3
+          </TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_4_TALKS}>Part 4</TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_5_INCOMPLETE_SENTENCES}>
+            Part 5
+          </TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_6_TEXT_COMPLETION}>
+            Part 6
+          </TabsTrigger>
+          <TabsTrigger value={QuestionType.PART_7_READING_COMPREHENSION}>
+            Part 7
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
