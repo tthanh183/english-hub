@@ -74,7 +74,10 @@ export default function ExercisePart2Dialog({
         const index = letterToIndex(question.correctAnswer);
         setCorrectAnswerIndex(index);
       }
+    } else {
+      resetContentState();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question]);
 
   useEffect(() => {

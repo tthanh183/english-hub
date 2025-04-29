@@ -66,6 +66,7 @@ export default function ExercisePart1Dialog({
     } else {
       resetContentState();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question]);
 
   const { courseId } = useParams();
