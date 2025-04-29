@@ -119,7 +119,11 @@ export default function ExerciseQuestionDialog({
 
       case QuestionType.PART_4_TALKS:
         return (
-          <ExercisePart4Dialog exerciseId={exerciseId} question={question} />
+          <ExercisePart4Dialog
+            exerciseId={exerciseId}
+            question={question}
+            onClose={() => onOpenChange(false)}
+          />
         );
 
       case QuestionType.PART_5_INCOMPLETE_SENTENCES:

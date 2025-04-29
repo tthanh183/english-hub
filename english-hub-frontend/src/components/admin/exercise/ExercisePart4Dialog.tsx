@@ -25,11 +25,13 @@ import QuestionCard from '../QuestionCard';
 type ExercisePart4DialogProps = {
   exerciseId?: string;
   question?: QuestionResponse;
+  onClose: () => void;
 };
 
 export default function ExercisePart4Dialog({
   exerciseId,
   question,
+  onClose,
 }: ExercisePart4DialogProps) {
   const isEditMode = !!question;
   const { courseId } = useParams();
@@ -166,9 +168,8 @@ export default function ExercisePart4Dialog({
       }
     },
     onSettled: () => {
-      if (!isEditMode) {
-        resetContentState();
-      }
+      resetContentState();
+      onClose();
     },
   });
 
@@ -455,7 +456,9 @@ export default function ExercisePart4Dialog({
       />
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
         <Button
           className="gap-1 w-[150px]"
           onClick={handleSaveQuestion}
