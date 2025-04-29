@@ -20,7 +20,7 @@ import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
-import QuestionCard from '../QuestionCard';
+import QuestionCard from '@/components/admin/QuestionCard';
 
 type ExercisePart4DialogProps = {
   exerciseId?: string;
