@@ -8,7 +8,7 @@ import {
   QuestionType,
   QuestionUpdateRequest,
 } from '@/types/questionType';
-import { Spinner } from '../../Spinner';
+import { Spinner } from '@/components/Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import {
   addQuestionToExercise,
