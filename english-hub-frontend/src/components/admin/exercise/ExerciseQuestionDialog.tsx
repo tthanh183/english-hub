@@ -27,12 +27,12 @@ import {
   QuestionType,
 } from '@/types/questionType';
 import ExercisePart1Dialog from './ExercisePart1Dialog';
-import Part2Dialog from '../Part2Dialog';
 import Part3Dialog from '../Part3Dialog';
 import Part4Dialog from '../Part4Dialog';
 import Part5Dialog from '../Part5Dialog';
 import Part6Dialog from '../Part6Dialog';
 import Part7Dialog from '../Part7Dialog';
+import ExercisePart2Dialog from './ExercisePart2Dialog';
 
 type ExerciseQuestionDialogProps = {
   isOpen: boolean;
@@ -96,7 +96,9 @@ export default function ExerciseQuestionDialog({
         );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:
-        return <Part2Dialog exerciseId={exerciseId} question={question} />;
+        return (
+          <ExercisePart2Dialog exerciseId={exerciseId} question={question} />
+        );
 
       case QuestionType.PART_3_CONVERSATIONS:
         return <Part3Dialog exerciseId={exerciseId} question={question} />;
