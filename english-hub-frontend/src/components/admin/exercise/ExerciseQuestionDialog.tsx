@@ -92,7 +92,11 @@ export default function ExerciseQuestionDialog({
     switch (part) {
       case QuestionType.PART_1_PHOTOGRAPHS:
         return (
-          <ExercisePart1Dialog exerciseId={exerciseId} question={question} />
+          <ExercisePart1Dialog
+            exerciseId={exerciseId}
+            question={question}
+            onClose={() => onOpenChange(false)}
+          />
         );
 
       case QuestionType.PART_2_QUESTION_RESPONSES:

@@ -24,11 +24,13 @@ import QuestionCard from '../QuestionCard';
 type ExercisePart1DialogProps = {
   exerciseId?: string;
   question?: QuestionResponse;
+  onClose: () => void;
 };
 
 export default function ExercisePart1Dialog({
   exerciseId,
   question,
+  onClose,
 }: ExercisePart1DialogProps) {
   const isEditMode = !!question;
 
@@ -111,9 +113,8 @@ export default function ExercisePart1Dialog({
       }
     },
     onSettled: () => {
-      if (!isEditMode) {
-        resetContentState();
-      }
+      resetContentState();
+      onClose();
     },
   });
 
@@ -262,7 +263,7 @@ export default function ExercisePart1Dialog({
       />
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button variant="outline" onClick={() => resetContentState()}>
+        <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
         <Button
