@@ -110,7 +110,11 @@ export default function ExerciseQuestionDialog({
 
       case QuestionType.PART_3_CONVERSATIONS:
         return (
-          <ExercisePart3Dialog exerciseId={exerciseId} question={question} />
+          <ExercisePart3Dialog
+            exerciseId={exerciseId}
+            question={question}
+            onClose={() => onOpenChange(false)}
+          />
         );
 
       case QuestionType.PART_4_TALKS:
