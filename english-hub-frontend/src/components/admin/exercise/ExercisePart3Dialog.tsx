@@ -41,7 +41,9 @@ export default function ExercisePart3Dialog({
   );
 
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    question?.imageUrl || null
+  );
 
   const [groupId, setGroupId] = useState<string | null>(null);
 
@@ -60,7 +62,6 @@ export default function ExercisePart3Dialog({
 
   useEffect(() => {
     if (isEditMode && question?.groupId) {
-      console.log('Group ID:', question.groupId);
       setGroupId(question.groupId);
     }
   }, [isEditMode, question]);
@@ -84,15 +85,11 @@ export default function ExercisePart3Dialog({
         (a.title || '').localeCompare(b.title || '')
       );
 
-      console.log('Sorted questions:', sortedQuestions);
-
       if (sortedQuestions[0].audioUrl) {
-        console.log('Setting audio preview to:', sortedQuestions[0].audioUrl);
         setAudioPreview(sortedQuestions[0].audioUrl);
       }
 
       if (sortedQuestions[0].imageUrl) {
-        console.log('Setting image preview to:', sortedQuestions[0].imageUrl);
         setImagePreview(sortedQuestions[0].imageUrl);
       }
 

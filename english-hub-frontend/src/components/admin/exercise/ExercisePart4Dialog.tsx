@@ -36,7 +36,15 @@ export default function ExercisePart4Dialog({
   const queryClient = useQueryClient();
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioPreview, setAudioPreview] = useState<string | null>(null);
+  const [audioPreview, setAudioPreview] = useState<string | null>(
+    question?.audioUrl || null
+  );
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    question?.imageUrl || null
+  );
+
   const [groupId, setGroupId] = useState<string | null>(null);
 
   const [title1, setTitle1] = useState('');
@@ -61,10 +69,10 @@ export default function ExercisePart4Dialog({
   const groupQuestionsQuery = useQuery({
     queryKey: ['groupQuestions', groupId],
     queryFn: async () => {
-      if (!isEditMode || !groupId || (!exerciseId && !examId)) return null;
+      if (!isEditMode || !groupId || !exerciseId) return null;
       return getAllQuestionByGroupId(groupId);
     },
-    enabled: !!isEditMode && !!groupId && (!!exerciseId || !!examId),
+    enabled: !!isEditMode && !!groupId && !!exerciseId,
   });
 
   useEffect(() => {
@@ -79,6 +87,10 @@ export default function ExercisePart4Dialog({
 
       if (sortedQuestions[0].audioUrl) {
         setAudioPreview(sortedQuestions[0].audioUrl);
+      }
+
+      if (sortedQuestions[0].imageUrl) {
+        setImagePreview(sortedQuestions[0].imageUrl);
       }
 
       setTitle1(sortedQuestions[0].title || '');
@@ -120,8 +132,7 @@ export default function ExercisePart4Dialog({
   const saveMutation = useMutation({
     mutationFn: async (data: {
       courseId: string;
-      exerciseId?: string;
-      examId?: string;
+      exerciseId: string;
       questionData: QuestionCreateRequest[];
     }) => {
       if (isEditMode && groupQuestionsQuery.data) {
@@ -132,7 +143,7 @@ export default function ExercisePart4Dialog({
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId || variables.examId],
+        queryKey: ['questions', variables.exerciseId],
       });
 
       if (groupId) {
@@ -166,8 +177,15 @@ export default function ExercisePart4Dialog({
       URL.revokeObjectURL(audioPreview);
     }
 
+    if (imagePreview && !imagePreview.startsWith('http')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
     setAudioFile(null);
     setAudioPreview(null);
+
+    setImageFile(null);
+    setImagePreview(null);
 
     setTitle1('');
     setTitle2('');
@@ -199,6 +217,22 @@ export default function ExercisePart4Dialog({
     setAudioPreview(null);
   };
 
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const handleImageClear = () => {
+    if (imagePreview && !imagePreview.startsWith('http')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSaveQuestion = async () => {
     try {
       if (!title1 || !title2 || !title3) {
@@ -212,6 +246,7 @@ export default function ExercisePart4Dialog({
       }
 
       let audioUrl = audioPreview || '';
+      let imageUrl = imagePreview || '';
 
       if (audioFile) {
         if (isEditMode && audioPreview && audioPreview.startsWith('http')) {
@@ -225,10 +260,23 @@ export default function ExercisePart4Dialog({
         audioUrl = await uploadFileToS3(audioFile);
       }
 
+      if (imageFile) {
+        if (isEditMode && imagePreview && imagePreview.startsWith('http')) {
+          try {
+            await deleteFileFromS3(imagePreview);
+          } catch (error) {
+            console.error('Failed to delete old image file', error);
+          }
+        }
+
+        imageUrl = await uploadFileToS3(imageFile);
+      }
+
       const question1: QuestionCreateRequest = {
         title: title1,
         questionType: QuestionType.PART_4_TALKS,
         audioUrl: audioUrl,
+        imageUrl: imageUrl,
         choiceA: options1[0],
         choiceB: options1[1],
         choiceC: options1[2],
@@ -240,6 +288,7 @@ export default function ExercisePart4Dialog({
         title: title2,
         questionType: QuestionType.PART_4_TALKS,
         audioUrl: audioUrl,
+        imageUrl: imageUrl,
         choiceA: options2[0],
         choiceB: options2[1],
         choiceC: options2[2],
@@ -251,6 +300,7 @@ export default function ExercisePart4Dialog({
         title: title3,
         questionType: QuestionType.PART_4_TALKS,
         audioUrl: audioUrl,
+        imageUrl: imageUrl,
         choiceA: options3[0],
         choiceB: options3[1],
         choiceC: options3[2],
@@ -261,7 +311,6 @@ export default function ExercisePart4Dialog({
       saveMutation.mutate({
         courseId: courseId || '',
         exerciseId: exerciseId || '',
-        examId: examId || '',
         questionData: [question1, question2, question3],
       });
     } catch (error) {
@@ -272,21 +321,19 @@ export default function ExercisePart4Dialog({
 
   const handleAddQuestion = async (data: {
     courseId: string;
-    exerciseId?: string;
-    examId?: string;
+    exerciseId: string;
     questionData: QuestionCreateRequest[];
   }) => {
     return addQuestionsToExercise(
       data.courseId,
-      data.exerciseId || data.examId || '',
+      data.exerciseId,
       data.questionData
     );
   };
 
   const handleUpdateQuestion = async (data: {
     courseId: string;
-    exerciseId?: string;
-    examId?: string;
+    exerciseId: string;
     questionData: QuestionUpdateRequest[];
   }) => {
     if (!groupQuestionsQuery.data || groupQuestionsQuery.data.length !== 3) {
@@ -312,7 +359,7 @@ export default function ExercisePart4Dialog({
       results.push(
         await updateQuestionInExercise(
           data.courseId,
-          data.exerciseId || data.examId || '',
+          data.exerciseId,
           question.id,
           question
         )
@@ -327,8 +374,11 @@ export default function ExercisePart4Dialog({
       if (audioPreview && !audioPreview.startsWith('http')) {
         URL.revokeObjectURL(audioPreview);
       }
+      if (imagePreview && !imagePreview.startsWith('http')) {
+        URL.revokeObjectURL(imagePreview);
+      }
     };
-  }, [audioPreview]);
+  }, [audioPreview, imagePreview]);
 
   if (isEditMode && groupQuestionsQuery.isLoading) {
     return (
@@ -356,17 +406,22 @@ export default function ExercisePart4Dialog({
 
   return (
     <>
-      <div className="mb-10">
-        <div className="w-full max-w-md mx-auto">
-          <MediaUploader
-            type="audio"
-            value={audioPreview}
-            onChange={handleAudioChange}
-            onClear={handleAudioClear}
-            label="Audio File"
-            className="max-h-[250px]"
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MediaUploader
+          type="image"
+          value={imagePreview}
+          onChange={handleImageChange}
+          onClear={handleImageClear}
+          label="Photograph"
+        />
+
+        <MediaUploader
+          type="audio"
+          value={audioPreview}
+          onChange={handleAudioChange}
+          onClear={handleAudioClear}
+          label="Audio File"
+        />
       </div>
 
       <QuestionCard
@@ -400,9 +455,7 @@ export default function ExercisePart4Dialog({
       />
 
       <div className="flex justify-end gap-3 mt-8">
-        <Button variant="outline" onClick={() => resetContentState()}>
-          Cancel
-        </Button>
+        <Button variant="outline">Cancel</Button>
         <Button
           className="gap-1 w-[150px]"
           onClick={handleSaveQuestion}
