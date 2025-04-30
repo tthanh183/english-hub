@@ -48,6 +48,7 @@ export type QuestionResponse = {
   id: string;
   title: string;
   questionType: QuestionType;
+  createdAt: Date;
   audioUrl?: string;
   imageUrl?: string;
   passage?: string;
@@ -57,6 +58,7 @@ export type QuestionResponse = {
   choiceD?: string;
   correctAnswer: string;
   groupId: string;
+
 };
 
 export type QuestionGroupResponse = {
