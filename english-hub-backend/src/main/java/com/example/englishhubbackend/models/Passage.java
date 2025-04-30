@@ -1,9 +1,7 @@
 package com.example.englishhubbackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,5 +17,6 @@ public class Passage {
   @GeneratedValue(strategy = GenerationType.UUID)
   UUID id;
 
+  @Column(columnDefinition = "TEXT")
   String content;
 }

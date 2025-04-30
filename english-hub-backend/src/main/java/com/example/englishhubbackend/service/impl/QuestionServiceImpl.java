@@ -9,10 +9,8 @@ import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.QuestionMapper;
 import com.example.englishhubbackend.models.*;
 import com.example.englishhubbackend.repository.QuestionRepository;
-import com.example.englishhubbackend.service.AudioService;
-import com.example.englishhubbackend.service.QuestionService;
-import com.example.englishhubbackend.service.QuestionTypeService;
-import com.example.englishhubbackend.service.S3Service;
+import com.example.englishhubbackend.service.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +30,7 @@ public class QuestionServiceImpl implements QuestionService {
   QuestionMapper questionMapper;
   S3Service s3Service;
   AudioService audioService;
+  PassageService passageService;
   QuestionTypeService questionTypeService;
 
   @Override
@@ -40,7 +39,10 @@ public class QuestionServiceImpl implements QuestionService {
     String questionTypeName = questionType.getName();
     Question question;
 
-    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())) {
+    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name()) ||
+            questionTypeName.equals(QuestionTypeEnum.PART_4_TALKS.name() )) {
       ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
@@ -55,21 +57,6 @@ public class QuestionServiceImpl implements QuestionService {
 
       question = listeningQuestion;
 
-    } else if (questionTypeName.equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_4_TALKS.name())) {
-      ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
-      listeningQuestion.setQuestionType(questionType);
-
-      Audio audio = new Audio();
-      audio.setUrl(request.getAudioUrl());
-      audioService.saveAudio(audio);
-      listeningQuestion.setAudio(audio);
-
-      listeningQuestion.setImageUrl(null);
-
-      question = listeningQuestion;
-
     } else if (questionTypeName.equals(QuestionTypeEnum.PART_5_INCOMPLETE_SENTENCES.name()) ||
             questionTypeName.equals(QuestionTypeEnum.PART_6_TEXT_COMPLETION.name()) ||
             questionTypeName.equals(QuestionTypeEnum.PART_7_READING_COMPREHENSION.name())) {
@@ -79,11 +66,11 @@ public class QuestionServiceImpl implements QuestionService {
       if (request.getPassage() != null && !request.getPassage().isEmpty()) {
         Passage passage = new Passage();
         passage.setContent(request.getPassage());
+        passageService.savePassage(passage);
         readingQuestion.setPassage(passage);
       }
 
       question = readingQuestion;
-
     } else {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }
@@ -128,9 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
       question.setAudio(audio);
     }
 
-    String questionTypeName = question.getQuestionType().getName();
-
-    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())) {
+    if (request.getImageUrl() != null) {
       question.setImageUrl(request.getImageUrl());
     } else {
       question.setImageUrl(null);
@@ -143,11 +128,16 @@ public class QuestionServiceImpl implements QuestionService {
   private ReadingQuestion updateReadingQuestion(ReadingQuestion question, QuestionUpdateRequest request) {
     questionMapper.toReadingQuestion(request, question);
 
-    if (request.getPassage() != null && question.getPassage() != null) {
-      question.getPassage().setContent(request.getPassage());
-    } else if (request.getPassage() != null) {
-      Passage passage = new Passage();
-      passage.setContent(request.getPassage());
+    if(request.getPassage() != null) {
+      Passage passage = question.getPassage();
+      if(passage != null) {
+        passage.setContent(request.getPassage());
+        passageService.savePassage(passage);
+      } else {
+        passage = new Passage();
+        passage.setContent(request.getPassage());
+        passageService.savePassage(passage);
+      }
       question.setPassage(passage);
     }
 
