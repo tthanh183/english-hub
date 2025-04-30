@@ -8,6 +8,8 @@ import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.QuestionMapper;
 import com.example.englishhubbackend.models.*;
+import com.example.englishhubbackend.repository.AudioRepository;
+import com.example.englishhubbackend.repository.PassageRepository;
 import com.example.englishhubbackend.repository.QuestionRepository;
 import com.example.englishhubbackend.service.*;
 
@@ -28,10 +30,11 @@ import org.springframework.stereotype.Service;
 public class QuestionServiceImpl implements QuestionService {
   QuestionRepository questionRepository;
   QuestionMapper questionMapper;
-  S3Service s3Service;
   AudioService audioService;
   PassageService passageService;
   QuestionTypeService questionTypeService;
+  AudioRepository audioRepository;
+  PassageRepository passageRepository;
 
   @Override
   public Question createQuestionEntity(QuestionCreateRequest request) {
@@ -46,9 +49,12 @@ public class QuestionServiceImpl implements QuestionService {
       ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
-      Audio audio = new Audio();
-      audio.setUrl(request.getAudioUrl());
-      audioService.saveAudio(audio);
+      Audio audio = audioRepository.findByUrl(request.getAudioUrl());
+      if (audio == null) {
+        audio = new Audio();
+        audio.setUrl(request.getAudioUrl());
+        audioRepository.save(audio);
+      }
       listeningQuestion.setAudio(audio);
 
       if (request.getImageUrl() != null) {
@@ -64,9 +70,12 @@ public class QuestionServiceImpl implements QuestionService {
       readingQuestion.setQuestionType(questionType);
 
       if (request.getPassage() != null && !request.getPassage().isEmpty()) {
-        Passage passage = new Passage();
-        passage.setContent(request.getPassage());
-        passageService.savePassage(passage);
+        Passage passage = passageRepository.findByContent(request.getPassage());
+        if(passage == null) {
+          passage = new Passage();
+          passage.setContent(request.getPassage());
+          passageRepository.save(passage);
+        }
         readingQuestion.setPassage(passage);
       }
 
@@ -108,8 +117,13 @@ public class QuestionServiceImpl implements QuestionService {
         audio.setUrl(request.getAudioUrl());
         audioService.saveAudio(audio);
       } else {
-        audio = new Audio();
-        audio.setUrl(request.getAudioUrl());
+        Audio existingAudio = audioRepository.findByUrl(request.getAudioUrl());
+        if(existingAudio != null) {
+          audio = existingAudio;
+        } else {
+          audio = new Audio();
+          audio.setUrl(request.getAudioUrl());
+        }
         audioService.saveAudio(audio);
       }
       question.setAudio(audio);
@@ -134,8 +148,13 @@ public class QuestionServiceImpl implements QuestionService {
         passage.setContent(request.getPassage());
         passageService.savePassage(passage);
       } else {
-        passage = new Passage();
-        passage.setContent(request.getPassage());
+        Passage existingPassage = passageRepository.findByContent(request.getPassage());
+        if(existingPassage != null) {
+          passage = existingPassage;
+        } else {
+          passage = new Passage();
+          passage.setContent(request.getPassage());
+        }
         passageService.savePassage(passage);
       }
       question.setPassage(passage);
