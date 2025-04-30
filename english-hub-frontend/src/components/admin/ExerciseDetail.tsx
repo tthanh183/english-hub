@@ -108,7 +108,15 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {question.title}
+                      {question.title.length > 50 ? (
+                        <p className="text-sm font-medium text-muted-foreground truncate max-w-[700px]">
+                          {question.title}
+                        </p>
+                      ) : (
+                        <p className="text-sm font-medium text-muted-foreground">
+                          {question.title}
+                        </p>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
