@@ -19,7 +19,7 @@ type QuestionCardProps = {
   setOptions: (options: string[]) => void;
   correctAnswerIndex: number;
   setCorrectAnswerIndex: (index: number) => void;
-  part: 'part1' | 'part2' | 'part3' | 'part4' | 'part5' | 'part6';
+  part: 'part1' | 'part2' | 'part3' | 'part4' | 'part5' | 'part6' | 'part7';
 };
 
 const PART_OPTIONS = {
