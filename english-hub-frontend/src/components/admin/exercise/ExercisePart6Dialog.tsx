@@ -70,9 +70,11 @@ export default function ExercisePart6Dialog({
       groupQuestionsQuery.data &&
       groupQuestionsQuery.data.length === 4
     ) {
-      const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
-        (a.title || '').localeCompare(b.title || '')
-      );
+      const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateA - dateB;
+      });
 
       setPassage(question.passage || '');
 
