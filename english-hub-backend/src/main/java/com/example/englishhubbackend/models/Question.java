@@ -21,6 +21,7 @@ public abstract class Question {
   @GeneratedValue(strategy = GenerationType.UUID)
   UUID id;
 
+  @Column(columnDefinition = "TEXT")
   String title;
 
   @ManyToOne

@@ -15,6 +15,7 @@ import com.example.englishhubbackend.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -167,6 +168,7 @@ public class QuestionServiceImpl implements QuestionService {
   public List<QuestionResponse> getQuestionsByGroupId(UUID groupId) {
     return questionRepository.findAllByGroupId(groupId)
             .stream()
+            .sorted(Comparator.comparing(Question::getCreatedAt))
             .map(this::mapQuestionToResponse)
             .toList();
   }
