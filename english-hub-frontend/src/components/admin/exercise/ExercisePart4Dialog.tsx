@@ -83,11 +83,7 @@ export default function ExercisePart4Dialog({
       groupQuestionsQuery.data &&
       groupQuestionsQuery.data.length === 3
     ) {
-      const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return dateA - dateB;
-      });
+      const sortedQuestions = groupQuestionsQuery.data || [];
 
       if (sortedQuestions[0].audioUrl) {
         setAudioPreview(sortedQuestions[0].audioUrl);
