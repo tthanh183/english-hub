@@ -75,6 +75,8 @@ export async function updateQuestionInExercise(
   questionId: string,
   question: QuestionUpdateRequest
 ): Promise<QuestionResponse> {
+  console.log(question);
+  
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
     question
@@ -101,6 +103,8 @@ export async function getQuestionsFromExercise(
   const response = await axiosInstance.get(
     `/courses/${courseId}/exercises/${exerciseId}/questions`
   );
+  console.log(response.data.result);
+  
   return response.data.result;
 }
 
