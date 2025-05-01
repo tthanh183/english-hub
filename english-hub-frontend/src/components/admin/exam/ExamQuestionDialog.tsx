@@ -26,13 +26,13 @@ import {
   QuestionResponse,
   QuestionType,
 } from '@/types/questionType';
-import ExercisePart5Dialog from './ExercisePart5Dialog';
 import ExercisePart6Dialog from './ExercisePart6Dialog';
 import ExercisePart7Dialog from './ExercisePart7Dialog';
 import ExamPart1Dialog from './ExamPart1Dialog';
 import ExamPart2Dialog from './ExamPart2Dialog';
 import ExamPart3Dialog from './ExamPart3Dialog';
 import ExamPart4Dialog from './ExamPart4Dialog';
+import ExamPart5Dialog from './ExamPart5Dialog';
 
 type ExamQuestionDialogProps = {
   isOpen: boolean;
@@ -128,7 +128,7 @@ export default function ExamQuestionDialog({
 
       case QuestionType.PART_5_INCOMPLETE_SENTENCES:
         return (
-          <ExamPart4Dialog
+          <ExamPart5Dialog
             examId={examId}
             question={question}
             onClose={() => onOpenChange(false)}
