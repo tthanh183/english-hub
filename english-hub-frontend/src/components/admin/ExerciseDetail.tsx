@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getQuestionsFromExercise } from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
-import QuestionDialog from './exercise/ExerciseQuestionDialog';
+import ExerciseQuestionDialog from './exercise/ExerciseQuestionDialog';
 
 type ExerciseDetailCardProps = {
   selectedExercise?: ExerciseResponse;
@@ -80,7 +80,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
           <Plus className="h-4 w-4 mr-2" />
           Add Question
         </Button>
-        <QuestionDialog
+        <ExerciseQuestionDialog
           isOpen={isAddQuestionOpen}
           onOpenChange={setIsAddQuestionOpen}
           exerciseId={selectedExercise?.id || ''}
@@ -155,7 +155,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
               ))}
             </TableBody>
             {selectedQuestion && (
-              <QuestionDialog
+              <ExerciseQuestionDialog
                 isOpen={isEditQuestionOpen}
                 onOpenChange={setIsEditQuestionOpen}
                 exerciseId={selectedExercise?.id}

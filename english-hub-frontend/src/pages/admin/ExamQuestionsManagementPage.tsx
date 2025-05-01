@@ -28,6 +28,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getExamById, getQuestionsFromExam } from '@/services/examService';
 import { Spinner } from '@/components/Spinner';
 import { ExamResponse } from '@/types/examType';
+import ExamQuestionDialog from '@/components/admin/exam/ExamQuestionDialog';
 
 export default function ExamQuestionsManagementPage() {
   const { examId } = useParams();
@@ -167,7 +168,7 @@ export default function ExamQuestionsManagementPage() {
             <Plus className="h-4 w-4 mr-2" />
             Add Question
           </Button>
-          <QuestionDialog
+          <ExamQuestionDialog
             isOpen={isAddQuestionOpen}
             onOpenChange={setIsAddQuestionOpen}
             examId={examId || ''}
@@ -247,7 +248,7 @@ export default function ExamQuestionsManagementPage() {
       </div>
 
       {selectedQuestion && (
-        <QuestionDialog
+        <ExamQuestionDialog
           isOpen={isEditQuestionOpen}
           onOpenChange={setIsEditQuestionOpen}
           examId={examId || ''}
