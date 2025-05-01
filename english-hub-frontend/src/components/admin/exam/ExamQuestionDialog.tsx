@@ -128,8 +128,8 @@ export default function ExamQuestionDialog({
 
       case QuestionType.PART_5_INCOMPLETE_SENTENCES:
         return (
-          <ExercisePart5Dialog
-            exerciseId={exerciseId}
+          <ExamPart4Dialog
+            examId={examId}
             question={question}
             onClose={() => onOpenChange(false)}
           />
