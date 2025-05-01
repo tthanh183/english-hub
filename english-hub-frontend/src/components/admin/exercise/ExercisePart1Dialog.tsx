@@ -122,6 +122,9 @@ export default function ExercisePart1Dialog({
     if (audioPreview && !audioPreview.startsWith('http')) {
       URL.revokeObjectURL(audioPreview);
     }
+    if (imagePreview && !imagePreview.startsWith('http')) {
+      URL.revokeObjectURL(imagePreview);
+    }
     setImageFile(null);
     setImagePreview(null);
     setAudioFile(null);
