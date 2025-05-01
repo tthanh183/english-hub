@@ -11,11 +11,10 @@ import {
 import { Spinner } from '@/components/Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import {
-  addQuestionsToExercise,
-  updateQuestionInExercise,
-} from '@/services/exerciseService';
+  addQuestionsToExam,
+  updateQuestionInExam,
+} from '@/services/examService';
 import { getAllQuestionByGroupId } from '@/services/questionService';
-import { useParams } from 'react-router-dom';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
@@ -34,7 +33,6 @@ export default function ExamPart3Dialog({
   onClose,
 }: ExamPart3DialogProps) {
   const isEditMode = !!question;
-  const { courseId } = useParams();
   const queryClient = useQueryClient();
 
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -71,10 +69,10 @@ export default function ExamPart3Dialog({
   const groupQuestionsQuery = useQuery({
     queryKey: ['groupQuestions', groupId],
     queryFn: async () => {
-      if (!isEditMode || !groupId || !exerciseId || !courseId) return null;
+      if (!isEditMode || !groupId || !examId) return null;
       return getAllQuestionByGroupId(groupId);
     },
-    enabled: !!isEditMode && !!groupId && !!exerciseId && !!courseId,
+    enabled: !!isEditMode && !!groupId && !!examId,
   });
 
   useEffect(() => {
@@ -131,8 +129,7 @@ export default function ExamPart3Dialog({
 
   const saveMutation = useMutation({
     mutationFn: async (data: {
-      courseId: string;
-      exerciseId: string;
+      examId: string;
       questionData: QuestionCreateRequest[];
     }) => {
       if (isEditMode && groupQuestionsQuery.data) {
@@ -143,7 +140,7 @@ export default function ExamPart3Dialog({
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId],
+        queryKey: ['questions', variables.examId],
       });
 
       if (groupId) {
@@ -308,8 +305,7 @@ export default function ExamPart3Dialog({
       };
 
       saveMutation.mutate({
-        courseId: courseId || '',
-        exerciseId: exerciseId || '',
+        examId: examId || '',
         questionData: [question1, question2, question3],
       });
     } catch (error) {
@@ -319,29 +315,21 @@ export default function ExamPart3Dialog({
   };
 
   const handleAddQuestion = async (data: {
-    courseId: string;
-    exerciseId: string;
+    examId: string;
     questionData: QuestionCreateRequest[];
   }) => {
-    return addQuestionsToExercise(
-      data.courseId,
-      data.exerciseId,
-      data.questionData
-    );
+    return addQuestionsToExam(data.examId, data.questionData);
   };
 
   const handleUpdateQuestion = async (data: {
-    courseId: string;
-    exerciseId: string;
+    examId: string;
     questionData: QuestionUpdateRequest[];
   }) => {
     if (!groupQuestionsQuery.data || groupQuestionsQuery.data.length !== 3) {
       throw new Error('Cannot update: Missing question data');
     }
 
-    const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
-      (a.title || '').localeCompare(b.title || '')
-    );
+    const sortedQuestions = [...groupQuestionsQuery.data];
 
     const updatedQuestions = [
       { ...data.questionData[0], id: sortedQuestions[0].id },
@@ -356,12 +344,7 @@ export default function ExamPart3Dialog({
       }
 
       results.push(
-        await updateQuestionInExercise(
-          data.courseId,
-          data.exerciseId,
-          question.id,
-          question
-        )
+        await updateQuestionInExam(data.examId, question.id, question)
       );
     }
 
