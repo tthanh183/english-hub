@@ -26,13 +26,13 @@ import {
   QuestionResponse,
   QuestionType,
 } from '@/types/questionType';
-import ExercisePart4Dialog from './ExercisePart4Dialog';
 import ExercisePart5Dialog from './ExercisePart5Dialog';
 import ExercisePart6Dialog from './ExercisePart6Dialog';
 import ExercisePart7Dialog from './ExercisePart7Dialog';
 import ExamPart1Dialog from './ExamPart1Dialog';
 import ExamPart2Dialog from './ExamPart2Dialog';
 import ExamPart3Dialog from './ExamPart3Dialog';
+import ExamPart4Dialog from './ExamPart4Dialog';
 
 type ExamQuestionDialogProps = {
   isOpen: boolean;
@@ -119,8 +119,8 @@ export default function ExamQuestionDialog({
 
       case QuestionType.PART_4_TALKS:
         return (
-          <ExercisePart4Dialog
-            exerciseId={exerciseId}
+          <ExamPart4Dialog
+            examId={examId}
             question={question}
             onClose={() => onOpenChange(false)}
           />
