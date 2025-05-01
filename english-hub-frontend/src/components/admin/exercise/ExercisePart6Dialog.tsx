@@ -169,9 +169,7 @@ export default function ExercisePart6Dialog({
       throw new Error('Cannot update: Missing question data');
     }
 
-    const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
-      (a.title || '').localeCompare(b.title || '')
-    );
+    const sortedQuestions = groupQuestionsQuery.data || [];
 
     const updatedQuestions = data.questionData.map((q, index) => ({
       ...q,
@@ -218,7 +216,7 @@ export default function ExercisePart6Dialog({
     const questionData = titles.map((title, index) => ({
       title,
       questionType: QuestionType.PART_6_TEXT_COMPLETION,
-      passage: passage, 
+      passage: passage,
       choiceA: options[index][0],
       choiceB: options[index][1],
       choiceC: options[index][2],

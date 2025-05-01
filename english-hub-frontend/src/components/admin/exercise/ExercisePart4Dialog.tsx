@@ -339,9 +339,7 @@ export default function ExercisePart4Dialog({
       throw new Error('Cannot update: Missing question data');
     }
 
-    const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) =>
-      (a.title || '').localeCompare(b.title || '')
-    );
+    const sortedQuestions = groupQuestionsQuery.data || [];
 
     const updatedQuestions = [
       { ...data.questionData[0], id: sortedQuestions[0].id },

@@ -22,17 +22,17 @@ import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 import QuestionCard from '@/components/admin/QuestionCard';
 
-type Part3DialogProps = {
-  exerciseId?: string;
+type ExamPart3DialogProps = {
+  examId?: string;
   question?: QuestionResponse;
   onClose: () => void;
 };
 
-export default function ExercisePart3Dialog({
-  exerciseId,
+export default function ExamPart3Dialog({
+  examId,
   question,
   onClose,
-}: Part3DialogProps) {
+}: ExamPart3DialogProps) {
   const isEditMode = !!question;
   const { courseId } = useParams();
   const queryClient = useQueryClient();

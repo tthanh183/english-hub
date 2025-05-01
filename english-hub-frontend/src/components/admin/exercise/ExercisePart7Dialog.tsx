@@ -163,11 +163,7 @@ export default function ExercisePart7Dialog({
       throw new Error('Cannot update: Missing question data');
     }
 
-    const sortedQuestions = [...groupQuestionsQuery.data].sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return dateA - dateB;
-    });
+    const sortedQuestions = groupQuestionsQuery.data || [];
 
     if (data.questionData.length > sortedQuestions.length) {
       const existingQuestions = data.questionData.slice(
