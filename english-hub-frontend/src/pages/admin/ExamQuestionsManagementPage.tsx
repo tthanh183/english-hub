@@ -22,7 +22,6 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
-import QuestionDialog from '@/components/admin/exercise/ExerciseQuestionDialog';
 import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
 import { useQuery } from '@tanstack/react-query';
 import { getExamById, getQuestionsFromExam } from '@/services/examService';
@@ -84,7 +83,8 @@ export default function ExamQuestionsManagementPage() {
   };
 
   const handleDelete = (id: string) => {
-    setQuestions(prev => prev.filter(q => q.id !== id));
+    console.log(`Deleting question with ID: ${id}`);
+    // setQuestions(prev => prev.filter(q => q.id !== id));
   };
 
   const getQuestionTypeDisplay = (question: QuestionResponse): string => {

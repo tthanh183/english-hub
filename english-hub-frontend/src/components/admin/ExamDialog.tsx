@@ -55,7 +55,7 @@ export default function ExamDialog({
       } else {
         setExamData({
           title: '',
-          duration: 60,
+          duration: 7200,
         });
       }
     }
@@ -151,7 +151,7 @@ export default function ExamDialog({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="duration">Duration (minutes)</Label>
+            <Label htmlFor="duration">Duration (milliseconds)</Label>
             <Input
               id="duration"
               type="number"

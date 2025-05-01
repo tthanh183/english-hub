@@ -24,6 +24,7 @@ import { getAllExams } from '@/services/examService';
 import ExamDialog from '@/components/admin/ExamDialog';
 import { ExamResponse } from '@/types/examType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
+import { longToString } from '@/utils/timeUtil';
 
 export default function ExamManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -90,7 +91,7 @@ export default function ExamManagementPage() {
             {filteredExams?.map(exam => (
               <TableRow key={exam.id}>
                 <TableCell className="font-medium">{exam.title}</TableCell>
-                <TableCell>{exam.duration} min</TableCell>
+                <TableCell>{longToString(exam.duration)}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu
                     open={openDropdownExamId === exam.id}
