@@ -22,7 +22,7 @@ import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
 import QuestionCard from '@/components/admin/QuestionCard';
 
-type ExercisePart3DialogProps = {
+type Part3DialogProps = {
   exerciseId?: string;
   question?: QuestionResponse;
   onClose: () => void;
@@ -32,7 +32,7 @@ export default function ExercisePart3Dialog({
   exerciseId,
   question,
   onClose,
-}: ExercisePart3DialogProps) {
+}: Part3DialogProps) {
   const isEditMode = !!question;
   const { courseId } = useParams();
   const queryClient = useQueryClient();
