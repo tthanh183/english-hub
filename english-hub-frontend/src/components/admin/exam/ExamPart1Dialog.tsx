@@ -11,10 +11,9 @@ import {
 import { Spinner } from '@/components/Spinner';
 import MediaUploader from '@/components/admin/MediaUploader';
 import {
-  addQuestionToExercise,
-  updateQuestionInExercise,
-} from '@/services/exerciseService';
-import { useParams } from 'react-router-dom';
+  addQuestionToExam,
+  updateQuestionInExam,
+} from '@/services/examService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { indexToLetter, letterToIndex } from '@/utils/questionUtil';
@@ -34,7 +33,7 @@ export default function ExamPart1Dialog({
 }: ExamPart1DialogProps) {
   const isEditMode = !!question;
 
-  const [imageFile, setImageFile] = useState<File | null>();
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     question?.imageUrl || null
   );
@@ -71,33 +70,28 @@ export default function ExamPart1Dialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question]);
 
-  const { courseId } = useParams();
-
   const queryClient = useQueryClient();
   const saveMutation = useMutation({
     mutationFn: async (data: {
-      courseId: string;
-      exerciseId: string;
+      examId: string;
       questionData: QuestionCreateRequest;
     }) => {
       if (isEditMode && question) {
-        return updateQuestionInExercise(
-          data.courseId,
-          data.exerciseId,
+        return updateQuestionInExam(
+          data.examId,
           question.id,
           data.questionData as QuestionUpdateRequest
         );
       } else {
-        return addQuestionToExercise(
-          data.courseId,
-          data.exerciseId,
+        return addQuestionToExam(
+          data.examId,
           data.questionData as QuestionCreateRequest
         );
       }
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['questions', variables.exerciseId],
+        queryKey: ['questions', variables.examId],
       });
       if (isEditMode) {
         showSuccess('Question updated successfully');
@@ -121,6 +115,9 @@ export default function ExamPart1Dialog({
   const resetContentState = () => {
     if (audioPreview && !audioPreview.startsWith('http')) {
       URL.revokeObjectURL(audioPreview);
+    }
+    if (imagePreview && !imagePreview.startsWith('http')) {
+      URL.revokeObjectURL(imagePreview);
     }
     setImageFile(null);
     setImagePreview(null);
@@ -214,8 +211,7 @@ export default function ExamPart1Dialog({
     };
 
     saveMutation.mutate({
-      courseId: courseId || '',
-      exerciseId: exerciseId || '',
+      examId: examId || '',
       questionData,
     });
   };
