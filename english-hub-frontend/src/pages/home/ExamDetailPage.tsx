@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { getQuestionGroupsFromExam } from '@/services/examService';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { QuestionGroupResponse, QuestionType } from '@/types/questionType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -74,9 +74,12 @@ export default function ExamDetailPage() {
   const [flaggedQuestions, setFlaggedQuestions] = useState<string[]>([]);
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [showQuestionNav, setShowQuestionNav] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(120 * 60); 
 
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { examId } = useParams();
+  const navigate = useNavigate();
 
   const totalQuestions = testParts.reduce(
     (acc, part) => acc + part.questions,
@@ -147,24 +150,79 @@ export default function ExamDetailPage() {
     return currentGroupQuestions.flatMap(group => group.questions || []);
   };
 
-  // Tính toán chiều rộng cho question nav dựa theo số lượng câu hỏi
   const getQuestionNavWidth = () => {
     const questionCount = getAllQuestionsForCurrentPart().length;
-    
-    // Mỗi nút có kích thước 10 + 0.5*2 (gap) = 11 đơn vị
-    // Mỗi hàng có thể chứa tối đa 2 nút (2*11 = 22 đơn vị)
-    // Do đó chiều rộng tối thiểu là 22 + padding (2*2=4) = 26 đơn vị
-    
+
     if (questionCount <= 2) {
-      return 'w-28'; // Đủ cho 2 nút cạnh nhau + padding
+      return 'w-28';
     } else if (questionCount <= 9) {
-      return 'w-36'; // Đủ cho 3 nút cạnh nhau + padding
+      return 'w-36';
     } else if (questionCount <= 16) {
-      return 'w-40'; // Đủ cho 4 nút trong 2 hàng
+      return 'w-40';
     } else {
-      return 'w-48'; // Đủ cho nhiều nút và can scroll
+      return 'w-48';
     }
   };
+
+  const formatTime = useCallback((seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }, []);
+
+  const handleSubmitExam = useCallback(() => {
+    if (!window.confirm('Are you sure you want to submit your exam?')) {
+      return;
+    }
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    navigate(`/exam-result/${examId}`, {
+      state: {
+        answers: selectedAnswers,
+        timeSpent: 120 * 60 - timeLeft,
+      },
+    });
+  }, [timeLeft, selectedAnswers, examId, navigate]);
+
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(timerRef.current as NodeJS.Timeout);
+          handleSubmitExam();
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [handleSubmitExam]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const message =
+        'If you leave now, your exam progress will be lost. Are you sure?';
+      e.returnValue = message;
+      return message;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   if (isLoading) {
     return <GlobalSkeleton />;
@@ -173,9 +231,17 @@ export default function ExamDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="sticky top-0 z-50 flex justify-center py-3 bg-gray-50">
-        <div className="flex items-center px-6 py-2 rounded-full bg-blue-100 shadow-sm">
-          <Clock className="h-5 w-5 mr-2 text-blue-600" />
-          <span className="text-lg font-bold">01:55:38</span>
+        <div
+          className={`flex items-center px-6 py-2 rounded-full ${
+            timeLeft < 300 ? 'bg-red-100' : 'bg-blue-100'
+          } shadow-sm`}
+        >
+          <Clock
+            className={`h-5 w-5 mr-2 ${
+              timeLeft < 300 ? 'text-red-600' : 'text-blue-600'
+            }`}
+          />
+          <span className="text-lg font-bold">{formatTime(timeLeft)}</span>
         </div>
       </div>
 
@@ -214,10 +280,11 @@ export default function ExamDetailPage() {
             </div>
 
             <div className="space-y-2 mt-6">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                Pause
-              </Button>
-              <Button variant="destructive" className="w-full">
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={handleSubmitExam}
+              >
                 Submit
               </Button>
             </div>
@@ -225,9 +292,7 @@ export default function ExamDetailPage() {
         </div>
 
         <div className="flex-1">
-          {/* Content Container - Đảm bảo header và content có cùng padding */}
           <div className="space-y-8 mb-8 lg:pr-20">
-            {/* Header */}
             <div className="rounded-lg p-6 bg-white shadow-sm">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">
@@ -245,7 +310,6 @@ export default function ExamDetailPage() {
               </div>
             </div>
 
-            {/* Questions */}
             {currentGroupQuestions.map(groupQuestion => (
               <div
                 key={groupQuestion.id}
@@ -418,10 +482,11 @@ export default function ExamDetailPage() {
           </div>
 
           <div className="lg:hidden flex space-x-2 mb-6">
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
-              Pause
-            </Button>
-            <Button variant="destructive" className="flex-1">
+            <Button
+              variant="destructive"
+              className="flex-1"
+              onClick={handleSubmitExam}
+            >
               Submit
             </Button>
           </div>
@@ -446,7 +511,9 @@ export default function ExamDetailPage() {
             )}
           </Button>
 
-          <div className={`${getQuestionNavWidth()} overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2 bg-white shadow-xl`}>
+          <div
+            className={`${getQuestionNavWidth()} overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2 bg-white shadow-xl`}
+          >
             <div className="text-center mb-1 text-sm font-medium text-gray-500">
               Questions
             </div>
@@ -454,9 +521,7 @@ export default function ExamDetailPage() {
             <div className="flex flex-wrap justify-center gap-2">
               {getAllQuestionsForCurrentPart().map((question, idx) => {
                 const questionNumber =
-                  question.title?.match(/Question (\d+)/i)?.[1] || 
-                  question.questionNumber ||
-                  idx + 1;
+                  question.title?.match(/Question (\d+)/i)?.[1] || idx + 1;
 
                 return (
                   <button
