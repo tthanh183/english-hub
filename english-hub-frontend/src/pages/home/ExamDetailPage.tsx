@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import {
-  Play,
-  Volume2,
-  RotateCcw,
   Flag,
   Clock,
   ChevronUp,
@@ -13,76 +10,105 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { getQuestionGroupsFromExam } from '@/services/examService';
+import { useParams } from 'react-router-dom';
+import { QuestionGroupResponse, QuestionType } from '@/types/questionType';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
+import AudioPlayer from '@/components/AudioPlayer';
+
+const testParts = [
+  {
+    id: 1,
+    name: 'Part 1',
+    questions: 6,
+    questionType: QuestionType.PART_1_PHOTOGRAPHS,
+  },
+  {
+    id: 2,
+    name: 'Part 2',
+    questions: 25,
+    questionType: QuestionType.PART_2_QUESTION_RESPONSES,
+  },
+  {
+    id: 3,
+    name: 'Part 3',
+    questions: 39,
+    questionType: QuestionType.PART_3_CONVERSATIONS,
+  },
+  {
+    id: 4,
+    name: 'Part 4',
+    questions: 30,
+    questionType: QuestionType.PART_4_TALKS,
+  },
+  {
+    id: 5,
+    name: 'Part 5',
+    questions: 30,
+    questionType: QuestionType.PART_5_INCOMPLETE_SENTENCES,
+  },
+  {
+    id: 6,
+    name: 'Part 6',
+    questions: 16,
+    questionType: QuestionType.PART_6_TEXT_COMPLETION,
+  },
+  {
+    id: 7,
+    name: 'Part 7',
+    questions: 54,
+    questionType: QuestionType.PART_7_READING_COMPREHENSION,
+  },
+];
 
 export default function ExamDetailPage() {
   const [currentPart, setCurrentPart] = useState(1);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
-  const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
+  const [currentGroupQuestions, setCurrentGroupQuestions] = useState<
+    QuestionGroupResponse[]
+  >([]);
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, string>
+  >({});
+  const [flaggedQuestions, setFlaggedQuestions] = useState<string[]>([]);
+  const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [showQuestionNav, setShowQuestionNav] = useState(true);
 
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const { examId } = useParams();
 
-  // Mock test data
-  const testParts = [
-    { id: 1, name: 'Part 1', questions: 6, description: 'Photos' },
-    { id: 2, name: 'Part 2', questions: 25, description: 'Question-Response' },
-    { id: 3, name: 'Part 3', questions: 39, description: 'Conversations' },
-    { id: 4, name: 'Part 4', questions: 30, description: 'Talks' },
-    { id: 5, name: 'Part 5', questions: 30, description: 'Incomplete Sentences' },
-    { id: 6, name: 'Part 6', questions: 16, description: 'Text Completion' },
-    { id: 7, name: 'Part 7', questions: 54, description: 'Reading Comprehension' },
-  ];
-
-  const totalQuestions = testParts.reduce((acc, part) => acc + part.questions, 0);
+  const totalQuestions = testParts.reduce(
+    (acc, part) => acc + part.questions,
+    0
+  );
   const answeredQuestions = Object.keys(selectedAnswers).length;
   const progressPercentage = (answeredQuestions / totalQuestions) * 100;
 
-  // Generate mock questions for the current part
-  const generateQuestionsForPart = (partId: number) => {
-    const part = testParts.find(p => p.id === partId);
-    if (!part) return [];
+  const { data: questions, isLoading } = useQuery<QuestionGroupResponse[]>({
+    queryKey: ['questions', examId],
+    queryFn: () => getQuestionGroupsFromExam(examId as string),
+  });
 
-    return Array.from({ length: part.questions }, (_, i) => {
-      const questionNumber = i + 1;
-      return {
-        id: `${partId}-${questionNumber}`,
-        number: questionNumber,
-        text:
-          partId === 5
-            ? `${questionNumber}. The marketing department has prepared ________ for the new product launch next month.`
-            : `${questionNumber}. ${
-                partId <= 4 ? '[Audio Question]' : 'Question text would appear here'
-              }`,
-        options:
-          partId === 5
-            ? [
-                { value: 'A', label: 'a variety of materials' },
-                { value: 'B', label: 'a various material' },
-                { value: 'C', label: 'various of materials' },
-                { value: 'D', label: 'variety of material' },
-              ]
-            : [
-                { value: 'A', label: 'Option A' },
-                { value: 'B', label: 'Option B' },
-                { value: 'C', label: 'Option C' },
-                { value: 'D', label: 'Option D' },
-              ],
-        hasImage: partId === 1,
-      };
-    });
-  };
+  useEffect(() => {
+    const currentQuestionType = testParts.find(
+      part => part.id === currentPart
+    )?.questionType;
 
-  const currentPartQuestions = generateQuestionsForPart(currentPart);
+    const currentPartQuestions =
+      questions?.filter(
+        question => question.questionType === currentQuestionType
+      ) || [];
 
-  const toggleFlagQuestion = (questionNumber: number) => {
-    if (flaggedQuestions.includes(questionNumber)) {
-      setFlaggedQuestions(flaggedQuestions.filter(q => q !== questionNumber));
+    setCurrentGroupQuestions(currentPartQuestions);
+    console.log(currentPartQuestions);
+  }, [currentPart, questions]);
+
+  const toggleFlagQuestion = (questionId: string) => {
+    if (flaggedQuestions.includes(questionId)) {
+      setFlaggedQuestions(flaggedQuestions.filter(id => id !== questionId));
     } else {
-      setFlaggedQuestions([...flaggedQuestions, questionNumber]);
+      setFlaggedQuestions([...flaggedQuestions, questionId]);
     }
   };
 
@@ -93,53 +119,54 @@ export default function ExamDetailPage() {
     });
   };
 
-  const scrollToQuestion = (questionNumber: number) => {
-    const ref = questionRefs.current[`${currentPart}-${questionNumber}`];
+  const scrollToQuestion = (questionId: string) => {
+    const ref = questionRefs.current[questionId];
     if (ref) {
-      ref.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setActiveQuestion(questionNumber);
+      const elementRect = ref.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const middleOfElement =
+        absoluteElementTop - window.innerHeight / 2 + elementRect.height / 2;
 
-      // Reset active question after a delay
+      window.scrollTo({
+        top: middleOfElement,
+        behavior: 'smooth',
+      });
+
+      setActiveQuestion(questionId);
+
       setTimeout(() => {
         setActiveQuestion(null);
       }, 2000);
     }
   };
 
-  // Reset question refs when part changes
   useEffect(() => {
     questionRefs.current = {};
   }, [currentPart]);
 
+  const getAllQuestionsForCurrentPart = () => {
+    return currentGroupQuestions.flatMap(group => group.questions || []);
+  };
+
+  if (isLoading) {
+    return <GlobalSkeleton />;
+  }
+
   return (
-    <div className={cn('min-h-screen', isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50')}>
-      {/* Header */}
-      <div className="flex justify-end p-4">
-        <div
-          className={cn(
-            'flex items-center px-4 py-2 rounded-full',
-            isDarkMode ? 'bg-gray-700' : 'bg-blue-100'
-          )}
-        >
-          <Clock
-            className={cn('h-5 w-5 mr-2', isDarkMode ? 'text-blue-400' : 'text-blue-600')}
-          />
+    <div className="min-h-screen bg-gray-50">
+      <div className="sticky top-0 z-50 flex justify-center py-3 bg-gray-50">
+        <div className="flex items-center px-6 py-2 rounded-full bg-blue-100 shadow-sm">
+          <Clock className="h-5 w-5 mr-2 text-blue-600" />
           <span className="text-lg font-bold">01:55:38</span>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6 flex flex-col lg:flex-row relative">
-        {/* Sidebar */}
         <div className="hidden lg:block w-64 mr-8">
-          <div
-            className={cn(
-              'rounded-lg p-4 mb-6 sticky top-24',
-              isDarkMode ? 'bg-gray-800' : 'bg-white shadow-sm'
-            )}
-          >
+          <div className="rounded-lg p-4 mb-6 sticky top-24 bg-white shadow-sm">
             <div className="mb-4">
               <h3 className="font-medium mb-2">Progress</h3>
-              <Progress value={progressPercentage} className={isDarkMode ? 'bg-gray-700' : ''} />
+              <Progress value={progressPercentage} />
               <div className="flex justify-between mt-2 text-sm">
                 <span>
                   {answeredQuestions}/{totalQuestions} questions
@@ -155,11 +182,7 @@ export default function ExamDetailPage() {
                   className={cn(
                     'p-3 rounded-md cursor-pointer transition-colors',
                     currentPart === part.id
-                      ? isDarkMode
-                        ? 'bg-blue-900 text-blue-100'
-                        : 'bg-blue-100 text-blue-800'
-                      : isDarkMode
-                      ? 'hover:bg-gray-700'
+                      ? 'bg-blue-100 text-blue-800'
                       : 'hover:bg-gray-100'
                   )}
                   onClick={() => setCurrentPart(part.id)}
@@ -168,13 +191,14 @@ export default function ExamDetailPage() {
                     <span className="font-medium">{part.name}</span>
                     <span className="text-sm">{part.questions} questions</span>
                   </div>
-                  <div className="text-sm opacity-80">{part.description}</div>
                 </div>
               ))}
             </div>
 
             <div className="space-y-2 mt-6">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700">Pause</Button>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                Pause
+              </Button>
               <Button variant="destructive" className="w-full">
                 Submit
               </Button>
@@ -182,225 +206,216 @@ export default function ExamDetailPage() {
           </div>
         </div>
 
-        {/* Main content */}
         <div className="flex-1">
-          {/* Part header */}
-          <div
-            className={cn(
-              'rounded-lg p-4 mb-6',
-              isDarkMode ? 'bg-gray-800' : 'bg-white shadow-sm'
-            )}
-          >
+          <div className="rounded-lg p-4 mb-6 bg-white shadow-sm">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">
-                {testParts.find(p => p.id === currentPart)?.name}:{' '}
-                {testParts.find(p => p.id === currentPart)?.description}
+                {testParts.find(p => p.id === currentPart)?.name}
               </h2>
               <div className="text-sm">
                 {
-                  Object.keys(selectedAnswers).filter(key =>
-                    key.startsWith(`${currentPart}-`)
+                  getAllQuestionsForCurrentPart().filter(
+                    q => selectedAnswers[q.id]
                   ).length
                 }
-                /{testParts.find(p => p.id === currentPart)?.questions} questions answered
+                /{testParts.find(p => p.id === currentPart)?.questions}{' '}
+                questions answered
               </div>
             </div>
           </div>
 
-          {/* Questions list */}
           <div className="space-y-8 mb-8 lg:pr-20">
-            {currentPartQuestions.map(question => (
+            {currentGroupQuestions.map(groupQuestion => (
               <div
-                key={question.id}
-                ref={el => (questionRefs.current[question.id] = el)}
-                className={cn(
-                  'rounded-lg p-6 transition-all',
-                  activeQuestion === question.number
-                    ? isDarkMode
-                      ? 'bg-blue-900/20 border border-blue-500'
-                      : 'bg-blue-50 border border-blue-200'
-                    : isDarkMode
-                    ? 'bg-gray-800'
-                    : 'bg-white shadow-sm'
-                )}
+                key={groupQuestion.id}
+                className="rounded-lg p-6 bg-white shadow-sm"
               >
-                {/* Question header */}
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold">Question {question.number}.</h3>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => toggleFlagQuestion(question.number)}
-                    className={cn(
-                      flaggedQuestions.includes(question.number)
-                        ? 'text-red-500 border-red-500'
-                        : isDarkMode
-                        ? 'border-gray-600'
-                        : ''
-                    )}
-                  >
-                    <Flag
-                      className={cn(
-                        'h-4 w-4 mr-2',
-                        flaggedQuestions.includes(question.number)
-                          ? 'fill-red-500'
-                          : ''
-                      )}
+                {groupQuestion.audioUrl && (
+                  <div className="mb-6">
+                    <AudioPlayer
+                      key={groupQuestion.audioUrl}
+                      src={groupQuestion.audioUrl}
                     />
-                    {flaggedQuestions.includes(question.number) ? 'Flagged' : 'Flag'}
-                  </Button>
-                </div>
-
-                {/* Audio player for listening parts */}
-                {currentPart <= 4 && (
-                  <div
-                    className={cn(
-                      'p-4 rounded-lg mb-6',
-                      isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className={isDarkMode ? 'text-blue-400' : 'text-blue-600'}
-                      >
-                        <Play className="h-5 w-5" />
-                      </Button>
-                      <div className="flex-1">
-                        <Slider defaultValue={[20]} max={100} step={1} className="h-2" />
-                      </div>
-                      <div className="text-sm text-gray-500">00:00 / 00:24</div>
-                      <Button variant="ghost" size="icon">
-                        <Volume2 className="h-5 w-5" />
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <RotateCcw className="h-4 w-4" />
-                      </Button>
-                      <div className="text-sm">1x</div>
-                    </div>
                   </div>
                 )}
 
-                {/* Question content */}
-                <div className="mb-6">
-                  {/* For Part 1 - Photo */}
-                  {question.hasImage && (
-                    <div className="flex justify-center mb-6">
-                      <img
-                        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-35HNgMZrimt028keVkliJdvedqWOqa.png"
-                        alt={`Question ${question.number}`}
-                        width={500}
-                        height={400}
-                        className="rounded-lg"
-                      />
-                    </div>
-                  )}
-
-                  {/* Question text */}
-                  {!question.hasImage && <p className="text-lg mb-4">{question.text}</p>}
-
-                  {/* Answer options */}
-                  <RadioGroup
-                    value={selectedAnswers[question.id]}
-                    onValueChange={value => handleAnswerSelect(question.id, value)}
-                    className="space-y-4"
+                {groupQuestion.imageUrl && (
+                  <div
+                    className="flex justify-center items-center my-2"
+                    style={{ height: '400px' }}
                   >
-                    {question.options.map(option => (
-                      <div
-                        key={option.value}
-                        className={cn(
-                          'flex items-center space-x-3 p-3 rounded-md',
-                          selectedAnswers[question.id] === option.value
-                            ? isDarkMode
-                              ? 'bg-blue-900'
-                              : 'bg-blue-50'
-                            : isDarkMode
-                            ? 'hover:bg-gray-700'
-                            : 'hover:bg-gray-50'
-                        )}
-                      >
-                        <RadioGroupItem
-                          value={option.value}
-                          id={`${question.id}-${option.value}`}
-                        />
-                        <Label
-                          htmlFor={`${question.id}-${option.value}`}
-                          className="flex-1 cursor-pointer"
+                    <img
+                      src={groupQuestion.imageUrl}
+                      alt="TOEIC question"
+                      className="rounded-lg shadow-sm"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '100%',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                )}
+
+                {groupQuestion.passage && (
+                  <div className="bg-gray-50 p-4 rounded-lg my-6">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: groupQuestion.passage,
+                      }}
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-10">
+                  {groupQuestion.questions.map((question, index) => (
+                    <div
+                      key={question.id}
+                      ref={el => (questionRefs.current[question.id] = el)}
+                      className={cn(
+                        'border-t pt-6 first:border-0',
+                        activeQuestion === question.id
+                          ? 'bg-blue-50 border border-blue-200'
+                          : ''
+                      )}
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-lg font-semibold">
+                          {question.title || `Question ${index + 1}`}
+                        </h3>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleFlagQuestion(question.id)}
+                          className={
+                            flaggedQuestions.includes(question.id)
+                              ? 'text-red-500 border-red-500'
+                              : ''
+                          }
                         >
-                          ({option.value}) {option.label}
-                        </Label>
+                          <Flag
+                            className={cn(
+                              'h-4 w-4 mr-2',
+                              flaggedQuestions.includes(question.id)
+                                ? 'fill-red-500'
+                                : ''
+                            )}
+                          />
+                          {flaggedQuestions.includes(question.id)
+                            ? 'Flagged'
+                            : 'Flag'}
+                        </Button>
                       </div>
-                    ))}
-                  </RadioGroup>
+
+                      <RadioGroup
+                        value={selectedAnswers[question.id] || ''}
+                        onValueChange={value =>
+                          handleAnswerSelect(question.id, value)
+                        }
+                        className="space-y-0.5"
+                      >
+                        {['A', 'B', 'C', 'D'].map(option => {
+                          const value =
+                            question[
+                              `choice${option}` as keyof typeof question
+                            ];
+                          if (value === null) return null;
+
+                          const isSelected =
+                            selectedAnswers[question.id] === option;
+
+                          return (
+                            <div
+                              key={option}
+                              className={`flex items-center space-x-4 p-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                                isSelected
+                                  ? 'bg-blue-100 border border-blue-300'
+                                  : 'hover:bg-gray-50'
+                              }`}
+                              onClick={() =>
+                                handleAnswerSelect(question.id, option)
+                              }
+                            >
+                              <div className="flex-shrink-0">
+                                <RadioGroupItem
+                                  value={option}
+                                  id={`${question.id}-${option}`}
+                                  className="h-5 w-5"
+                                />
+                              </div>
+
+                              <Label
+                                htmlFor={`${question.id}-${option}`}
+                                className="flex-1 text-gray-700 cursor-pointer py-1"
+                              >
+                                {`${option}. ${value || ''}`}
+                              </Label>
+                            </div>
+                          );
+                        })}
+                      </RadioGroup>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Bottom navigation */}
-          <div
-            className={cn(
-              'rounded-lg overflow-hidden mb-6',
-              isDarkMode ? 'bg-gray-800' : 'bg-white shadow-sm'
-            )}
-          >
+          <div className="rounded-lg overflow-hidden mb-6 bg-white shadow-sm">
             <div className="overflow-x-auto">
               <div className="flex min-w-max">
-                {testParts.map(part => (
-                  <div
-                    key={part.id}
-                    className={cn(
-                      'px-6 py-4 text-center border-b-2 cursor-pointer min-w-[120px]',
-                      currentPart === part.id
-                        ? isDarkMode
-                          ? 'border-blue-500 text-blue-400'
-                          : 'border-blue-600 text-blue-600'
-                        : isDarkMode
-                        ? 'border-gray-700'
-                        : 'border-gray-200'
-                    )}
-                    onClick={() => setCurrentPart(part.id)}
-                  >
-                    <div className="font-medium">{part.name}</div>
-                    <div className="text-xs mt-1 opacity-80">
-                      {
-                        Object.keys(selectedAnswers).filter(key =>
-                          key.startsWith(`${part.id}-`)
-                        ).length
-                      }
-                      /{part.questions} questions
+                {testParts.map(part => {
+                  const partQuestions =
+                    currentPart === part.id
+                      ? getAllQuestionsForCurrentPart()
+                      : [];
+
+                  const answeredCount = partQuestions.filter(
+                    q => selectedAnswers[q.id]
+                  ).length;
+
+                  return (
+                    <div
+                      key={part.id}
+                      className={cn(
+                        'px-6 py-4 text-center border-b-2 cursor-pointer min-w-[120px]',
+                        currentPart === part.id
+                          ? 'border-blue-600 text-blue-600'
+                          : 'border-gray-200'
+                      )}
+                      onClick={() => setCurrentPart(part.id)}
+                    >
+                      <div className="font-medium">{part.name}</div>
+                      <div className="text-xs mt-1 opacity-80">
+                        {answeredCount}/{part.questions} questions
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Mobile action buttons */}
           <div className="lg:hidden flex space-x-2 mb-6">
-            <Button className="flex-1 bg-blue-600 hover:bg-blue-700">Pause</Button>
+            <Button className="flex-1 bg-blue-600 hover:bg-blue-700">
+              Pause
+            </Button>
             <Button variant="destructive" className="flex-1">
               Submit
             </Button>
           </div>
         </div>
 
-        {/* Question navigation sidebar - fixed on right */}
         <div
           className={cn(
             'fixed right-4 top-24 bottom-24 z-40 transition-all duration-300 flex',
             showQuestionNav ? 'translate-x-0' : 'translate-x-full'
           )}
         >
-          {/* Toggle button */}
           <Button
             size="sm"
             variant="outline"
-            className={cn(
-              'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full h-24 w-8 rounded-l-md rounded-r-none',
-              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
-            )}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full h-24 w-8 rounded-l-md rounded-r-none bg-white shadow-md"
             onClick={() => setShowQuestionNav(!showQuestionNav)}
           >
             {showQuestionNav ? (
@@ -410,45 +425,62 @@ export default function ExamDetailPage() {
             )}
           </Button>
 
-          {/* Question numbers */}
-          <div
-            className={cn(
-              'w-16 overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2',
-              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white shadow-lg'
-            )}
-          >
-            {Array.from(
-              { length: testParts[currentPart - 1].questions },
-              (_, i) => i + 1
-            ).map(num => (
-              <button
-                key={num}
-                className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center text-sm transition-all',
-                  activeQuestion === num
-                    ? 'ring-2 ring-offset-2 ring-blue-500'
-                    : '',
-                  selectedAnswers[`${currentPart}-${num}`]
-                    ? isDarkMode
-                      ? 'bg-blue-900 text-blue-100'
-                      : 'bg-blue-100 text-blue-800'
-                    : flaggedQuestions.includes(num)
-                    ? isDarkMode
-                      ? 'bg-red-900 text-red-100'
-                      : 'bg-red-100 text-red-800'
-                    : isDarkMode
-                    ? 'bg-gray-700 hover:bg-gray-600'
-                    : 'bg-gray-100 hover:bg-gray-200'
-                )}
-                onClick={() => scrollToQuestion(num)}
-              >
-                {num}
-              </button>
-            ))}
+          <div className="w-32 overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2 bg-white shadow-xl">
+            <div className="text-center mb-1 text-sm font-medium text-gray-500">
+              Questions
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-2">
+              {getAllQuestionsForCurrentPart().map((question, idx) => {
+                const questionNumber =
+                  question.title?.match(/Question (\d+)/i)?.[1] || idx + 1;
+
+                return (
+                  <button
+                    key={question.id}
+                    className={cn(
+                      'w-10 h-10 rounded-md flex items-center justify-center text-sm font-medium transition-all shadow-sm',
+                      activeQuestion === question.id
+                        ? 'ring-2 ring-offset-1 ring-blue-500'
+                        : '',
+                      selectedAnswers[question.id]
+                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                        : flaggedQuestions.includes(question.id)
+                        ? 'bg-red-50 text-red-800 border border-red-300'
+                        : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                    )}
+                    onClick={() => scrollToQuestion(question.id)}
+                    title={`Go to question ${questionNumber}`}
+                  >
+                    {questionNumber}
+
+                    {flaggedQuestions.includes(question.id) && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="border-t my-2 pt-2">
+              <div className="flex items-center justify-between mb-2 text-xs">
+                <span className="flex items-center">
+                  <div className="w-3 h-3 rounded-sm bg-blue-100 border border-blue-300 mr-1"></div>
+                  Answered
+                </span>
+                <span>{Object.keys(selectedAnswers).length}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center">
+                  <div className="w-3 h-3 rounded-sm bg-red-50 border border-red-300 mr-1"></div>
+                  Flagged
+                </span>
+                <span>{flaggedQuestions.length}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Scroll to top button */}
         <Button
           size="icon"
           className="fixed bottom-6 right-6 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-40"

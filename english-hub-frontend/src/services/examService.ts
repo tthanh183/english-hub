@@ -4,7 +4,7 @@ import {
   ExamUpdateRequest,
 } from '@/types/examType';
 import axiosInstance from './axiosInstance';
-import { QuestionCreateRequest, QuestionResponse, QuestionUpdateRequest } from '@/types/questionType';
+import { QuestionCreateRequest, QuestionGroupResponse, QuestionResponse, QuestionUpdateRequest } from '@/types/questionType';
 
 export async function getAllExams(): Promise<ExamResponse[]> {
   const response = await axiosInstance.get('/exams');
@@ -81,7 +81,7 @@ export async function getQuestionsFromExam(
 
 export async function getQuestionGroupsFromExam(
   examId: string
-): Promise<QuestionResponse[]> {
+): Promise<QuestionGroupResponse[]> {
   const response = await axiosInstance.get(`/exams/${examId}/questions/groups`);
   return response.data.result;
 }

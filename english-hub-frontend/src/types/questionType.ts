@@ -58,11 +58,11 @@ export type QuestionResponse = {
   choiceD?: string;
   correctAnswer: string;
   groupId: string;
-
 };
 
 export type QuestionGroupResponse = {
   id: string;
+  questionType: QuestionType;
   audioUrl?: string;
   imageUrl?: string;
   passage?: string;
