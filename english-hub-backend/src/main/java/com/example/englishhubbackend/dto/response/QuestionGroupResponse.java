@@ -13,6 +13,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class QuestionGroupResponse {
     UUID groupId;
+    String questionType;
     String audioUrl;
     String imageUrl;
     String passage;

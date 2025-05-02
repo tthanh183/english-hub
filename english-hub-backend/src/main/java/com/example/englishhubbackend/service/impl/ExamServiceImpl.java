@@ -180,6 +180,7 @@ public class ExamServiceImpl implements ExamService {
                     groupResponse.setPassage(reading.getPassage().getContent());
                 }
             }
+            groupResponse.setQuestionType(first.getQuestionType().getName());
             response.add(groupResponse);
         }
         return response;
