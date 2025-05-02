@@ -101,7 +101,6 @@ export default function ExamDetailPage() {
       ) || [];
 
     setCurrentGroupQuestions(currentPartQuestions);
-    console.log(currentPartQuestions);
   }, [currentPart, questions]);
 
   const toggleFlagQuestion = (questionId: string) => {
@@ -146,6 +145,25 @@ export default function ExamDetailPage() {
 
   const getAllQuestionsForCurrentPart = () => {
     return currentGroupQuestions.flatMap(group => group.questions || []);
+  };
+
+  // Tính toán chiều rộng cho question nav dựa theo số lượng câu hỏi
+  const getQuestionNavWidth = () => {
+    const questionCount = getAllQuestionsForCurrentPart().length;
+    
+    // Mỗi nút có kích thước 10 + 0.5*2 (gap) = 11 đơn vị
+    // Mỗi hàng có thể chứa tối đa 2 nút (2*11 = 22 đơn vị)
+    // Do đó chiều rộng tối thiểu là 22 + padding (2*2=4) = 26 đơn vị
+    
+    if (questionCount <= 2) {
+      return 'w-28'; // Đủ cho 2 nút cạnh nhau + padding
+    } else if (questionCount <= 9) {
+      return 'w-36'; // Đủ cho 3 nút cạnh nhau + padding
+    } else if (questionCount <= 16) {
+      return 'w-40'; // Đủ cho 4 nút trong 2 hàng
+    } else {
+      return 'w-48'; // Đủ cho nhiều nút và can scroll
+    }
   };
 
   if (isLoading) {
@@ -207,24 +225,27 @@ export default function ExamDetailPage() {
         </div>
 
         <div className="flex-1">
-          <div className="rounded-lg p-4 mb-6 bg-white shadow-sm">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">
-                {testParts.find(p => p.id === currentPart)?.name}
-              </h2>
-              <div className="text-sm">
-                {
-                  getAllQuestionsForCurrentPart().filter(
-                    q => selectedAnswers[q.id]
-                  ).length
-                }
-                /{testParts.find(p => p.id === currentPart)?.questions}{' '}
-                questions answered
+          {/* Content Container - Đảm bảo header và content có cùng padding */}
+          <div className="space-y-8 mb-8 lg:pr-20">
+            {/* Header */}
+            <div className="rounded-lg p-6 bg-white shadow-sm">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold">
+                  {testParts.find(p => p.id === currentPart)?.name}
+                </h2>
+                <div className="text-sm">
+                  {
+                    getAllQuestionsForCurrentPart().filter(
+                      q => selectedAnswers[q.id]
+                    ).length
+                  }
+                  /{testParts.find(p => p.id === currentPart)?.questions}{' '}
+                  questions answered
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-8 mb-8 lg:pr-20">
+            {/* Questions */}
             {currentGroupQuestions.map(groupQuestion => (
               <div
                 key={groupQuestion.id}
@@ -425,7 +446,7 @@ export default function ExamDetailPage() {
             )}
           </Button>
 
-          <div className="w-32 overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2 bg-white shadow-xl">
+          <div className={`${getQuestionNavWidth()} overflow-y-auto rounded-l-lg p-2 flex flex-col gap-2 bg-white shadow-xl`}>
             <div className="text-center mb-1 text-sm font-medium text-gray-500">
               Questions
             </div>
@@ -433,7 +454,9 @@ export default function ExamDetailPage() {
             <div className="flex flex-wrap justify-center gap-2">
               {getAllQuestionsForCurrentPart().map((question, idx) => {
                 const questionNumber =
-                  question.title?.match(/Question (\d+)/i)?.[1] || idx + 1;
+                  question.title?.match(/Question (\d+)/i)?.[1] || 
+                  question.questionNumber ||
+                  idx + 1;
 
                 return (
                   <button
