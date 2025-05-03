@@ -12,7 +12,7 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { getQuestionGroupsFromExam } from '@/services/examService';
+import { getQuestionGroupsFromExam, submitExam } from '@/services/examService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QuestionGroupResponse, QuestionType } from '@/types/questionType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
@@ -74,7 +74,7 @@ export default function ExamDetailPage() {
   const [flaggedQuestions, setFlaggedQuestions] = useState<string[]>([]);
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [showQuestionNav, setShowQuestionNav] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(120 * 60); 
+  const [timeLeft, setTimeLeft] = useState(120 * 60);
 
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -174,7 +174,7 @@ export default function ExamDetailPage() {
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
-  const handleSubmitExam = useCallback(() => {
+  const handleSubmitExam = useCallback(async () => {
     if (!window.confirm('Are you sure you want to submit your exam?')) {
       return;
     }
@@ -183,13 +183,19 @@ export default function ExamDetailPage() {
       clearInterval(timerRef.current);
     }
 
-    navigate(`/exam-result/${examId}`, {
-      state: {
-        answers: selectedAnswers,
-        timeSpent: 120 * 60 - timeLeft,
-      },
-    });
-  }, [timeLeft, selectedAnswers, examId, navigate]);
+    try {
+      console.log('Submitting exam with answers:', selectedAnswers);
+
+      const result = await submitExam(examId as string, selectedAnswers);
+
+      navigate(`/exams/exam-results/${result.id}`, {
+        state: { examResult: result },
+      });
+    } catch (error) {
+      console.error('Failed to submit exam:', error);
+      alert('There was an error submitting your exam. Please try again.');
+    }
+  }, [selectedAnswers, examId, navigate ]);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {

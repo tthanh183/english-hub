@@ -4,7 +4,13 @@ import {
   ExamUpdateRequest,
 } from '@/types/examType';
 import axiosInstance from './axiosInstance';
-import { QuestionCreateRequest, QuestionGroupResponse, QuestionResponse, QuestionUpdateRequest } from '@/types/questionType';
+import {
+  ExamSubmissionResponse,
+  QuestionCreateRequest,
+  QuestionGroupResponse,
+  QuestionResponse,
+  QuestionUpdateRequest,
+} from '@/types/questionType';
 
 export async function getAllExams(): Promise<ExamResponse[]> {
   const response = await axiosInstance.get('/exams');
@@ -45,7 +51,7 @@ export async function addQuestionToExam(
     question
   );
   console.log(response.data.result);
-  
+
   return response.data.result;
 }
 
@@ -53,7 +59,7 @@ export async function updateQuestionInExam(
   examId: string,
   questionId: string,
   question: QuestionUpdateRequest
-): Promise<QuestionResponse> {  
+): Promise<QuestionResponse> {
   const response = await axiosInstance.put(
     `/exams/${examId}/questions/${questionId}`,
     question
@@ -83,5 +89,15 @@ export async function getQuestionGroupsFromExam(
   examId: string
 ): Promise<QuestionGroupResponse[]> {
   const response = await axiosInstance.get(`/exams/${examId}/questions/groups`);
+  return response.data.result;
+}
+
+export async function submitExam(
+  examId: string,
+  answers: Record<string, string>
+): Promise<ExamSubmissionResponse> {
+  const response = await axiosInstance.post(`/exams/${examId}/submit`, {
+    answers,
+  });
   return response.data.result;
 }

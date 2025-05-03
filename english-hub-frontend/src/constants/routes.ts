@@ -23,4 +23,5 @@ export const ROUTES = {
 
   EXAM: '/exams',
   EXAM_DETAIL: '/exams/:examId',
+  EXAM_RESULT: '/exams/exam-results/:examId',
 };

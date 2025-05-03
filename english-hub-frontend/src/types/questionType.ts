@@ -68,3 +68,19 @@ export type QuestionGroupResponse = {
   passage?: string;
   questions: QuestionResponse[];
 };
+
+export type ExamSubmissionRequest = {
+  examId: string;
+  answers: Record<string, string>;
+};
+
+export type ExamSubmissionResponse = {
+  id: string;
+  examId: string;
+  userId: string;
+  completedAt: Date;
+  listeningScore: number;
+  readingScore: number;
+  totalScore: number;
+  maxScore: number;
+};

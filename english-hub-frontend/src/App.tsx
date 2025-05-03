@@ -21,6 +21,7 @@ import ExamManagementPage from '@/pages/admin/ExamManagementPage';
 import ExamQuestionsManagementPage from './pages/admin/ExamQuestionsManagementPage';
 import ExamPage from './pages/home/ExamPage';
 import ExamDetailPage from './pages/home/ExamDetailPage';
+import ExamResultPage from './pages/home/ExamResultPage';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
 
           <Route path={ROUTES.EXAM} element={<ExamPage />} />
           <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
+          <Route path={ROUTES.EXAM_RESULT} element={<ExamResultPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>
