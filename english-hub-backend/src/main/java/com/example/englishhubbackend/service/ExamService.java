@@ -1,10 +1,8 @@
 package com.example.englishhubbackend.service;
 
-import com.example.englishhubbackend.dto.request.ExamCreateRequest;
-import com.example.englishhubbackend.dto.request.ExamUpdateRequest;
-import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
-import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
+import com.example.englishhubbackend.dto.request.*;
 import com.example.englishhubbackend.dto.response.ExamResponse;
+import com.example.englishhubbackend.dto.response.ExamSubmissionResponse;
 import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 
@@ -32,4 +30,5 @@ public interface ExamService {
 
     List<QuestionGroupResponse> getQuestionGroupsFromExam(UUID examId);
 
+    ExamSubmissionResponse submitExam(UUID examId, ExamSubmissionRequest examSubmissionRequest);
 }

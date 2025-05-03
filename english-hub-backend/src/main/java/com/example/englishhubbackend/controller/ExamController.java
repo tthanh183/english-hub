@@ -1,13 +1,7 @@
 package com.example.englishhubbackend.controller;
 
-import com.example.englishhubbackend.dto.request.ExamCreateRequest;
-import com.example.englishhubbackend.dto.request.ExamUpdateRequest;
-import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
-import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
-import com.example.englishhubbackend.dto.response.ApiResponse;
-import com.example.englishhubbackend.dto.response.ExamResponse;
-import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
-import com.example.englishhubbackend.dto.response.QuestionResponse;
+import com.example.englishhubbackend.dto.request.*;
+import com.example.englishhubbackend.dto.response.*;
 import com.example.englishhubbackend.service.ExamService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -106,4 +100,10 @@ public class ExamController {
                 .build();
     }
 
+    @PostMapping("/{examId}/submit")
+    public ApiResponse<ExamSubmissionResponse> submitExam(@PathVariable String examId ,@RequestBody ExamSubmissionRequest examSubmissionRequest) {
+        return ApiResponse.<ExamSubmissionResponse>builder()
+                .result(examService.submitExam(UUID.fromString(examId), examSubmissionRequest))
+                .build();
+    }
 }

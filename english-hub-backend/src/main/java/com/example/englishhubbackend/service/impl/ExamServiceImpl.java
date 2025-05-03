@@ -1,25 +1,27 @@
 package com.example.englishhubbackend.service.impl;
 
-import com.example.englishhubbackend.dto.request.ExamCreateRequest;
-import com.example.englishhubbackend.dto.request.ExamUpdateRequest;
-import com.example.englishhubbackend.dto.request.QuestionCreateRequest;
-import com.example.englishhubbackend.dto.request.QuestionUpdateRequest;
+import com.example.englishhubbackend.dto.request.*;
 import com.example.englishhubbackend.dto.response.ExamResponse;
+import com.example.englishhubbackend.dto.response.ExamSubmissionResponse;
 import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.ExamMapper;
-import com.example.englishhubbackend.models.Exam;
-import com.example.englishhubbackend.models.ListeningQuestion;
-import com.example.englishhubbackend.models.Question;
-import com.example.englishhubbackend.models.ReadingQuestion;
+import com.example.englishhubbackend.models.*;
 import com.example.englishhubbackend.repository.ExamRepository;
+import com.example.englishhubbackend.repository.ResultRepository;
+import com.example.englishhubbackend.repository.UserRepository;
 import com.example.englishhubbackend.service.ExamService;
 import com.example.englishhubbackend.service.QuestionService;
+import com.example.englishhubbackend.util.ToeicScoringUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,6 +35,8 @@ public class ExamServiceImpl implements ExamService {
     ExamRepository examRepository;
     ExamMapper examMapper;
     QuestionService questionService;
+    UserRepository userRepository;
+    ResultRepository resultRepository;
 
 
     @Override
@@ -185,4 +189,69 @@ public class ExamServiceImpl implements ExamService {
         }
         return response;
     }
+
+    @Override
+    public ExamSubmissionResponse submitExam(UUID examId, ExamSubmissionRequest examSubmissionRequest) {
+        Exam exam =
+                examRepository
+                        .findById(examId)
+                        .orElseThrow(() -> new AppException(ErrorCode.EXAM_NOT_FOUND));
+
+        Map<UUID, Question> questionMap = exam.getQuestions().stream()
+                .collect(Collectors.toMap(Question::getId, question -> question));
+
+        int correctListeningAnswers = 0;
+        int correctReadingAnswers = 0;
+
+        if (examSubmissionRequest.getAnswers() != null && !examSubmissionRequest.getAnswers().isEmpty()) {
+            for (Map.Entry<String, String> entry : examSubmissionRequest.getAnswers().entrySet()) {
+                UUID questionId = UUID.fromString(entry.getKey());
+                String submittedAnswer = entry.getValue();
+
+                Question question = questionMap.get(questionId);
+                if (question == null) {
+                    throw new AppException(ErrorCode.QUESTION_NOT_FOUND);
+                }
+
+                if (question.getCorrectAnswer().equalsIgnoreCase(submittedAnswer)) {
+                    if (question instanceof ListeningQuestion) {
+                        correctListeningAnswers++;
+                    } else if (question instanceof ReadingQuestion) {
+                        correctReadingAnswers++;
+                    }
+                }
+            }
+        }
+
+        int listeningScore = ToeicScoringUtil.convertListeningScore(correctListeningAnswers);
+        int readingScore = ToeicScoringUtil.convertReadingScore(correctReadingAnswers);
+
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+        User currentUser = userRepository
+                .findById(UUID.fromString(userId))
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Result result = Result.builder()
+                .listeningScore(listeningScore)
+                .readingScore(readingScore)
+                .lastCompletedAt(LocalDateTime.now())
+                .user(currentUser)
+                .exam(exam)
+                .build();
+
+        resultRepository.save(result);
+
+        return ExamSubmissionResponse.builder()
+                .id(result.getId())
+                .examId(exam.getId())
+                .userId(currentUser.getId())
+                .completedAt(result.getLastCompletedAt())
+                .listeningScore(result.getListeningScore())
+                .readingScore(result.getReadingScore())
+                .totalScore(result.getListeningScore() + result.getReadingScore())
+                .maxScore(990)
+                .build();
+    }
+
 }

@@ -17,12 +17,12 @@ public class Result {
   @GeneratedValue(strategy = GenerationType.UUID)
   UUID id;
 
-  int score;
+  int listeningScore;
+
+  int readingScore;
 
   @JoinColumn(name = "last_completed_at")
   LocalDateTime lastCompletedAt;
-
-  int attempts;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
