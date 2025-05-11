@@ -77,7 +77,16 @@ public enum ErrorCode {
             "Question not found. Please check the question ID and try again.",
             HttpStatus.NOT_FOUND),
   EXAM_NOT_FOUND(
-      1021, "Exam not found. Please check the exam ID and try again.", HttpStatus.NOT_FOUND);
+      1021,
+          "Exam not found. Please check the exam ID and try again.",
+          HttpStatus.NOT_FOUND),
+  DECK_NOT_FOUND(
+          1022,
+          "Deck not found. Please check the deck ID and try again.",
+          HttpStatus.NOT_FOUND),
+  FLASHCARD_NOT_FOUND(1023,
+          "Flashcard not found. Please check the flashcard ID and try again.",
+          HttpStatus.NOT_FOUND),;
 
   private int code;
   private String message;

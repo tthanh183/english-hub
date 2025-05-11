@@ -1,9 +1,7 @@
 package com.example.englishhubbackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,11 +12,16 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Vocabulary {
+public class FlashCard {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   UUID id;
 
-  String title;
-  String content;
+  String word;
+
+  String meaning;
+
+  @ManyToOne
+  @JoinColumn(name = "deck_id")
+  private Deck deck;
 }
