@@ -5,6 +5,7 @@ import {
   BookOpen,
   ClipboardList,
   Home,
+  Layers,
   LogOut,
   Menu,
   Users,
@@ -25,6 +26,11 @@ export default function DashboardLayout() {
     { name: 'User Management', href: '/admin/users', icon: Users },
     { name: 'Course Management', href: '/admin/courses', icon: BookOpen },
     { name: 'Exam Management', href: '/admin/exams', icon: ClipboardList },
+    {
+      name: 'Deck Management',
+      href: '/admin/decks',
+      icon: Layers,
+    },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 

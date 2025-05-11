@@ -11,6 +11,8 @@ export const ROUTES = {
   ADMIN_COURSES_DETAIL: '/admin/courses/:courseId',
   ADMIN_EXAMS: '/admin/exams',
   ADMIN_EXAM_QUESTIONS: '/admin/exams/:examId/questions',
+  ADMIN_DECKS: '/admin/decks',
+  ADMIN_FLASHCARDS: '/admin/decks/:deckId',
 
   COURSES: '/courses',
   COURSES_LISTENING_READING: '/courses/listening-reading',
@@ -24,4 +26,7 @@ export const ROUTES = {
   EXAM: '/exams',
   EXAM_DETAIL: '/exams/:examId',
   EXAM_RESULT: '/exams/exam-results/:examId',
+
+  DECK: '/decks',
+  FLASH_CARD: 'decks/:deckId',
 };
