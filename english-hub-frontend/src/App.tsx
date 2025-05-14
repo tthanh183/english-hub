@@ -24,6 +24,7 @@ import ExamDetailPage from './pages/home/ExamDetailPage';
 import ExamResultPage from './pages/home/ExamResultPage';
 import DeckManagementPage from './pages/admin/DeckManagementPage';
 import FlashCardManagementPage from './pages/admin/FlashCardManagementPage';
+import DeckPage from './pages/home/DeckPage';
 
 function App() {
   return (
@@ -51,6 +52,8 @@ function App() {
           <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
           <Route path={ROUTES.EXAM_RESULT} element={<ExamResultPage />} />
 
+          <Route path={ROUTES.DECK} element={<DeckPage />} />
+          <Route path={ROUTES.FLASH_CARD} element={<DeckPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

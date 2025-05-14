@@ -11,7 +11,7 @@ export default function Header() {
     { title: 'Practice S&W', href: '/courses/speaking-writing' },
     { title: 'Mock Tests', href: '/exams' },
     { title: 'Grammar', href: '/grammar' },
-    { title: 'Vocabulary', href: '/vocabulary' },
+    { title: 'Vocabulary', href: '/decks' },
     { title: 'Blog', href: '/blog' },
   ];
 
