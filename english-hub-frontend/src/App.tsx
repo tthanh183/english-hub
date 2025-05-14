@@ -26,6 +26,7 @@ import DeckManagementPage from './pages/admin/DeckManagementPage';
 import FlashCardManagementPage from './pages/admin/FlashCardManagementPage';
 import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
+import FlashCardPage from './pages/home/FlashCardPage';
 
 function App() {
   return (
@@ -55,7 +56,7 @@ function App() {
 
           <Route path={ROUTES.DECK} element={<DeckPage />} />
           <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
-          <Route path={ROUTES.FLASH_CARD} element={<DeckPage />} />
+          <Route path={ROUTES.FLASH_CARD} element={<FlashCardPage />} />
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>

@@ -1,280 +1,327 @@
-'use client';
-
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import {
   ArrowLeft,
-  Search,
   Volume2,
-  Plus,
-  Download,
-  Upload,
-  Filter,
+  Flag,
+  Check,
+  X,
+  Clock,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+import { getDeckById } from '@/services/deckService';
+import { getAllFlashCards } from '@/services/flashCardService';
+import { DeckResponse } from '@/types/deckType';
+import { FlashCardResponse } from '@/types/flashCardType';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
+import { ROUTES } from '@/constants/routes';
 
-// Mock vocabulary data
-const vocabularyDecks = {
-  'toeic-essential': {
-    id: 'toeic-essential',
-    title: 'TOEIC Essential Vocabulary',
-    description: '600 essential words for the TOEIC exam',
-    cards: [
-      {
-        id: 1,
-        front: 'accommodate',
-        back: 'to provide lodging or sufficient space for',
-        example: 'The hotel can accommodate up to 500 guests.',
-        pronunciation: '/əˈkɒmədeɪt/',
-        partOfSpeech: 'verb',
-      },
-      {
-        id: 2,
-        front: 'adjacent',
-        back: 'next to or adjoining something else',
-        example: 'Our office is adjacent to the train station.',
-        pronunciation: '/əˈdʒeɪsənt/',
-        partOfSpeech: 'adjective',
-      },
-      {
-        id: 3,
-        front: 'allocate',
-        back: 'to distribute according to a plan or set apart for a special purpose',
-        example: 'We need to allocate more resources to this project.',
-        pronunciation: '/ˈæləkeɪt/',
-        partOfSpeech: 'verb',
-      },
-      {
-        id: 4,
-        front: 'anticipate',
-        back: 'to expect or predict',
-        example: 'We anticipate strong growth in the next quarter.',
-        pronunciation: '/ænˈtɪsɪpeɪt/',
-        partOfSpeech: 'verb',
-      },
-      {
-        id: 5,
-        front: 'commence',
-        back: 'to begin or start',
-        example: 'The meeting will commence at 9 AM sharp.',
-        pronunciation: '/kəˈmens/',
-        partOfSpeech: 'verb',
-      },
-      {
-        id: 6,
-        front: 'comply',
-        back: 'to act in accordance with a wish or command',
-        example: 'All employees must comply with the new regulations.',
-        pronunciation: '/kəmˈplaɪ/',
-        partOfSpeech: 'verb',
-      },
-      {
-        id: 7,
-        front: 'comprehensive',
-        back: 'complete; including all or nearly all elements or aspects of something',
-        example: 'The report provides a comprehensive analysis of the market.',
-        pronunciation: '/ˌkɒmprɪˈhensɪv/',
-        partOfSpeech: 'adjective',
-      },
-      {
-        id: 8,
-        front: 'crucial',
-        back: 'decisive or critical, especially in the success or failure of something',
-        example: 'Teamwork is crucial for the success of this project.',
-        pronunciation: '/ˈkruːʃəl/',
-        partOfSpeech: 'adjective',
-      },
-      {
-        id: 9,
-        front: 'deadline',
-        back: 'the latest time or date by which something should be completed',
-        example: 'The deadline for this assignment is next Friday.',
-        pronunciation: '/ˈdedlaɪn/',
-        partOfSpeech: 'noun',
-      },
-      {
-        id: 10,
-        front: 'efficient',
-        back: 'achieving maximum productivity with minimum wasted effort or expense',
-        example: 'The new system is more efficient than the old one.',
-        pronunciation: '/ɪˈfɪʃənt/',
-        partOfSpeech: 'adjective',
-      },
-    ],
-  },
-  'business-english': {
-    id: 'business-english',
-    title: 'Business English',
-    description: '300 essential business English terms and phrases',
-    cards: [
-      {
-        id: 1,
-        front: 'agenda',
-        back: 'a list of items to be discussed at a meeting',
-        example: "Let's go through the agenda for today's meeting.",
-        pronunciation: '/əˈdʒendə/',
-        partOfSpeech: 'noun',
-      },
-      {
-        id: 2,
-        front: 'benchmark',
-        back: 'a standard or point of reference against which things may be compared',
-        example: 'Our sales figures are well above the industry benchmark.',
-        pronunciation: '/ˈbentʃmɑːk/',
-        partOfSpeech: 'noun',
-      },
-      // More cards would be here
-    ],
-  },
-  // Other decks would be defined here
-};
+export default function FlashCardPage() {
+  const { deckId } = useParams<{ deckId: string }>();
+  const navigate = useNavigate();
 
-export default function DeckPage() {
-  const params = useParams();
-  const router = useRouter();
-  const deckId = params.deckId as string;
-  const deck = vocabularyDecks[deckId as keyof typeof vocabularyDecks];
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [studiedCards, setStudiedCards] = useState<string[]>([]);
+  const [flaggedCards, setFlaggedCards] = useState<string[]>([]);
+  const [showRating, setShowRating] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterPartOfSpeech, setFilterPartOfSpeech] = useState('all');
-
-  // If deck doesn't exist, redirect to vocabulary page
-  if (!deck) {
-    router.push('/vocabulary');
-    return null;
-  }
-
-  const filteredCards = deck.cards.filter(card => {
-    const matchesSearch =
-      card.front.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.back.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesFilter =
-      filterPartOfSpeech === 'all' || card.partOfSpeech === filterPartOfSpeech;
-
-    return matchesSearch && matchesFilter;
+  const {
+    data: deck,
+    isLoading: isDeckLoading,
+    error: deckError,
+  } = useQuery<DeckResponse>({
+    queryKey: ['deck', deckId],
+    queryFn: () => getDeckById(deckId || ''),
+    enabled: !!deckId,
   });
 
-  const partsOfSpeech = Array.from(
-    new Set(deck.cards.map(card => card.partOfSpeech))
-  );
+  const {
+    data: flashCards = [],
+    isLoading: isCardsLoading,
+    error: cardsError,
+  } = useQuery<FlashCardResponse[]>({
+    queryKey: ['flashcards', deckId],
+    queryFn: () => getAllFlashCards(deckId || ''),
+    enabled: !!deckId,
+  });
+
+  useEffect(() => {
+    if (!deckId) {
+      navigate(ROUTES.DECK);
+    }
+  }, [deckId, navigate]);
+
+  if (isDeckLoading || isCardsLoading) {
+    return <GlobalSkeleton />;
+  }
+
+  if (deckError || cardsError || !deck || flashCards.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4">
+          <h2 className="text-red-800 font-medium">Error</h2>
+          <p className="text-red-700">
+            {(deckError as Error)?.message ||
+            (cardsError as Error)?.message ||
+            flashCards.length === 0
+              ? "This deck doesn't have any flashcards yet."
+              : "Couldn't load flashcards. Please try again."}
+          </p>
+          <div className="mt-4">
+            <Button onClick={() => navigate(ROUTES.DECK)}>Back to Decks</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentCard = flashCards[currentCardIndex];
+  const progress = ((currentCardIndex + 1) / flashCards.length) * 100;
+
+  const handleFlipCard = () => {
+    setIsFlipped(!isFlipped);
+
+    if (!isFlipped && !studiedCards.includes(currentCard.id)) {
+      setShowRating(true);
+    }
+  };
+
+  const handleRating = (rating: number) => {
+    console.log(`Card ${currentCard.id} rated as ${rating}`);
+
+    if (!studiedCards.includes(currentCard.id)) {
+      setStudiedCards([...studiedCards, currentCard.id]);
+    }
+
+    setShowRating(false);
+
+    setTimeout(() => {
+      setIsFlipped(false);
+
+      if (currentCardIndex < flashCards.length - 1) {
+        setCurrentCardIndex(currentCardIndex + 1);
+      } else {
+        navigate(`${ROUTES.DECK}/${deckId}`);
+      }
+    }, 300);
+  };
+
+  const handlePrevCard = () => {
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex(currentCardIndex - 1);
+      setIsFlipped(false);
+      setShowRating(false);
+    }
+  };
+
+  const handleNextCard = () => {
+    if (currentCardIndex < flashCards.length - 1) {
+      setCurrentCardIndex(currentCardIndex + 1);
+      setIsFlipped(false);
+      setShowRating(false);
+    }
+  };
+
+  const toggleFlagCard = () => {
+    if (flaggedCards.includes(currentCard.id)) {
+      setFlaggedCards(flaggedCards.filter(id => id !== currentCard.id));
+    } else {
+      setFlaggedCards([...flaggedCards, currentCard.id]);
+    }
+  };
+
+  const playPronunciation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log(`Playing pronunciation for ${currentCard.word}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/vocabulary" className="mr-4">
+          <Link to={`${ROUTES.DECK}`} className="mr-4">
             <Button variant="outline" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">{deck.title}</h1>
-            <p className="text-sm text-gray-600">{deck.description}</p>
+            <h1 className="text-2xl font-bold text-gray-800">{deck.name}</h1>
+            <p className="text-sm text-gray-600">
+              Card {currentCardIndex + 1} of {flashCards.length}
+            </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Link href={`/vocabulary/${deckId}/study`}>
-            <Button className="bg-blue-600 hover:bg-blue-700">Study Now</Button>
-          </Link>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFlagCard}
+            className={cn(
+              flaggedCards.includes(currentCard.id)
+                ? 'text-red-500 border-red-500'
+                : ''
+            )}
+          >
+            <Flag
+              className={cn(
+                'h-4 w-4 mr-2',
+                flaggedCards.includes(currentCard.id) ? 'fill-red-500' : ''
+              )}
+            />
+            {flaggedCards.includes(currentCard.id) ? 'Flagged' : 'Flag Card'}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`${ROUTES.DECK}/${deckId}`)}
+          >
+            End Session
+          </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-          <TabsList>
-            <TabsTrigger value="all">
-              All Cards ({deck.cards.length})
-            </TabsTrigger>
-            <TabsTrigger value="due">Due for Review (0)</TabsTrigger>
-            <TabsTrigger value="flagged">Flagged (0)</TabsTrigger>
-          </TabsList>
+      <Progress
+        value={progress}
+        className="mb-8 h-2 bg-gray-200 [&>div]:bg-blue-600"
+      />
 
-          <div className="flex gap-2 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search cards..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
+      <div className="flex flex-col justify-center mb-8" style={{ minHeight: '400px' }}>
+        <div className="w-full max-w-2xl mx-auto" style={{ perspective: '1000px' }}>
+          <div
+            onClick={handleFlipCard}
+            className="cursor-pointer h-80 relative w-full"
+            style={{
+              transformStyle: 'preserve-3d',
+              transition: 'transform 0.6s',
+              transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            }}
+          >
+            <Card
+              className="absolute w-full h-full p-8 flex flex-col items-center justify-center"
+              style={{
+                backfaceVisibility: 'hidden',
+              }}
+            >
+              <div className="text-3xl font-bold mb-4">{currentCard.word}</div>
+              <div className="mt-6 text-gray-400 text-sm">
+                Click to reveal definition
+              </div>
+            </Card>
+
+            <Card
+              className="absolute w-full h-full p-8 bg-blue-50 flex flex-col"
+              style={{
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+                overflowY: 'auto',
+              }}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div className="text-2xl font-bold">{currentCard.word}</div>
+                <Button variant="ghost" size="sm" onClick={playPronunciation}>
+                  <Volume2 className="h-4 w-4 mr-2" />
+                  Listen
+                </Button>
+              </div>
+              <div className="text-xl mb-4">{currentCard.meaning}</div>
+            </Card>
+          </div>
+        </div>
+
+        {showRating && (
+          <div className="mt-8 flex flex-col items-center">
+            <div className="text-lg font-medium mb-4">
+              How well did you know this word?
             </div>
-            <Button variant="outline" className="flex items-center">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-          </div>
-        </div>
-
-        <TabsContent value="all" className="mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCards.map(card => (
-              <Card
-                key={card.id}
-                className="overflow-hidden hover:shadow-md transition-shadow"
+            <div className="flex gap-2 w-full max-w-2xl mx-auto">
+              <Button
+                variant="outline"
+                className="flex-1 border-red-500 text-red-500 hover:bg-red-50"
+                onClick={() => handleRating(0)}
               >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="font-bold text-lg">{card.front}</div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        console.log(`Playing pronunciation for ${card.front}`)
-                      }
-                    >
-                      <Volume2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="text-sm text-gray-500 mb-2">
-                    {card.partOfSpeech}
-                  </div>
-                  <div className="mb-2">{card.back}</div>
-                  <div className="text-sm text-gray-600 italic">
-                    {card.example}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                <X className="h-4 w-4 mr-2" />
+                Again
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-orange-500 text-orange-500 hover:bg-orange-50"
+                onClick={() => handleRating(1)}
+              >
+                Hard
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-yellow-500 text-yellow-500 hover:bg-yellow-50"
+                onClick={() => handleRating(2)}
+              >
+                Good
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-green-500 text-green-500 hover:bg-green-50"
+                onClick={() => handleRating(3)}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Easy
+              </Button>
+            </div>
           </div>
-        </TabsContent>
+        )}
+      </div>
 
-        <TabsContent value="due" className="mt-0">
-          <div className="text-center py-12">
-            <p className="text-gray-500">
-              No cards due for review at the moment.
-            </p>
-          </div>
-        </TabsContent>
+      <div className="flex justify-between">
+        <Button
+          variant="outline"
+          onClick={handlePrevCard}
+          disabled={currentCardIndex === 0}
+          className="flex items-center"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous Card
+        </Button>
 
-        <TabsContent value="flagged" className="mt-0">
-          <div className="text-center py-12">
-            <p className="text-gray-500">No flagged cards yet.</p>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Manage Deck</h2>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Card
+          <Button
+            variant="outline"
+            onClick={handleFlipCard}
+            className="flex items-center"
+          >
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Flip Card
           </Button>
-          <Button variant="outline" className="flex items-center">
-            <Upload className="h-4 w-4 mr-2" />
-            Import
-          </Button>
-          <Button variant="outline" className="flex items-center">
-            <Download className="h-4 w-4 mr-2" />
-            Export
+          <Button
+            variant="outline"
+            onClick={() => {
+              setCurrentCardIndex(
+                Math.floor(Math.random() * flashCards.length)
+              );
+              setIsFlipped(false);
+              setShowRating(false);
+            }}
+            className="flex items-center"
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            Random Card
           </Button>
         </div>
+
+        <Button
+          variant="outline"
+          onClick={handleNextCard}
+          disabled={currentCardIndex === flashCards.length - 1}
+          className="flex items-center"
+        >
+          Next Card
+          <ChevronRight className="h-4 w-4 ml-2" />
+        </Button>
       </div>
     </div>
   );
