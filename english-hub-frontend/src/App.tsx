@@ -25,6 +25,7 @@ import ExamResultPage from './pages/home/ExamResultPage';
 import DeckManagementPage from './pages/admin/DeckManagementPage';
 import FlashCardManagementPage from './pages/admin/FlashCardManagementPage';
 import DeckPage from './pages/home/DeckPage';
+import VocabularyPage from './pages/home/VocabularyPage';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route path={ROUTES.EXAM_RESULT} element={<ExamResultPage />} />
 
           <Route path={ROUTES.DECK} element={<DeckPage />} />
+          <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
           <Route path={ROUTES.FLASH_CARD} element={<DeckPage />} />
         </Route>
 

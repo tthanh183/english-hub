@@ -69,7 +69,7 @@ export default function VocabularyPage() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between pt-3 border-t">
-              <Link to={`/vocabulary/${deck.id}`}>
+              <Link to={`/decks/${deck.id}/vocabularies`}>
                 <Button
                   variant="outline"
                   className="text-blue-600 border-blue-600 hover:bg-blue-50"
@@ -77,7 +77,7 @@ export default function VocabularyPage() {
                   Browse Cards
                 </Button>
               </Link>
-              <Link to={`/decks/${deck.id}`}>
+              <Link to={`/decks/${deck.id}/flashcards`}>
                 <Button className="bg-blue-600 hover:bg-blue-700">
                   Study Now
                   <ArrowRight className="ml-2 h-4 w-4" />
