@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,6 +51,7 @@ public class LessonServiceImpl implements LessonService {
   }
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public LessonResponse createLesson(UUID courseId, LessonCreateRequest lessonCreateRequest) {
     Course course = courseService.getCourseEntityById(courseId);
     if (course == null) {
@@ -62,6 +64,7 @@ public class LessonServiceImpl implements LessonService {
   }
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public LessonResponse updateLesson(UUID lessonId, LessonUpdateRequest lessonUpdateRequest) {
     Lesson lesson =
         lessonRepository
@@ -72,6 +75,7 @@ public class LessonServiceImpl implements LessonService {
   }
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public void deleteLesson(UUID lessonId) {
     Lesson lesson =
         lessonRepository

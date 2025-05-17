@@ -18,6 +18,7 @@ import com.example.englishhubbackend.util.ToeicScoringUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +41,7 @@ public class ExamServiceImpl implements ExamService {
 
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ExamResponse createExam(ExamCreateRequest examCreateRequest) {
         Exam newExam = examMapper.toExam(examCreateRequest);
         newExam.setCreatedDate(LocalDateTime.now());
@@ -61,6 +63,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ExamResponse updateExam(UUID examId, ExamUpdateRequest examUpdateRequest) {
         Exam exam = examRepository
                 .findById(examId)
@@ -70,6 +73,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteExam(UUID examId) {
         Exam exam = examRepository
                 .findById(examId)
@@ -78,6 +82,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<QuestionResponse> addQuestionsToExam(UUID examId, List<QuestionCreateRequest> questionCreateRequest) {
         Exam exam = examRepository
                 .findById(examId)
@@ -102,6 +107,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse addQuestionToExam(UUID examId, QuestionCreateRequest questionCreateRequest) {
         Exam exam =
                 examRepository
@@ -134,6 +140,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse updateQuestionInExam(UUID examId, UUID questionId, QuestionUpdateRequest questionUpdateRequest) {
         Exam exam =
                 examRepository

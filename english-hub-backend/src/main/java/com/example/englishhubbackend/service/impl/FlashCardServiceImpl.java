@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class FlashCardServiceImpl implements FlashCardService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public FlashCardResponse createFlashCard(UUID deckId, FlashCardCreateRequest flashCardCreateRequest) {
         Deck deck = deckRepository.findById(deckId)
                 .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
@@ -57,6 +59,7 @@ public class FlashCardServiceImpl implements FlashCardService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public FlashCardResponse updateFlashCard(UUID flashCardId, FlashCardUpdateRequest flashCardUpdateRequest) {
         return flashCardRepository.findById(flashCardId)
                 .map(flashCard -> {
@@ -67,6 +70,7 @@ public class FlashCardServiceImpl implements FlashCardService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteFlashCard(UUID flashCardId) {
         if (!flashCardRepository.existsById(flashCardId)) {
             throw new AppException(ErrorCode.FLASHCARD_NOT_FOUND);

@@ -73,6 +73,7 @@ public class ExerciseServiceImpl implements ExerciseService {
   }
 
   @Override
+  @PreAuthorize("hasRole('ADMIN')")
   public ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
     Exercise exercise = exerciseRepository
             .findById(exerciseId)

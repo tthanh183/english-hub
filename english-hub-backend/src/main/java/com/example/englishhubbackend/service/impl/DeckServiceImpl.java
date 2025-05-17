@@ -13,6 +13,7 @@ import com.example.englishhubbackend.service.DeckService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,11 +28,18 @@ public class DeckServiceImpl implements DeckService {
     DeckMapper deckMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public DeckResponse createDeck(DeckCreateRequest deckCreateRequest) {
         Deck newDeck = deckMapper.toDeck(deckCreateRequest);
         newDeck.setCreatedDate(LocalDate.now());
         newDeck.setUpdatedDate(LocalDate.now());
         return deckMapper.toDeckResponse(deckRepository.save(newDeck));
+    }
+
+    @Override
+    public List<DeckResponse> getAllDecks() {
+        List<Deck> desks = deckRepository.findAllByOrderByCreatedDateAsc();
+        return desks.stream().map(deckMapper::toDeckResponse).toList();
     }
 
     @Override
@@ -42,12 +50,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
-    public List<DeckResponse> getAllDecks() {
-        List<Deck> desks = deckRepository.findAllByOrderByCreatedDateAsc();
-        return desks.stream().map(deckMapper::toDeckResponse).toList();
-    }
-
-    @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public DeckResponse updateDeck(UUID id, DeckUpdateRequest deckUpdateRequest) {
         Deck deck = deckRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
@@ -57,6 +60,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteDeck(UUID id) {
         Deck deck = deckRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));

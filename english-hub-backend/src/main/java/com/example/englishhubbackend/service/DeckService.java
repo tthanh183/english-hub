@@ -10,9 +10,9 @@ import java.util.UUID;
 public interface DeckService {
     DeckResponse createDeck(DeckCreateRequest deckCreateRequest);
 
-    DeckResponse getDeckById(UUID id);
-
     List<DeckResponse> getAllDecks();
+
+    DeckResponse getDeckById(UUID id);
 
     DeckResponse updateDeck(UUID id, DeckUpdateRequest deckUpdateRequest);
 
