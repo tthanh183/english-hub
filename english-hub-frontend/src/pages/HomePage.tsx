@@ -74,7 +74,6 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        {/* Hero Section */}
         <section className="bg-gradient-to-b from-blue-50 to-white py-16">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
@@ -103,7 +102,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Categories Section */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-center text-gray-800">
@@ -117,7 +115,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Practice Tests Section */}
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -147,7 +144,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Stats Section */}
         <section className="py-16 bg-blue-600 text-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -167,7 +163,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-center text-gray-800">

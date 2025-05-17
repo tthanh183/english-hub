@@ -14,12 +14,12 @@ import { getAllDecks } from '@/services/deckService';
 import { DeckResponse } from '@/types/deckType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 
-export default function VocabularyPage() {
+export default function DeckPage() {
   const { data: decks = [], isLoading } = useQuery({
     queryKey: ['decks'],
     queryFn: getAllDecks,
   });
-
+ 
   if (isLoading) {
     return <GlobalSkeleton />;
   }

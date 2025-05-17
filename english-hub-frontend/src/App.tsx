@@ -35,7 +35,6 @@ function App() {
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route path={ROUTES.VERIFY} element={<VerifyPage />} />
-        {/* <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} /> */}
 
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />

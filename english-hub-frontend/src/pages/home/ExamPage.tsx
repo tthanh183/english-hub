@@ -63,7 +63,6 @@ export default function ExamPage() {
                 key={displayExam.id}
                 className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 flex flex-col h-full"
               >
-                {/* Card Header with Title and Premium Badge - Removed border-b */}
                 <CardHeader className="pb-2 space-y-1">
                   <div className="flex justify-between items-start gap-2">
                     <div>
@@ -93,9 +92,7 @@ export default function ExamPage() {
                   </div>
                 </CardHeader>
 
-                {/* Card Content with Test Info and Stats */}
                 <CardContent className="py-0 px-5 flex-grow">
-                  {/* Test Info Row - Subtle separator with padding only */}
                   <div className="flex items-center justify-between text-xs text-gray-600 mb-3 pb-2">
                     <div className="flex gap-3">
                       <div className="flex items-center">
@@ -121,7 +118,6 @@ export default function ExamPage() {
                     </Badge>
                   </div>
 
-                  {/* Combined Stats Row - Using shadow divider instead of border */}
                   <div className="flex justify-between items-center pt-1">
                     <div className="flex flex-col">
                       <div className="flex items-center text-xs text-gray-500 mb-0.5">
@@ -146,7 +142,6 @@ export default function ExamPage() {
                   </div>
                 </CardContent>
 
-                {/* Card Footer - Use shadow separator instead of border */}
                 <CardFooter className="flex justify-between items-center pt-3 pb-3 mt-auto bg-gray-50">
                   <div className="flex items-center text-xs text-gray-400">
                     <Calendar className="h-3 w-3 mr-1" />

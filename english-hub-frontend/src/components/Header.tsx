@@ -10,9 +10,7 @@ export default function Header() {
     { title: 'Practice L&R', href: '/courses/listening-reading' },
     { title: 'Practice S&W', href: '/courses/speaking-writing' },
     { title: 'Mock Tests', href: '/exams' },
-    { title: 'Grammar', href: '/grammar' },
     { title: 'Vocabulary', href: '/decks' },
-    { title: 'Blog', href: '/blog' },
   ];
 
   return (
