@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Outlet } from 'react-router-dom';
+import { ChatButton } from '@/components/home/ChatbotButton';
 
 export default function HomeLayout() {
   return (
@@ -10,6 +11,7 @@ export default function HomeLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ChatButton />
     </div>
   );
 }
