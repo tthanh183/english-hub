@@ -48,10 +48,12 @@ function App() {
           />
           <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
           <Route path={ROUTES.EXERCISE_DETAIL} element={<ExercisePage />} />
-
+          
           <Route path={ROUTES.EXAM} element={<ExamPage />} />
-          <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
-          <Route path={ROUTES.EXAM_RESULT} element={<ExamResultPage />} />
+          <Route element={<ProtectedRoute adminRequired={false} />}>
+            <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
+            <Route path={ROUTES.EXAM_RESULT} element={<ExamResultPage />} />
+          </Route>
 
           <Route path={ROUTES.DECK} element={<DeckPage />} />
           <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
@@ -77,7 +79,10 @@ function App() {
             />
 
             <Route path={ROUTES.ADMIN_DECKS} element={<DeckManagementPage />} />
-            <Route path={ROUTES.ADMIN_FLASHCARDS} element={<FlashCardManagementPage />} />
+            <Route
+              path={ROUTES.ADMIN_FLASHCARDS}
+              element={<FlashCardManagementPage />}
+            />
           </Route>
         </Route>
       </Routes>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,6 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllExams } from '@/services/examService';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { longToString } from '@/utils/timeUtil';
+import { useAuthStore } from '@/stores/authStore';
+import { showError } from '@/hooks/useToast';
 
 export default function ExamPage() {
   const { data: exams, isLoading } = useQuery({
@@ -24,6 +26,17 @@ export default function ExamPage() {
     Easy: 'bg-green-100 text-green-800 border-green-200',
     Intermediate: 'bg-amber-100 text-amber-800 border-amber-200',
     Hard: 'bg-red-100 text-red-800 border-red-200',
+  };
+
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const navigate = useNavigate();
+
+  const handleStartTest = (examId: string) => {
+    if (!isAuthenticated) {
+      showError('You need to login first');
+      return;
+    }
+    navigate(`/exams/${examId}`);
   };
 
   if (isLoading) {
@@ -156,25 +169,18 @@ export default function ExamPage() {
                       )}
                     </span>
                   </div>
-                  <Link
-                    to={
+                  <Button
+                    size="sm"
+                    variant={displayExam.premium ? 'outline' : 'default'}
+                    className={
                       displayExam.premium
-                        ? '/pricing'
-                        : `/exams/${displayExam.id}`
+                        ? 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50 font-medium'
+                        : 'bg-blue-600 hover:bg-blue-700 font-medium'
                     }
+                    onClick={() => handleStartTest(displayExam.id)}
                   >
-                    <Button
-                      size="sm"
-                      variant={displayExam.premium ? 'outline' : 'default'}
-                      className={
-                        displayExam.premium
-                          ? 'bg-white text-blue-700 border-blue-200 hover:bg-blue-50 font-medium'
-                          : 'bg-blue-600 hover:bg-blue-700 font-medium'
-                      }
-                    >
-                      {displayExam.premium ? 'Upgrade' : 'Start Test'}
-                    </Button>
-                  </Link>
+                    {displayExam.premium ? 'Upgrade' : 'Start Test'}
+                  </Button>
                 </CardFooter>
               </Card>
             );

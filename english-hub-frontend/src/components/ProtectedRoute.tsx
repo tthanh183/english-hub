@@ -12,7 +12,7 @@ export default function ProtectedRoute({ adminRequired }: ProtectedRouteProps) {
 
   if (!isAuthenticated) {
     showError('You need to login first');
-    return <Navigate to="/" />;
+    return null;
   }
 
   if (adminRequired && !isAdmin) {
