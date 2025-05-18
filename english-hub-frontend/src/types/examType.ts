@@ -3,6 +3,8 @@ export type ExamResponse = {
   title: string;
   duration: number;
   createdDate: Date;
+  attempts: number;
+  highestScore: number;
 };
 
 export type ExamCreateRequest = {

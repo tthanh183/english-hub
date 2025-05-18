@@ -131,7 +131,7 @@ export default function ExamPage() {
                     </Badge>
                   </div>
 
-                  <div className="flex justify-between items-center pt-1">
+                  <div className="flex justify-between items-start pt-1">
                     <div className="flex flex-col">
                       <div className="flex items-center text-xs text-gray-500 mb-0.5">
                         <BarChart3 className="h-3 w-3 mr-1 text-blue-600" />
@@ -140,6 +140,25 @@ export default function ExamPage() {
                       <div className="font-semibold text-md text-gray-800">
                         {displayExam.avgScore}
                         <span className="text-xs text-gray-500 ml-1">/990</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                      <div className="flex items-center text-xs text-gray-500 mb-0.5">
+                        <Trophy className="h-3 w-3 mr-1 text-green-600" />
+                        <span>Highest Score</span>
+                      </div>
+                      <div className="font-semibold text-md text-gray-800">
+                        {displayExam.highestScore > 0 ? (
+                          <span className="text-green-600">
+                            {displayExam.highestScore}
+                            <span className="text-xs text-gray-500 ml-1">
+                              /990
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-gray-400">--</span>
+                        )}
                       </div>
                     </div>
 
