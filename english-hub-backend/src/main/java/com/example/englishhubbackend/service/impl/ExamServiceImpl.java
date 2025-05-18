@@ -50,8 +50,26 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public List<ExamResponse> getAllExams() {
+        var currentUser = getCurrentUser();
+
         List<Exam> exams = examRepository.findAllByOrderByCreatedDateAsc();
-        return exams.stream().map(examMapper::toExamResponse).collect(Collectors.toList());
+
+        return exams.stream().map(exam -> {
+            int attempts = 0;
+            int highestScore = 0;
+
+            if (currentUser != null) {
+                attempts = resultRepository.countByUserAndExam(currentUser, exam);
+                Integer highestScoreResult = resultRepository.findHighestScoreByUserAndExam(currentUser, exam);
+                highestScore = highestScoreResult != null ? highestScoreResult : 0;
+            }
+
+            ExamResponse examResponse = examMapper.toExamResponse(exam);
+            examResponse.setAttempts(attempts);
+            examResponse.setHighestScore(highestScore);
+            return examResponse;
+            }
+        ).collect(Collectors.toList());
     }
 
     @Override
@@ -261,4 +279,13 @@ public class ExamServiceImpl implements ExamService {
                 .build();
     }
 
+    private User getCurrentUser() {
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+        try {
+            return userRepository.findById(UUID.fromString(userId)).orElse(null);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

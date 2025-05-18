@@ -16,4 +16,6 @@ public class ExamResponse {
     String title;
     int duration;
     LocalDateTime createdDate;
+    int attempts;
+    int highestScore;
 }
