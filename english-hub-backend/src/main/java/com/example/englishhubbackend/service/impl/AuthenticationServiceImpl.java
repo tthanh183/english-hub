@@ -37,6 +37,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -199,6 +200,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       redisTemplate.delete("refresh:" + userId);
     } catch (Exception e) {
       throw new AppException(ErrorCode.UNAUTHENTICATED);
+    }
+  }
+
+  @Override
+  public User getCurrentUser() {
+    var context = SecurityContextHolder.getContext();
+    String userId = context.getAuthentication().getName();
+    try {
+      return userRepository.findById(UUID.fromString(userId)).orElse(null);
+    } catch (IllegalArgumentException e) {
+      return null;
     }
   }
 

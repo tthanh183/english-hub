@@ -86,7 +86,12 @@ public enum ErrorCode {
           HttpStatus.NOT_FOUND),
   FLASHCARD_NOT_FOUND(1023,
           "Flashcard not found. Please check the flashcard ID and try again.",
-          HttpStatus.NOT_FOUND),;
+          HttpStatus.NOT_FOUND),
+  USER_FLASHCARD_NOT_FOUND(
+      1024,
+      "User flashcard not found. Please check the user ID and flashcard ID and try again.",
+      HttpStatus.NOT_FOUND),;
+
 
   private int code;
   private String message;

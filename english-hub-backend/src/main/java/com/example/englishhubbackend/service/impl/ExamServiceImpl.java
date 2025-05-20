@@ -12,8 +12,10 @@ import com.example.englishhubbackend.models.*;
 import com.example.englishhubbackend.repository.ExamRepository;
 import com.example.englishhubbackend.repository.ResultRepository;
 import com.example.englishhubbackend.repository.UserRepository;
+import com.example.englishhubbackend.service.AuthenticationService;
 import com.example.englishhubbackend.service.ExamService;
 import com.example.englishhubbackend.service.QuestionService;
+import com.example.englishhubbackend.service.UserService;
 import com.example.englishhubbackend.util.ToeicScoringUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class ExamServiceImpl implements ExamService {
     QuestionService questionService;
     UserRepository userRepository;
     ResultRepository resultRepository;
+    AuthenticationService authenticationService;
 
 
     @Override
@@ -50,7 +53,7 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public List<ExamResponse> getAllExams() {
-        var currentUser = getCurrentUser();
+        User currentUser = authenticationService.getCurrentUser();
 
         List<Exam> exams = examRepository.findAllByOrderByCreatedDateAsc();
 
@@ -251,11 +254,7 @@ public class ExamServiceImpl implements ExamService {
         int listeningScore = ToeicScoringUtil.convertListeningScore(correctListeningAnswers);
         int readingScore = ToeicScoringUtil.convertReadingScore(correctReadingAnswers);
 
-        var context = SecurityContextHolder.getContext();
-        String userId = context.getAuthentication().getName();
-        User currentUser = userRepository
-                .findById(UUID.fromString(userId))
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        User currentUser = authenticationService.getCurrentUser();
 
         Result result = Result.builder()
                 .listeningScore(listeningScore)
@@ -279,13 +278,4 @@ public class ExamServiceImpl implements ExamService {
                 .build();
     }
 
-    private User getCurrentUser() {
-        var context = SecurityContextHolder.getContext();
-        String userId = context.getAuthentication().getName();
-        try {
-            return userRepository.findById(UUID.fromString(userId)).orElse(null);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
 }

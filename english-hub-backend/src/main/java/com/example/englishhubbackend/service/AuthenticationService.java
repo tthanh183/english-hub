@@ -4,6 +4,7 @@ import com.example.englishhubbackend.dto.request.*;
 import com.example.englishhubbackend.dto.response.AuthenticateResponse;
 import com.example.englishhubbackend.dto.response.IntrospectResponse;
 import com.example.englishhubbackend.dto.response.UserResponse;
+import com.example.englishhubbackend.models.User;
 import com.nimbusds.jose.JOSEException;
 import java.text.ParseException;
 
@@ -22,4 +23,6 @@ public interface AuthenticationService {
   AuthenticateResponse refreshToken(RefreshRequest refreshRequest);
 
   void logout(RefreshRequest refreshRequest);
+
+  User getCurrentUser();
 }
