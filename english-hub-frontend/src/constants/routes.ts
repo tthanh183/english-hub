@@ -30,4 +30,5 @@ export const ROUTES = {
   DECK: '/decks',
   VOCABULARY: '/decks/:deckId/vocabularies',
   FLASH_CARD: '/decks/:deckId/flashcards',
+  REVIEW_TODAY: '/review/today',
 };

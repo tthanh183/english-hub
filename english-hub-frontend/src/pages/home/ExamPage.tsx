@@ -35,8 +35,9 @@ export default function ExamPage() {
     if (!isAuthenticated) {
       showError('You need to login first');
       return;
+    } else {
+      navigate(`/exams/${examId}`);
     }
-    navigate(`/exams/${examId}`);
   };
 
   if (isLoading) {

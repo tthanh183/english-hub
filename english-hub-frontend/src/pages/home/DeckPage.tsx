@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,18 +9,49 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Clock, ArrowRight, BookOpen } from 'lucide-react';
+import { Clock, ArrowRight, BookOpen, Zap } from 'lucide-react';
 import { getAllDecks } from '@/services/deckService';
+import { getTodayReview } from '@/services/reviewService';
 import { DeckResponse } from '@/types/deckType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
+import { useAuthStore } from '@/stores/authStore';
+import { showError } from '@/hooks/useToast';
+import { Badge } from '@/components/ui/badge';
 
 export default function DeckPage() {
-  const { data: decks = [], isLoading } = useQuery({
+  const { data: decks = [], isLoading: isDecksLoading } = useQuery({
     queryKey: ['decks'],
     queryFn: getAllDecks,
   });
- 
-  if (isLoading) {
+
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const navigate = useNavigate();
+
+  const { data: todayReviews = [], isLoading: isReviewLoading } = useQuery({
+    queryKey: ['today-review'],
+    queryFn: getTodayReview,
+    enabled: isAuthenticated,
+  });
+
+  const handleStartFlashCard = (deckId: string) => {
+    if (!isAuthenticated) {
+      showError('You need to login first');
+      return;
+    } else {
+      navigate(`/decks/${deckId}/flashcards`);
+    }
+  };
+
+  const handleStartTodayReview = () => {
+    if (!isAuthenticated) {
+      showError('You need to login first');
+      return;
+    } else {
+      navigate('/review/today');
+    }
+  };
+
+  if (isDecksLoading || isReviewLoading) {
     return <GlobalSkeleton />;
   }
 
@@ -37,6 +68,57 @@ export default function DeckPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {isAuthenticated && todayReviews.length > 0 && (
+          <Card className="overflow-hidden border-blue-200 hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-white">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-xl flex items-center">
+                  <Zap className="h-5 w-5 mr-2 text-blue-600" />
+                  Today's Review
+                </CardTitle>
+                <Badge className="bg-blue-100 text-blue-700">
+                  {todayReviews.length} card
+                  {todayReviews.length !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+              <CardDescription>
+                Review words scheduled for today based on spaced repetition
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pb-3">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-blue-50 p-3 rounded-md">
+                  <div className="flex items-center text-gray-500 mb-1">
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    <span>Cards</span>
+                  </div>
+                  <div className="font-semibold">
+                    {todayReviews.length} cards
+                  </div>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-md">
+                  <div className="flex items-center text-gray-500 mb-1">
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span>Date</span>
+                  </div>
+                  <div className="font-semibold">
+                    {new Date().toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end pt-3 border-t">
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={handleStartTodayReview}
+              >
+                Start Review
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
         {decks.map((deck: DeckResponse) => (
           <Card
             key={deck.id}
@@ -77,12 +159,13 @@ export default function DeckPage() {
                   Browse Cards
                 </Button>
               </Link>
-              <Link to={`/decks/${deck.id}/flashcards`}>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  Study Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button
+                className="bg-blue-600 hover:bg-blue-700"
+                onClick={() => handleStartFlashCard(deck.id)}
+              >
+                Study Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </CardFooter>
           </Card>
         ))}

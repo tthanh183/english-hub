@@ -27,6 +27,7 @@ import FlashCardManagementPage from './pages/admin/FlashCardManagementPage';
 import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
 import FlashCardPage from './pages/home/FlashCardPage';
+import ReviewTodayPage from './pages/home/ReviewTodayPage';
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
           />
           <Route path={ROUTES.LESSON_DETAIL} element={<LessonPage />} />
           <Route path={ROUTES.EXERCISE_DETAIL} element={<ExercisePage />} />
-          
+
           <Route path={ROUTES.EXAM} element={<ExamPage />} />
           <Route element={<ProtectedRoute adminRequired={false} />}>
             <Route path={ROUTES.EXAM_DETAIL} element={<ExamDetailPage />} />
@@ -57,7 +58,10 @@ function App() {
 
           <Route path={ROUTES.DECK} element={<DeckPage />} />
           <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
-          <Route path={ROUTES.FLASH_CARD} element={<FlashCardPage />} />
+          <Route element={<ProtectedRoute adminRequired={false} />}>
+            <Route path={ROUTES.FLASH_CARD} element={<FlashCardPage />} />
+            <Route path={ROUTES.REVIEW_TODAY} element={<ReviewTodayPage />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute adminRequired={true} />}>
