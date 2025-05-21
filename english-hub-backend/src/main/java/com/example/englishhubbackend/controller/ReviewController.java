@@ -2,6 +2,7 @@ package com.example.englishhubbackend.controller;
 
 import com.example.englishhubbackend.dto.request.ReviewRequest;
 import com.example.englishhubbackend.dto.response.ApiResponse;
+import com.example.englishhubbackend.dto.response.FlashCardResponse;
 import com.example.englishhubbackend.dto.response.UserFlashCardResponse;
 import com.example.englishhubbackend.service.ReviewService;
 import lombok.AccessLevel;
@@ -19,8 +20,8 @@ public class ReviewController {
     ReviewService reviewService;
 
     @GetMapping("/today")
-    public ApiResponse<List<UserFlashCardResponse>> getTodayReviews() {
-        return ApiResponse.<List<UserFlashCardResponse>>builder()
+    public ApiResponse<List<FlashCardResponse>> getTodayReviews() {
+        return ApiResponse.<List<FlashCardResponse>>builder()
                 .result(reviewService.getCardsToReviewToday())
                 .build();
     }

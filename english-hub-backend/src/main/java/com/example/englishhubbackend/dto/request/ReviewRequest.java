@@ -11,6 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReviewRequest {
-    private UUID flashCardId;
-    private int rating;
+    UUID flashCardId;
+    int rating;
 }

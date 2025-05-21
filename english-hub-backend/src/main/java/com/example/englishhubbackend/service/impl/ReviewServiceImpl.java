@@ -7,6 +7,7 @@ import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.FlashCardMapper;
 import com.example.englishhubbackend.mapper.UserFlashCardMapper;
+import com.example.englishhubbackend.models.FlashCard;
 import com.example.englishhubbackend.models.User;
 import com.example.englishhubbackend.models.UserFlashCard;
 import com.example.englishhubbackend.repository.FlashCardRepository;
@@ -28,18 +29,19 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewServiceImpl implements ReviewService {
     UserFlashCardRepository userFlashCardRepository;
-    UserFlashCardMapper userFlashCardMapper;
     AuthenticationService authenticationService;
+    FlashCardRepository flashCardRepository;
+    FlashCardMapper flashCardMapper;
 
-    @Override
-    public List<UserFlashCardResponse> getCardsToReviewToday() {
+    public List<FlashCardResponse> getCardsToReviewToday() {
         User currentUser = authenticationService.getCurrentUser();
 
         List<UserFlashCard> cards = userFlashCardRepository
                 .findByUserIdAndNextPracticeDateLessThanEqual(currentUser.getId(), LocalDate.now());
 
         return cards.stream()
-                .map(userFlashCardMapper::toUserFlashCardResponse)
+                .map(UserFlashCard::getFlashCard)
+                .map(flashCardMapper::toFlashCardResponse)
                 .collect(Collectors.toList());
     }
 
@@ -47,9 +49,27 @@ public class ReviewServiceImpl implements ReviewService {
     public void updateReview(ReviewRequest request) {
         User currentUser = authenticationService.getCurrentUser();
 
+        if(currentUser == null) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        FlashCard flashCard = flashCardRepository
+                .findById(request.getFlashCardId())
+                .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
+
         UserFlashCard userCard = userFlashCardRepository
                 .findByUserIdAndFlashCardId(currentUser.getId(), request.getFlashCardId())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_FLASHCARD_NOT_FOUND));
+                .orElseGet(() -> {
+                    UserFlashCard newCard = new UserFlashCard();
+                    newCard.setUser(currentUser);
+                    newCard.setFlashCard(flashCard);
+                    newCard.setEasinessFactor(2.5f);
+                    newCard.setRepetitions(0);
+                    newCard.setInterval(0);
+                    newCard.setLastReviewedDate(null);
+                    newCard.setNextPracticeDate(LocalDate.now());
+                    return newCard;
+                });
 
         int rating = request.getRating();
         int quality = switch (rating) {
