@@ -32,4 +32,6 @@ public interface ExamService {
   List<QuestionGroupResponse> getQuestionGroupsFromExam(UUID examId);
 
   ExamSubmissionResponse submitExam(UUID examId, ExamSubmissionRequest examSubmissionRequest);
+
+    void deleteQuestionFromExam(UUID examId, UUID questionId);
 }

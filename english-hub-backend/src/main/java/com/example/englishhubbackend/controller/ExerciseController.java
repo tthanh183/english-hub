@@ -109,4 +109,11 @@ public class ExerciseController {
         .result(exerciseService.getQuestionGroupsFromExercise(UUID.fromString(exerciseId)))
         .build();
   }
+
+  @DeleteMapping("/{exerciseId}/questions/{questionId}")
+    public ApiResponse<Void> deleteQuestionFromExercise(
+        @PathVariable String exerciseId, @PathVariable String questionId) {
+        exerciseService.deleteQuestionFromExercise(UUID.fromString(exerciseId), UUID.fromString(questionId));
+        return ApiResponse.<Void>builder().message("Question deleted successfully").build();
+    }
 }

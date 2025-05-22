@@ -10,6 +10,7 @@ import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.ExamMapper;
 import com.example.englishhubbackend.models.*;
 import com.example.englishhubbackend.repository.ExamRepository;
+import com.example.englishhubbackend.repository.QuestionRepository;
 import com.example.englishhubbackend.repository.ResultRepository;
 import com.example.englishhubbackend.repository.UserRepository;
 import com.example.englishhubbackend.service.AuthenticationService;
@@ -35,6 +36,7 @@ public class ExamServiceImpl implements ExamService {
   UserRepository userRepository;
   ResultRepository resultRepository;
   AuthenticationService authenticationService;
+  QuestionRepository questionRepository;
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
@@ -278,5 +280,25 @@ public class ExamServiceImpl implements ExamService {
         .totalScore(result.getListeningScore() + result.getReadingScore())
         .maxScore(990)
         .build();
+  }
+
+  @Override
+  public void deleteQuestionFromExam(UUID examId, UUID questionId) {
+    Exam exam =
+        examRepository
+            .findById(examId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXAM_NOT_FOUND));
+
+    Question question = questionRepository
+        .findById(questionId)
+        .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
+
+    if (!exam.getQuestions().contains(question)) {
+        throw new AppException(ErrorCode.QUESTION_NOT_FOUND);
+    }
+
+    questionRepository.delete(question);
+    exam.getQuestions().removeIf(q -> q.getId().equals(questionId));
+    examRepository.save(exam);
   }
 }

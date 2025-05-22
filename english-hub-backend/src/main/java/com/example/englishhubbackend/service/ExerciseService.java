@@ -33,4 +33,6 @@ public interface ExerciseService {
   ExerciseResponse getExerciseById(UUID courseId, UUID exerciseId);
 
   List<QuestionGroupResponse> getQuestionGroupsFromExercise(UUID exerciseId);
+
+  void deleteQuestionFromExercise(UUID exerciseId, UUID questionId);
 }

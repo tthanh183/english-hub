@@ -13,6 +13,7 @@ import com.example.englishhubbackend.mapper.ExerciseMapper;
 import com.example.englishhubbackend.mapper.QuestionMapper;
 import com.example.englishhubbackend.models.*;
 import com.example.englishhubbackend.repository.ExerciseRepository;
+import com.example.englishhubbackend.repository.QuestionRepository;
 import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.ExerciseService;
 import com.example.englishhubbackend.service.QuestionService;
@@ -36,6 +37,7 @@ public class ExerciseServiceImpl implements ExerciseService {
   CourseService courseService;
   QuestionService questionService;
   QuestionMapper questionMapper;
+  QuestionRepository questionRepository;
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
@@ -203,5 +205,24 @@ public class ExerciseServiceImpl implements ExerciseService {
       response.add(groupResponse);
     }
     return response;
+  }
+
+  @Override
+  public void deleteQuestionFromExercise(UUID exerciseId, UUID questionId) {
+    Exercise exercise =
+        exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+
+    Question question = questionRepository.findById(questionId)
+        .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
+
+    if (!exercise.getQuestions().contains(question)) {
+      throw new AppException(ErrorCode.QUESTION_NOT_FOUND);
+    }
+
+    questionRepository.delete(question);
+    exercise.getQuestions().removeIf(q -> q.getId().equals(questionId));
+    exerciseRepository.save(exercise);
   }
 }
