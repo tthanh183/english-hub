@@ -23,11 +23,17 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
 import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
-import { useQuery } from '@tanstack/react-query';
-import { getExamById, getQuestionsFromExam } from '@/services/examService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  deleteQuestionFromExam,
+  getExamById,
+  getQuestionsFromExam,
+} from '@/services/examService';
 import { Spinner } from '@/components/Spinner';
 import { ExamResponse } from '@/types/examType';
 import ExamQuestionDialog from '@/components/admin/exam/ExamQuestionDialog';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
 export default function ExamQuestionsManagementPage() {
   const { examId } = useParams();
@@ -55,12 +61,26 @@ export default function ExamQuestionsManagementPage() {
     fetchExam();
   }, [examId]);
 
+  const queryClient = useQueryClient();
+
   const { data: questions = [], isLoading } = useQuery<QuestionResponse[]>({
     queryKey: ['questions', examId],
     queryFn: () => getQuestionsFromExam(examId || ''),
   });
 
-  // Lọc câu hỏi dựa trên activeTab và searchTerm
+  const deleteQuestionMutation = useMutation({
+    mutationFn: (questionId: string) =>
+      deleteQuestionFromExam(examId || '', questionId),
+    onSuccess: message => {
+      showSuccess(message || 'Question deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['questions', examId] });
+    },
+    onError: error => {
+      console.error('Error deleting question:', error);
+      showError('Failed to delete question. Please try again.');
+    },
+  });
+
   const filteredQuestions = questions.filter(question => {
     const matchesSearch = question.title
       .toLowerCase()
@@ -83,8 +103,7 @@ export default function ExamQuestionsManagementPage() {
   };
 
   const handleDelete = (id: string) => {
-    console.log(`Deleting question with ID: ${id}`);
-    // setQuestions(prev => prev.filter(q => q.id !== id));
+    deleteQuestionMutation.mutate(id);
   };
 
   const getQuestionTypeDisplay = (question: QuestionResponse): string => {
@@ -229,14 +248,21 @@ export default function ExamQuestionsManagementPage() {
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive"
-                          onClick={() => handleDelete(question.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <DeleteConfirmation
+                          title="Delete Question"
+                          description="Are you sure you want to delete this question? This action cannot be undone."
+                          onConfirm={() => handleDelete(question.id)}
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive"
+                              disabled={deleteQuestionMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          }
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

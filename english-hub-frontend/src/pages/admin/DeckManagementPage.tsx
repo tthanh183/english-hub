@@ -29,7 +29,9 @@ import { Input } from '@/components/ui/input';
 import { DeckResponse } from '@/types/deckType';
 import DeckDialog from '@/components/admin/DeckDialog';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import { getAllDecks } from '@/services/deckService';
+import { deleteDeck, getAllDecks } from '@/services/deckService';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
 export default function VocabularyDecks() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -48,26 +50,19 @@ export default function VocabularyDecks() {
   });
 
   const deleteDeckMutation = useMutation({
-    mutationFn: async (deckId: string) => {
-      const response = await fetch(`/api/vocabulary-decks/${deckId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete vocabulary deck');
-      }
-
-      return response.json();
+    mutationFn: (deckId: string) => deleteDeck(deckId),
+    onSuccess: response => {
+      showSuccess(response || 'Deck deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['decks'] });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vocabularyDecks'] });
+    onError: error => {
+      console.error('Error deleting deck:', error);
+      showError('Failed to delete vocabulary deck');
     },
   });
 
   const handleDeleteDeck = (deckId: string) => {
-    if (window.confirm('Are you sure you want to delete this deck?')) {
-      deleteDeckMutation.mutate(deckId);
-    }
+    deleteDeckMutation.mutate(deckId);
   };
 
   const filteredDecks = decks.filter(
@@ -159,18 +154,21 @@ export default function VocabularyDecks() {
                         <Edit className="mr-2 h-4 w-4" /> Edit Deck
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        onSelect={e => {
-                          e.preventDefault();
-                          setOpenDropdownDeckId(null);
-                          setTimeout(() => {
-                            handleDeleteDeck(deck.id);
-                          }, 100);
-                        }}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
+                      <DeleteConfirmation
+                        title="Delete Vocabulary Deck"
+                        description={`Are you sure you want to delete "${deck.name}"? This action cannot be undone and will delete all flashcards in this deck.`}
+                        onConfirm={() => handleDeleteDeck(deck.id)}
+                        trigger={
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onSelect={e => {
+                              e.preventDefault();
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          </DropdownMenuItem>
+                        }
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

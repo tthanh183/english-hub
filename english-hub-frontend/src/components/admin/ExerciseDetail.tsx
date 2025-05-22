@@ -9,13 +9,18 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, Plus, FileText, Eye } from 'lucide-react';
+import { Pencil, Trash2, Plus, FileText } from 'lucide-react';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getQuestionsFromExercise } from '@/services/exerciseService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  deleteQuestionFromExercise,
+  getQuestionsFromExercise,
+} from '@/services/exerciseService';
 import { useParams } from 'react-router-dom';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
 import ExerciseQuestionDialog from './exercise/ExerciseQuestionDialog';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from './DeleteConfirmation';
 
 type ExerciseDetailCardProps = {
   selectedExercise?: ExerciseResponse;
@@ -38,6 +43,26 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
     enabled: !!selectedExercise?.id,
   });
 
+  const queryClient = useQueryClient();
+  const deleteQuestionMutation = useMutation({
+    mutationFn: (questionId: string) =>
+      deleteQuestionFromExercise(
+        courseId || '',
+        selectedExercise?.id || '',
+        questionId
+      ),
+    onSuccess: message => {
+      showSuccess(message);
+      queryClient.invalidateQueries({
+        queryKey: ['questions', selectedExercise?.id],
+      });
+    },
+    onError: error => {
+      console.error('Error deleting question:', error);
+      showError('Failed to delete question');
+    },
+  });
+
   const handleAddQuestion = () => {
     setSelectedQuestion(null);
     setIsAddQuestionOpen(true);
@@ -49,13 +74,7 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
   };
 
   const handleDelete = (questionId: string) => {
-    console.log('Delete question:', questionId);
-    // Implement delete functionality
-  };
-
-  const handlePreview = (question: QuestionResponse) => {
-    console.log('Preview question:', question);
-    // Implement preview functionality
+    deleteQuestionMutation.mutate(questionId);
   };
 
   const getQuestionTypeDisplay = (question: QuestionResponse): string => {
@@ -130,25 +149,25 @@ export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handlePreview(question)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
                         onClick={() => handleEditQuestion(question)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => handleDelete(question.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <DeleteConfirmation
+                        title="Delete Question"
+                        description="Are you sure you want to delete this question? This action cannot be undone."
+                        onConfirm={() => handleDelete(question.id)}
+                        trigger={
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive"
+                            disabled={deleteQuestionMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

@@ -19,12 +19,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getAllExams } from '@/services/examService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteExam, getAllExams } from '@/services/examService';
 import ExamDialog from '@/components/admin/ExamDialog';
 import { ExamResponse } from '@/types/examType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { longToString } from '@/utils/timeUtil';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
 export default function ExamManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -34,11 +36,30 @@ export default function ExamManagementPage() {
   const [openDropdownExamId, setOpenDropdownExamId] = useState<string | null>(
     null
   );
+
+  const queryClient = useQueryClient();
+
   const { data: exams, isLoading } = useQuery<ExamResponse[]>({
     queryKey: ['exams'],
     queryFn: () => getAllExams(),
   });
 
+  const deleteExamMutation = useMutation({
+    mutationFn: (examId: string) => deleteExam(examId),
+    onSuccess: response => {
+      showSuccess(response || 'Exam deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['exams'] });
+      setOpenDropdownExamId(null);
+    },
+    onError: error => {
+      console.error('Error deleting exam:', error);
+      showError('Failed to delete exam. Please try again.');
+    },
+  });
+
+  const handleDeleteExam = (examId: string) => {
+    deleteExamMutation.mutate(examId);
+  };
   const navigate = useNavigate();
 
   const filteredExams = exams?.filter(exam =>
@@ -128,9 +149,21 @@ export default function ExamManagementPage() {
                         View Questions
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-red-600">
-                        Delete
-                      </DropdownMenuItem>
+                      <DeleteConfirmation
+                        title="Delete Exam"
+                        description={`Are you sure you want to delete exam "${exam.title}"? This action cannot be undone.`}
+                        onConfirm={() => handleDeleteExam(exam.id)}
+                        trigger={
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onSelect={e => {
+                              e.preventDefault();
+                            }}
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        }
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

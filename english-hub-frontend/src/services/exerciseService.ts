@@ -75,8 +75,6 @@ export async function updateQuestionInExercise(
   questionId: string,
   question: QuestionUpdateRequest
 ): Promise<QuestionResponse> {
-  console.log(question);
-  
   const response = await axiosInstance.put(
     `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`,
     question
@@ -104,7 +102,7 @@ export async function getQuestionsFromExercise(
     `/courses/${courseId}/exercises/${exerciseId}/questions`
   );
   console.log(response.data.result);
-  
+
   return response.data.result;
 }
 
@@ -116,4 +114,15 @@ export async function getQuestionGroupsFromExercise(
     `/courses/${courseId}/exercises/${exerciseId}/questions/groups`
   );
   return response.data.result;
+}
+
+export async function deleteQuestionFromExercise(
+  courseId: string,
+  exerciseId: string,
+  questionId: string
+): Promise<string> {
+  const response = await axiosInstance.delete(
+    `/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`
+  );
+  return response.data.message;
 }

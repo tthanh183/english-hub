@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 
@@ -19,15 +19,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import { getAllFlashCards } from '@/services/flashCardService';
+import { deleteFlashCard, getAllFlashCards } from '@/services/flashCardService';
 import { getDeckById } from '@/services/deckService';
 import { FlashCardResponse } from '@/types/flashCardType';
 import { DeckResponse } from '@/types/deckType';
 import FlashCardDialog from '@/components/admin/FlashCardDialog';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
 export default function FlashCardManagementPage() {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [isAddFlashCardOpen, setIsAddFlashCardOpen] = useState<boolean>(false);
   const [isEditFlashCardOpen, setIsEditFlashCardOpen] =
@@ -53,15 +56,19 @@ export default function FlashCardManagementPage() {
   });
 
   const deleteMutation = useMutation({
-    // Delete flash card
+    mutationFn: (cardId: string) => deleteFlashCard(deckId || '', cardId),
+    onSuccess: response => {
+      showSuccess(response || 'Flash card deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['flashcards', deckId] });
+    },
+    onError: error => {
+      console.error('Error deleting flash card:', error);
+      showError('Failed to delete flash card');
+    },
   });
 
   const handleDeleteCard = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this card?')) {
-      console.log('Deleting card with ID:', id);
-
-      deleteMutation.mutate();
-    }
+    deleteMutation.mutate(id);
   };
 
   const handleEditCard = (card: FlashCardResponse) => {
@@ -158,18 +165,21 @@ export default function FlashCardManagementPage() {
                           <Edit className="mr-2 h-4 w-4" /> Edit Card
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem
-                          onSelect={e => {
-                            e.preventDefault();
-                            setOpenDropdownCardId(null);
-                            setTimeout(() => {
-                              handleDeleteCard(card.id);
-                            }, 100);
-                          }}
-                          className="text-red-600"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                        </DropdownMenuItem>
+                        <DeleteConfirmation
+                          title="Delete Flash Card"
+                          description={`Are you sure you want to delete the card "${card.word}"? This action cannot be undone.`}
+                          onConfirm={() => handleDeleteCard(card.id)}
+                          trigger={
+                            <DropdownMenuItem
+                              className="text-red-600"
+                              onSelect={e => {
+                                e.preventDefault();
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                            </DropdownMenuItem>
+                          }
+                        />
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

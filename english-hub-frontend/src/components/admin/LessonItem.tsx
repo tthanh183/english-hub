@@ -1,5 +1,5 @@
 import { LessonResponse } from '@/types/lessonType';
-import { Calendar, Clock, Edit, Grip, Trash } from 'lucide-react';
+import { Calendar, Clock, Edit, Grip, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { longToString } from '@/utils/timeUtil';
@@ -9,6 +9,7 @@ import { deleteLesson } from '@/services/lessonService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
+import { DeleteConfirmation } from './DeleteConfirmation';
 
 type LessonItemProps = {
   lesson: LessonResponse;
@@ -100,15 +101,20 @@ export default function LessonItem({
         >
           <Edit className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-red-500"
-          onClick={handleDelete}
-          disabled={deleteLessonMutation.isPending}
-        >
-          <Trash className="h-4 w-4" />
-        </Button>
+        <DeleteConfirmation
+          title="Delete Lesson"
+          description="Are you sure you want to delete this lesson? This action cannot be undone."
+          onConfirm={handleDelete}
+          trigger={
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-red-500"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          }
+        />
       </div>
     </div>
   );

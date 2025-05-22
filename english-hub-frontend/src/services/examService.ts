@@ -101,3 +101,13 @@ export async function submitExam(
   });
   return response.data.result;
 }
+
+export async function deleteQuestionFromExam(
+  examId: string,
+  questionId: string
+): Promise<string> {
+  const response = await axiosInstance.delete(
+    `/exams/${examId}/questions/${questionId}`
+  );
+  return response.data.message;
+}

@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,61 +12,55 @@ import {
 
 type DeleteConfirmationProps = {
   onConfirm: () => void;
-  itemName?: string;
+  title: string;
+  description: string;
+  trigger: React.ReactNode;
+  confirmText?: string;
+  cancelText?: string;
 };
 
 export function DeleteConfirmation({
   onConfirm,
-  itemName = 'item',
+  title,
+  description,
+  trigger,
+  confirmText = 'Delete',
+  cancelText = 'Cancel',
 }: DeleteConfirmationProps) {
   const [open, setOpen] = useState(false);
 
-  const handleOpenChange = (open: boolean) => {
-    setOpen(open);
-  };
-
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setOpen(true);
-  };
-
-  const handleConfirm = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleConfirm = () => {
     onConfirm();
     setOpen(false);
   };
 
   return (
     <>
-      <Button
-        variant="destructive"
-        onClick={handleButtonClick}
-        className="flex items-center space-x-1"
+      <div
+        onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          setOpen(true);
+        }}
       >
-        <Trash2 className="h-4 w-4" />
-        <span>Delete</span>
-      </Button>
+        {trigger}
+      </div>
 
-      <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent onClick={e => e.stopPropagation()}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {itemName}</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this {itemName.toLowerCase()}?
-              This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
+            <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={e => e.stopPropagation()}>
-              Cancel
+              {cancelText}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className="bg-red-500 hover:bg-red-600"
             >
-              Delete
+              {confirmText}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
