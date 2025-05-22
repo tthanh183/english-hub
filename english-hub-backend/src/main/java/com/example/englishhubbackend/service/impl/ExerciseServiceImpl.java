@@ -16,7 +16,6 @@ import com.example.englishhubbackend.repository.ExerciseRepository;
 import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.ExerciseService;
 import com.example.englishhubbackend.service.QuestionService;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +64,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     if (course == null) {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
-    Exercise exercise = exerciseRepository
+    Exercise exercise =
+        exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     return exerciseMapper.toExerciseResponse(exercise);
@@ -74,8 +73,10 @@ public class ExerciseServiceImpl implements ExerciseService {
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public ExerciseResponse updateExercise(UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
-    Exercise exercise = exerciseRepository
+  public ExerciseResponse updateExercise(
+      UUID exerciseId, ExerciseUpdateRequest exerciseUpdateRequest) {
+    Exercise exercise =
+        exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     exercise.setTitle(exerciseUpdateRequest.getTitle());
@@ -95,9 +96,10 @@ public class ExerciseServiceImpl implements ExerciseService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public List<QuestionResponse> addQuestionsToExercise(
-          UUID exerciseId, List<QuestionCreateRequest> questionCreateRequests) {
+      UUID exerciseId, List<QuestionCreateRequest> questionCreateRequests) {
 
-    Exercise exercise = exerciseRepository
+    Exercise exercise =
+        exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
 
@@ -122,11 +124,11 @@ public class ExerciseServiceImpl implements ExerciseService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public QuestionResponse addQuestionToExercise(
-          UUID exerciseId, QuestionCreateRequest questionCreateRequest) {
+      UUID exerciseId, QuestionCreateRequest questionCreateRequest) {
     Exercise exercise =
-            exerciseRepository
-                    .findById(exerciseId)
-                    .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
+        exerciseRepository
+            .findById(exerciseId)
+            .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     Question question = questionService.createQuestionEntity(questionCreateRequest);
     UUID groupId = UUID.randomUUID();
     question.setGroupId(groupId);
@@ -135,7 +137,6 @@ public class ExerciseServiceImpl implements ExerciseService {
     return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
 
-
   @Override
   public List<QuestionResponse> getAllQuestionsFromExercise(UUID exerciseId) {
     Exercise exercise =
@@ -143,14 +144,15 @@ public class ExerciseServiceImpl implements ExerciseService {
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
     return exercise.getQuestions().stream()
-            .sorted(Comparator.comparing(Question::getCreatedAt))
-            .map(questionService::mapQuestionToResponse)
-            .collect(Collectors.toList());
+        .sorted(Comparator.comparing(Question::getCreatedAt))
+        .map(questionService::mapQuestionToResponse)
+        .collect(Collectors.toList());
   }
 
   @Override
   @PreAuthorize("hasRole('ADMIN')")
-  public QuestionResponse updateQuestionInExercise(UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest) {
+  public QuestionResponse updateQuestionInExercise(
+      UUID exerciseId, UUID questionId, QuestionUpdateRequest questionUpdateRequest) {
     Exercise exercise =
         exerciseRepository
             .findById(exerciseId)
@@ -163,20 +165,21 @@ public class ExerciseServiceImpl implements ExerciseService {
 
   @Override
   public List<QuestionGroupResponse> getQuestionGroupsFromExercise(UUID exerciseId) {
-    Exercise exercise = exerciseRepository
+    Exercise exercise =
+        exerciseRepository
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
 
-    List<Question> questions = exercise.getQuestions().stream()
+    List<Question> questions =
+        exercise.getQuestions().stream()
             .sorted(Comparator.comparing(Question::getCreatedAt))
             .toList();
 
-    Map<UUID, List<Question>> grouped = questions.stream()
-            .collect(Collectors.groupingBy(
-                    Question::getGroupId,
-                    LinkedHashMap::new,
-                    Collectors.toList()
-            ));
+    Map<UUID, List<Question>> grouped =
+        questions.stream()
+            .collect(
+                Collectors.groupingBy(
+                    Question::getGroupId, LinkedHashMap::new, Collectors.toList()));
     List<QuestionGroupResponse> response = new ArrayList<>();
 
     for (Map.Entry<UUID, List<Question>> entry : grouped.entrySet()) {
@@ -185,16 +188,15 @@ public class ExerciseServiceImpl implements ExerciseService {
 
       QuestionGroupResponse groupResponse = new QuestionGroupResponse();
       groupResponse.setGroupId(groupId);
-      groupResponse.setQuestions(groupQuestions.stream()
-              .map(questionService::mapQuestionToResponse)
-              .toList());
+      groupResponse.setQuestions(
+          groupQuestions.stream().map(questionService::mapQuestionToResponse).toList());
 
       Question first = groupQuestions.getFirst();
       if (first instanceof ListeningQuestion listening) {
         groupResponse.setAudioUrl(listening.getAudio().getUrl());
         groupResponse.setImageUrl(listening.getImageUrl());
       } else if (first instanceof ReadingQuestion reading) {
-        if(reading.getPassage() != null) {
+        if (reading.getPassage() != null) {
           groupResponse.setPassage(reading.getPassage().getContent());
         }
       }
@@ -202,5 +204,4 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
     return response;
   }
-
 }

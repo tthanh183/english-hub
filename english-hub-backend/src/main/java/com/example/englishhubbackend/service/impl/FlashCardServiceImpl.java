@@ -11,6 +11,8 @@ import com.example.englishhubbackend.models.FlashCard;
 import com.example.englishhubbackend.repository.DeckRepository;
 import com.example.englishhubbackend.repository.FlashCardRepository;
 import com.example.englishhubbackend.service.FlashCardService;
+import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,64 +20,71 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FlashCardServiceImpl implements FlashCardService {
-    FlashCardRepository flashCardRepository;
-    FlashCardMapper flashCardMapper;
-    DeckRepository deckRepository;
+  FlashCardRepository flashCardRepository;
+  FlashCardMapper flashCardMapper;
+  DeckRepository deckRepository;
 
-    @Override
-    public List<FlashCardResponse> getAllFlashCardsFromDecks(UUID deckId) {
-        Deck deck = deckRepository.findById(deckId)
-                .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
-        return flashCardRepository.findAllByDeckId(deck.getId()).stream()
-                .map(flashCardMapper::toFlashCardResponse)
-                .toList();
+  @Override
+  public List<FlashCardResponse> getAllFlashCardsFromDecks(UUID deckId) {
+    Deck deck =
+        deckRepository
+            .findById(deckId)
+            .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
+    return flashCardRepository.findAllByDeckId(deck.getId()).stream()
+        .map(flashCardMapper::toFlashCardResponse)
+        .toList();
+  }
+
+  @Override
+  public FlashCardResponse getFlashCardById(UUID deckId, UUID flashCardId) {
+    Deck deck =
+        deckRepository
+            .findById(deckId)
+            .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
+    return flashCardRepository
+        .findById(flashCardId)
+        .map(flashCardMapper::toFlashCardResponse)
+        .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public FlashCardResponse createFlashCard(
+      UUID deckId, FlashCardCreateRequest flashCardCreateRequest) {
+    Deck deck =
+        deckRepository
+            .findById(deckId)
+            .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
+    FlashCard flashCard = flashCardMapper.toFlashCard(flashCardCreateRequest);
+    flashCard.setDeck(deck);
+    return flashCardMapper.toFlashCardResponse(flashCardRepository.save(flashCard));
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public FlashCardResponse updateFlashCard(
+      UUID flashCardId, FlashCardUpdateRequest flashCardUpdateRequest) {
+    return flashCardRepository
+        .findById(flashCardId)
+        .map(
+            flashCard -> {
+              flashCardMapper.toFlashCard(flashCardUpdateRequest, flashCard);
+              return flashCardMapper.toFlashCardResponse(flashCardRepository.save(flashCard));
+            })
+        .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
+  }
+
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  public void deleteFlashCard(UUID flashCardId) {
+    if (!flashCardRepository.existsById(flashCardId)) {
+      throw new AppException(ErrorCode.FLASHCARD_NOT_FOUND);
     }
-
-    @Override
-    public FlashCardResponse getFlashCardById(UUID deckId, UUID flashCardId) {
-        Deck deck = deckRepository.findById(deckId)
-                .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
-        return flashCardRepository.findById(flashCardId)
-                .map(flashCardMapper::toFlashCardResponse)
-                .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public FlashCardResponse createFlashCard(UUID deckId, FlashCardCreateRequest flashCardCreateRequest) {
-        Deck deck = deckRepository.findById(deckId)
-                .orElseThrow(() -> new AppException(ErrorCode.DECK_NOT_FOUND));
-        FlashCard flashCard = flashCardMapper.toFlashCard(flashCardCreateRequest);
-        flashCard.setDeck(deck);
-        return flashCardMapper.toFlashCardResponse(flashCardRepository.save(flashCard));
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public FlashCardResponse updateFlashCard(UUID flashCardId, FlashCardUpdateRequest flashCardUpdateRequest) {
-        return flashCardRepository.findById(flashCardId)
-                .map(flashCard -> {
-                    flashCardMapper.toFlashCard(flashCardUpdateRequest, flashCard);
-                    return flashCardMapper.toFlashCardResponse(flashCardRepository.save(flashCard));
-                })
-                .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteFlashCard(UUID flashCardId) {
-        if (!flashCardRepository.existsById(flashCardId)) {
-            throw new AppException(ErrorCode.FLASHCARD_NOT_FOUND);
-        }
-        flashCardRepository.deleteById(flashCardId);
-    }
-
+    flashCardRepository.deleteById(flashCardId);
+  }
 }

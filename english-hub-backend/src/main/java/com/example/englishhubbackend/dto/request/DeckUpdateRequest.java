@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeckUpdateRequest {
-    String name;
+  String name;
 
-    String description;
+  String description;
 }

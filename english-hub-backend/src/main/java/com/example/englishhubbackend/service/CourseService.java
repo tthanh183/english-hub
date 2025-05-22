@@ -19,5 +19,4 @@ public interface CourseService {
   void deleteCourse(UUID uuid);
 
   Course getCourseEntityById(UUID courseId);
-
 }

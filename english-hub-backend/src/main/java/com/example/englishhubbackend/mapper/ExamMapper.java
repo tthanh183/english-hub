@@ -10,11 +10,11 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ExamMapper {
-    Exam toExam(ExamCreateRequest examCreateRequest);
+  Exam toExam(ExamCreateRequest examCreateRequest);
 
-    void toExam(ExamUpdateRequest examUpdateRequest, @MappingTarget Exam exam);
+  void toExam(ExamUpdateRequest examUpdateRequest, @MappingTarget Exam exam);
 
-    @Mapping(target = "attempts", ignore = true)
-    @Mapping(target = "highestScore", ignore = true)
-    ExamResponse toExamResponse(Exam exam);
+  @Mapping(target = "attempts", ignore = true)
+  @Mapping(target = "highestScore", ignore = true)
+  ExamResponse toExamResponse(Exam exam);
 }

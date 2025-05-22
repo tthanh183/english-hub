@@ -12,14 +12,10 @@ import com.example.englishhubbackend.repository.AudioRepository;
 import com.example.englishhubbackend.repository.PassageRepository;
 import com.example.englishhubbackend.repository.QuestionRepository;
 import com.example.englishhubbackend.service.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-
-import com.example.englishhubbackend.util.S3Util;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,14 +35,15 @@ public class QuestionServiceImpl implements QuestionService {
 
   @Override
   public Question createQuestionEntity(QuestionCreateRequest request) {
-    QuestionType questionType = questionTypeService.getQuestionTypeEntityById(request.getQuestionType());
+    QuestionType questionType =
+        questionTypeService.getQuestionTypeEntityById(request.getQuestionType());
     String questionTypeName = questionType.getName();
     Question question;
 
-    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_4_TALKS.name() )) {
+    if (questionTypeName.equals(QuestionTypeEnum.PART_1_PHOTOGRAPHS.name())
+        || questionTypeName.equals(QuestionTypeEnum.PART_2_QUESTION_RESPONSES.name())
+        || questionTypeName.equals(QuestionTypeEnum.PART_3_CONVERSATIONS.name())
+        || questionTypeName.equals(QuestionTypeEnum.PART_4_TALKS.name())) {
       ListeningQuestion listeningQuestion = questionMapper.toListeningQuestion(request);
       listeningQuestion.setQuestionType(questionType);
 
@@ -64,15 +61,15 @@ public class QuestionServiceImpl implements QuestionService {
 
       question = listeningQuestion;
 
-    } else if (questionTypeName.equals(QuestionTypeEnum.PART_5_INCOMPLETE_SENTENCES.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_6_TEXT_COMPLETION.name()) ||
-            questionTypeName.equals(QuestionTypeEnum.PART_7_READING_COMPREHENSION.name())) {
+    } else if (questionTypeName.equals(QuestionTypeEnum.PART_5_INCOMPLETE_SENTENCES.name())
+        || questionTypeName.equals(QuestionTypeEnum.PART_6_TEXT_COMPLETION.name())
+        || questionTypeName.equals(QuestionTypeEnum.PART_7_READING_COMPREHENSION.name())) {
       ReadingQuestion readingQuestion = questionMapper.toReadingQuestion(request);
       readingQuestion.setQuestionType(questionType);
 
       if (request.getPassage() != null && !request.getPassage().isEmpty()) {
         Passage passage = passageRepository.findByContent(request.getPassage());
-        if(passage == null) {
+        if (passage == null) {
           passage = new Passage();
           passage.setContent(request.getPassage());
           passageRepository.save(passage);
@@ -89,7 +86,6 @@ public class QuestionServiceImpl implements QuestionService {
     return question;
   }
 
-
   @Override
   public Question saveQuestion(Question question) {
     return questionRepository.save(question);
@@ -97,7 +93,9 @@ public class QuestionServiceImpl implements QuestionService {
 
   @Override
   public Question updateQuestionEntity(UUID questionId, QuestionUpdateRequest request) {
-    Question question = questionRepository.findById(questionId)
+    Question question =
+        questionRepository
+            .findById(questionId)
             .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
     if (question instanceof ListeningQuestion listeningQuestion) {
@@ -109,7 +107,8 @@ public class QuestionServiceImpl implements QuestionService {
     throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
   }
 
-  private ListeningQuestion updateListeningQuestion(ListeningQuestion question, QuestionUpdateRequest request) {
+  private ListeningQuestion updateListeningQuestion(
+      ListeningQuestion question, QuestionUpdateRequest request) {
     questionMapper.toListeningQuestion(request, question);
 
     if (request.getAudioUrl() != null) {
@@ -119,7 +118,7 @@ public class QuestionServiceImpl implements QuestionService {
         audioService.saveAudio(audio);
       } else {
         Audio existingAudio = audioRepository.findByUrl(request.getAudioUrl());
-        if(existingAudio != null) {
+        if (existingAudio != null) {
           audio = existingAudio;
         } else {
           audio = new Audio();
@@ -139,18 +138,18 @@ public class QuestionServiceImpl implements QuestionService {
     return questionRepository.save(question);
   }
 
-
-  private ReadingQuestion updateReadingQuestion(ReadingQuestion question, QuestionUpdateRequest request) {
+  private ReadingQuestion updateReadingQuestion(
+      ReadingQuestion question, QuestionUpdateRequest request) {
     questionMapper.toReadingQuestion(request, question);
 
-    if(request.getPassage() != null) {
+    if (request.getPassage() != null) {
       Passage passage = question.getPassage();
-      if(passage != null) {
+      if (passage != null) {
         passage.setContent(request.getPassage());
         passageService.savePassage(passage);
       } else {
         Passage existingPassage = passageRepository.findByContent(request.getPassage());
-        if(existingPassage != null) {
+        if (existingPassage != null) {
           passage = existingPassage;
         } else {
           passage = new Passage();
@@ -166,21 +165,19 @@ public class QuestionServiceImpl implements QuestionService {
 
   @Override
   public List<QuestionResponse> getQuestionsByGroupId(UUID groupId) {
-    return questionRepository.findAllByGroupId(groupId)
-            .stream()
-            .sorted(Comparator.comparing(Question::getCreatedAt))
-            .map(this::mapQuestionToResponse)
-            .toList();
+    return questionRepository.findAllByGroupId(groupId).stream()
+        .sorted(Comparator.comparing(Question::getCreatedAt))
+        .map(this::mapQuestionToResponse)
+        .toList();
   }
 
   public QuestionResponse mapQuestionToResponse(Question question) {
     if (question instanceof ListeningQuestion listeningQuestion) {
-        return questionMapper.toQuestionResponse(listeningQuestion);
+      return questionMapper.toQuestionResponse(listeningQuestion);
     } else if (question instanceof ReadingQuestion readingQuestion) {
       return questionMapper.toQuestionResponse(readingQuestion);
     } else {
       throw new AppException(ErrorCode.QUESTION_TYPE_NOT_SUPPORTED);
     }
   }
-
 }

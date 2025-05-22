@@ -1,7 +1,6 @@
 package com.example.englishhubbackend.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
@@ -24,8 +23,7 @@ public abstract class Question {
   @Column(columnDefinition = "TEXT")
   String title;
 
-  @ManyToOne
-  QuestionType questionType;
+  @ManyToOne QuestionType questionType;
 
   @Column(name = "created_at")
   LocalDateTime createdAt;

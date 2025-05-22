@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserFlashCardMapper {
-    UserFlashCardResponse toUserFlashCardResponse(UserFlashCard userFlashCard);
+  UserFlashCardResponse toUserFlashCardResponse(UserFlashCard userFlashCard);
 }

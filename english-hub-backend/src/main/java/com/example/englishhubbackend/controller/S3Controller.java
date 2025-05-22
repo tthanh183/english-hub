@@ -14,17 +14,17 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class S3Controller {
-     S3Service s3Service;
+  S3Service s3Service;
 
-     @PostMapping("/upload")
-     public ApiResponse<String> uploadFile(@RequestPart("file") MultipartFile file) {
-       String fileUrl = s3Service.uploadFileToS3(file);
-       return ApiResponse.<String>builder().result(fileUrl).build();
-     }
+  @PostMapping("/upload")
+  public ApiResponse<String> uploadFile(@RequestPart("file") MultipartFile file) {
+    String fileUrl = s3Service.uploadFileToS3(file);
+    return ApiResponse.<String>builder().result(fileUrl).build();
+  }
 
-    @DeleteMapping("/delete")
-    public ApiResponse<Void> deleteFile(@RequestBody DeleteFileRequest deleteFileRequest) {
-        s3Service.deleteFileFromS3(deleteFileRequest.getFileName());
-        return ApiResponse.<Void>builder().build();
-    }
+  @DeleteMapping("/delete")
+  public ApiResponse<Void> deleteFile(@RequestBody DeleteFileRequest deleteFileRequest) {
+    s3Service.deleteFileFromS3(deleteFileRequest.getFileName());
+    return ApiResponse.<Void>builder().build();
+  }
 }

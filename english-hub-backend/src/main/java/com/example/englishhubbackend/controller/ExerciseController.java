@@ -9,7 +9,6 @@ import com.example.englishhubbackend.dto.response.ExerciseResponse;
 import com.example.englishhubbackend.dto.response.QuestionGroupResponse;
 import com.example.englishhubbackend.dto.response.QuestionResponse;
 import com.example.englishhubbackend.service.ExerciseService;
-
 import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
@@ -40,23 +39,21 @@ public class ExerciseController {
   }
 
   @GetMapping("/{exerciseId}")
-    public ApiResponse<ExerciseResponse> getExercise(
-        @PathVariable String courseId, @PathVariable String exerciseId) {
-        return ApiResponse.<ExerciseResponse>builder()
-            .result(exerciseService.getExerciseById(UUID.fromString(courseId), UUID.fromString(exerciseId)))
-            .build();
-    }
+  public ApiResponse<ExerciseResponse> getExercise(
+      @PathVariable String courseId, @PathVariable String exerciseId) {
+    return ApiResponse.<ExerciseResponse>builder()
+        .result(
+            exerciseService.getExerciseById(UUID.fromString(courseId), UUID.fromString(exerciseId)))
+        .build();
+  }
 
   @PutMapping("{exerciseId}")
-    public ApiResponse<ExerciseResponse> updateExercise(
-        @PathVariable String exerciseId,
-        @RequestBody ExerciseUpdateRequest exerciseUpdateRequest) {
-        return ApiResponse.<ExerciseResponse>builder()
-            .result(
-                exerciseService.updateExercise(
-                    UUID.fromString(exerciseId), exerciseUpdateRequest))
-            .build();
-    }
+  public ApiResponse<ExerciseResponse> updateExercise(
+      @PathVariable String exerciseId, @RequestBody ExerciseUpdateRequest exerciseUpdateRequest) {
+    return ApiResponse.<ExerciseResponse>builder()
+        .result(exerciseService.updateExercise(UUID.fromString(exerciseId), exerciseUpdateRequest))
+        .build();
+  }
 
   @DeleteMapping("/{exerciseId}")
   public ApiResponse<Void> deleteExercise(@PathVariable String exerciseId) {
@@ -66,8 +63,7 @@ public class ExerciseController {
 
   @PostMapping("/{exerciseId}/question")
   public ApiResponse<QuestionResponse> addQuestionToExercise(
-      @PathVariable String exerciseId,
-      @RequestBody QuestionCreateRequest questionCreateRequest) {
+      @PathVariable String exerciseId, @RequestBody QuestionCreateRequest questionCreateRequest) {
     return ApiResponse.<QuestionResponse>builder()
         .result(
             exerciseService.addQuestionToExercise(
@@ -79,11 +75,11 @@ public class ExerciseController {
   public ApiResponse<List<QuestionResponse>> addQuestionsToExercise(
       @PathVariable String exerciseId,
       @RequestBody List<QuestionCreateRequest> questionCreateRequest) {
-      return ApiResponse.<List<QuestionResponse>>builder()
-          .result(
-              exerciseService.addQuestionsToExercise(
-                  UUID.fromString(exerciseId), questionCreateRequest))
-          .build();
+    return ApiResponse.<List<QuestionResponse>>builder()
+        .result(
+            exerciseService.addQuestionsToExercise(
+                UUID.fromString(exerciseId), questionCreateRequest))
+        .build();
   }
 
   @GetMapping("/{exerciseId}/questions")
@@ -99,21 +95,18 @@ public class ExerciseController {
       @PathVariable String exerciseId,
       @PathVariable String questionId,
       @RequestBody QuestionUpdateRequest questionUpdateRequest) {
-      return ApiResponse.<QuestionResponse>builder()
-          .result(
-              exerciseService.updateQuestionInExercise(
-                  UUID.fromString(exerciseId),
-                  UUID.fromString(questionId),
-                  questionUpdateRequest))
-          .build();
+    return ApiResponse.<QuestionResponse>builder()
+        .result(
+            exerciseService.updateQuestionInExercise(
+                UUID.fromString(exerciseId), UUID.fromString(questionId), questionUpdateRequest))
+        .build();
   }
 
   @GetMapping("/{exerciseId}/questions/groups")
-    public ApiResponse<List<QuestionGroupResponse>> getQuestionGroupsFromExercise(
-        @PathVariable String exerciseId) {
-        return ApiResponse.<List<QuestionGroupResponse>>builder()
-            .result(exerciseService.getQuestionGroupsFromExercise(UUID.fromString(exerciseId)))
-            .build();
-    }
-
+  public ApiResponse<List<QuestionGroupResponse>> getQuestionGroupsFromExercise(
+      @PathVariable String exerciseId) {
+    return ApiResponse.<List<QuestionGroupResponse>>builder()
+        .result(exerciseService.getQuestionGroupsFromExercise(UUID.fromString(exerciseId)))
+        .build();
+  }
 }

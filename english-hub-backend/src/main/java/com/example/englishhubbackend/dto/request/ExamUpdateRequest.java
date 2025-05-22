@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamUpdateRequest {
-    String title;
-    int duration;
+  String title;
+  int duration;
 }

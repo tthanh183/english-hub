@@ -9,13 +9,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class QuestionUpdateRequest {
-    String title;
-    String imageUrl;
-    String audioUrl;
-    String passage;
-    String choiceA;
-    String choiceB;
-    String choiceC;
-    String choiceD;
-    String correctAnswer;
+  String title;
+  String imageUrl;
+  String audioUrl;
+  String passage;
+  String choiceA;
+  String choiceB;
+  String choiceC;
+  String choiceD;
+  String correctAnswer;
 }

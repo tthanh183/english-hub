@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FlashCardUpdateRequest {
-    String word;
-    String meaning;
+  String word;
+  String meaning;
 }

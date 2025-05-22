@@ -9,7 +9,9 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface DeckMapper {
-     Deck toDeck(DeckCreateRequest deckCreateRequest);
-     DeckResponse toDeckResponse(Deck deck);
-     void toDeck(DeckUpdateRequest deckUpdateRequest, @MappingTarget Deck deck);
+  Deck toDeck(DeckCreateRequest deckCreateRequest);
+
+  DeckResponse toDeckResponse(Deck deck);
+
+  void toDeck(DeckUpdateRequest deckUpdateRequest, @MappingTarget Deck deck);
 }

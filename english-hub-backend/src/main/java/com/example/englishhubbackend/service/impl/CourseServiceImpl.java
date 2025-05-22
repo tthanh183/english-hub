@@ -13,7 +13,6 @@ import com.example.englishhubbackend.service.S3Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -78,5 +77,4 @@ public class CourseServiceImpl implements CourseService {
         .findById(courseId)
         .orElseThrow(() -> new AppException(ErrorCode.COURSE_NOT_FOUND));
   }
-
 }

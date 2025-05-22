@@ -73,25 +73,23 @@ public enum ErrorCode {
       1019,
       "Question type not supported. Please check the question type and try again.",
       HttpStatus.BAD_REQUEST),
-    QUESTION_NOT_FOUND(1020,
-            "Question not found. Please check the question ID and try again.",
-            HttpStatus.NOT_FOUND),
+  QUESTION_NOT_FOUND(
+      1020,
+      "Question not found. Please check the question ID and try again.",
+      HttpStatus.NOT_FOUND),
   EXAM_NOT_FOUND(
-      1021,
-          "Exam not found. Please check the exam ID and try again.",
-          HttpStatus.NOT_FOUND),
+      1021, "Exam not found. Please check the exam ID and try again.", HttpStatus.NOT_FOUND),
   DECK_NOT_FOUND(
-          1022,
-          "Deck not found. Please check the deck ID and try again.",
-          HttpStatus.NOT_FOUND),
-  FLASHCARD_NOT_FOUND(1023,
-          "Flashcard not found. Please check the flashcard ID and try again.",
-          HttpStatus.NOT_FOUND),
+      1022, "Deck not found. Please check the deck ID and try again.", HttpStatus.NOT_FOUND),
+  FLASHCARD_NOT_FOUND(
+      1023,
+      "Flashcard not found. Please check the flashcard ID and try again.",
+      HttpStatus.NOT_FOUND),
   USER_FLASHCARD_NOT_FOUND(
       1024,
       "User flashcard not found. Please check the user ID and flashcard ID and try again.",
-      HttpStatus.NOT_FOUND),;
-
+      HttpStatus.NOT_FOUND),
+  ;
 
   private int code;
   private String message;

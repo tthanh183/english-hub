@@ -5,5 +5,5 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PassageRepository extends JpaRepository<Passage, UUID> {
-    Passage findByContent(String passage);
+  Passage findByContent(String passage);
 }

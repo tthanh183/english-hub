@@ -10,10 +10,11 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface FlashCardMapper {
-    FlashCard toFlashCard(FlashCardCreateRequest flashCardCreateRequest);
+  FlashCard toFlashCard(FlashCardCreateRequest flashCardCreateRequest);
 
-    FlashCardResponse toFlashCardResponse(FlashCard flashCard);
+  FlashCardResponse toFlashCardResponse(FlashCard flashCard);
 
-    @Mapping(target = "id", ignore = true)
-    void toFlashCard(FlashCardUpdateRequest flashCardUpdateRequest, @MappingTarget FlashCard flashCard);
+  @Mapping(target = "id", ignore = true)
+  void toFlashCard(
+      FlashCardUpdateRequest flashCardUpdateRequest, @MappingTarget FlashCard flashCard);
 }

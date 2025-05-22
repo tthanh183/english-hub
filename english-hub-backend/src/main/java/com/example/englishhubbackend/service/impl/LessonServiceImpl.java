@@ -11,12 +11,9 @@ import com.example.englishhubbackend.models.Lesson;
 import com.example.englishhubbackend.repository.LessonRepository;
 import com.example.englishhubbackend.service.CourseService;
 import com.example.englishhubbackend.service.LessonService;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,9 +42,9 @@ public class LessonServiceImpl implements LessonService {
       throw new AppException(ErrorCode.COURSE_NOT_FOUND);
     }
     return lessonRepository
-            .findById(lessonId)
-            .map(lessonMapper::toLessonResponse)
-            .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
+        .findById(lessonId)
+        .map(lessonMapper::toLessonResponse)
+        .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
   }
 
   @Override
@@ -83,5 +80,4 @@ public class LessonServiceImpl implements LessonService {
             .orElseThrow(() -> new AppException(ErrorCode.LESSON_NOT_FOUND));
     lessonRepository.delete(lesson);
   }
-
 }

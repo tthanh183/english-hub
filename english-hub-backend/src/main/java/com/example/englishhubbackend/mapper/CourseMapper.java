@@ -5,7 +5,6 @@ import com.example.englishhubbackend.dto.request.CourseUpdateRequest;
 import com.example.englishhubbackend.dto.response.CourseResponse;
 import com.example.englishhubbackend.models.Course;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")

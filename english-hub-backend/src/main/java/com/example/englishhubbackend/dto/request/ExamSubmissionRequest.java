@@ -1,9 +1,8 @@
 package com.example.englishhubbackend.dto.request;
 
+import java.util.Map;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Map;
 
 @Data
 @Builder
@@ -11,5 +10,5 @@ import java.util.Map;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExamSubmissionRequest {
-    Map<String, String> answers;
+  Map<String, String> answers;
 }

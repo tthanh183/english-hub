@@ -40,7 +40,12 @@ public class SecurityConfig {
                 request
                     .requestMatchers(HttpMethod.POST, publicEndpoints)
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/courses/**", "/api/exams" ,"/api/decks/**", "/api/questions/**")
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/courses/**",
+                        "/api/exams",
+                        "/api/decks/**",
+                        "/api/questions/**")
                     .permitAll()
                     .requestMatchers(
                         "/v3/api-docs/**",

@@ -34,11 +34,11 @@ public class CourseController {
   }
 
   @GetMapping("/{courseId}")
-    public ApiResponse<CourseResponse> getCourseById(@PathVariable String courseId) {
-        return ApiResponse.<CourseResponse>builder()
-            .result(courseService.getCourseById(UUID.fromString(courseId)))
-            .build();
-    }
+  public ApiResponse<CourseResponse> getCourseById(@PathVariable String courseId) {
+    return ApiResponse.<CourseResponse>builder()
+        .result(courseService.getCourseById(UUID.fromString(courseId)))
+        .build();
+  }
 
   @PutMapping("/{courseId}")
   public ApiResponse<CourseResponse> updateCourse(
