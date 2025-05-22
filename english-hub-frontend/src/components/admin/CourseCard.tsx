@@ -1,8 +1,9 @@
 import { format } from 'date-fns';
-import { BookOpen, GraduationCap, Edit, Trash2 } from 'lucide-react';
+import { BookOpen, GraduationCap, Edit } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
+import { DeleteConfirmation } from './DeleteConfirmation';
 
 type CourseCardProps = {
   course: {
@@ -79,18 +80,7 @@ export default function CourseCard({
             <Edit className="h-4 w-4" />
             <span>Update</span>
           </Button>
-          <Button
-            variant="destructive"
-            onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete();
-            }}
-            className="flex items-center space-x-1"
-          >
-            <Trash2 className="h-4 w-4" />
-            <span>Delete</span>
-          </Button>
+          <DeleteConfirmation onConfirm={onDelete} itemName="Course" />
         </div>
       </div>
     </Link>

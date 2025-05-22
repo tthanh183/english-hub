@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { useAuthStore } from '@/stores/authStore';
 
-const API_URL = 'http://localhost:8080/api'; 
+const API_URL = 'http://localhost:8080/api';
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
@@ -10,20 +10,20 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 axiosInstance.interceptors.response.use(
-  response => response, 
+  response => response,
   async error => {
     const originalRequest = error.config;
 
@@ -38,7 +38,8 @@ axiosInstance.interceptors.response.use(
             refreshToken,
           });
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data.result;
+          const { accessToken, refreshToken: newRefreshToken } =
+            response.data.result;
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', newRefreshToken);
           useAuthStore.getState().setAuth(accessToken, newRefreshToken);
@@ -46,7 +47,7 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
           return axiosInstance(originalRequest);
         } else {
-          window.location.href = '/home'; 
+          window.location.href = '/';
         }
       } catch (err) {
         localStorage.removeItem('accessToken');
