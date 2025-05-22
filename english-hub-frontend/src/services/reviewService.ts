@@ -7,14 +7,10 @@ type ReviewRequest = {
 };
 
 export async function getTodayReview(): Promise<FlashCardResponse[]> {  
-  const response = await axiosInstance.get('/reviews/today');
-  console.log('review', response.data.result);
-  
+  const response = await axiosInstance.get('/reviews/today');  
   return response.data.result;
 }
 
-export async function updateReview(review: ReviewRequest): Promise<void> {  
-  console.log('review', review);
-  
+export async function updateReview(review: ReviewRequest): Promise<void> {    
   await axiosInstance.post('/reviews', review);
 }

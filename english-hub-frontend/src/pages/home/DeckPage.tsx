@@ -137,7 +137,7 @@ export default function DeckPage() {
                     <BookOpen className="h-4 w-4 mr-1" />
                     <span> Cards</span>
                   </div>
-                  <div className="font-semibold">20 cards</div>
+                  <div className="font-semibold">12 cards</div>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-md">
                   <div className="flex items-center text-gray-500 mb-1">

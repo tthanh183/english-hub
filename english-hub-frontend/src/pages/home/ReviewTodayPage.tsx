@@ -103,7 +103,7 @@ export default function ReviewTodayPage() {
       {
         onSuccess: () => {
           if (!studiedCards.includes(currentCard.id)) {
-            setStudiedCards([...studiedCards, currentCard.id]);
+            setStudiedCards(prev => [...prev, currentCard.id]);
           }
 
           setShowRating(false);
@@ -112,12 +112,20 @@ export default function ReviewTodayPage() {
             setIsFlipped(false);
 
             if (currentCardIndex < reviewCards.length - 1) {
-              setCurrentCardIndex(currentCardIndex + 1);
+              setCurrentCardIndex(prev => prev + 1);
             } else {
               showSuccess('Review session completed!');
-              navigate(ROUTES.DECK);
+
+              setTimeout(() => {
+                console.log('Navigating to DECK page:', ROUTES.DECK);
+                navigate(ROUTES.DECK, { replace: true });
+              }, 500);
             }
-          }, 500);
+          }, 300);
+        },
+        onError: error => {
+          console.error('Failed to save review:', error);
+          showError('Failed to save review. Please try again.');
         },
       }
     );
