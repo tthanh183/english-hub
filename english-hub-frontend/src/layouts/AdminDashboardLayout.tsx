@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useMobile } from '@/hooks/useMobile';
 import { cn } from '@/lib/utils';
 
-export default function DashboardLayout() {
+export default function AdminDashboardLayout() {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const { pathname } = useLocation();
@@ -63,21 +63,28 @@ export default function DashboardLayout() {
           <h1 className="text-xl font-bold">Learning Admin</h1>
         </div>
         <nav className="flex-1 px-4 py-2 space-y-1">
-          {navItems.map(item => (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                pathname === item.href
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-              )}
-            >
-              <item.icon className="h-5 w-5 mr-2" />
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map(item => {
+            const isActive =
+              item.href === '/admin'
+                ? pathname === '/admin' || pathname === '/admin/'
+                : pathname.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={cn(
+                  'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                )}
+              >
+                <item.icon className="h-5 w-5 mr-2" />
+                {item.name}
+              </Link>
+            );
+          })}
         </nav>
         <div className="p-4 border-t">
           <Button
