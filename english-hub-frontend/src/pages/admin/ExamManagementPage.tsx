@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreHorizontal, Plus, Search } from 'lucide-react';
+import { Edit, Eye, Plus, Search, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -10,14 +10,6 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteExam, getAllExams } from '@/services/examService';
@@ -33,9 +25,6 @@ export default function ExamManagementPage() {
   const [isAddExamOpen, setIsAddExamOpen] = useState<boolean>(false);
   const [isEditExamOpen, setIsEditExamOpen] = useState<boolean>(false);
   const [selectedExam, setSelectedExam] = useState<ExamResponse | null>(null);
-  const [openDropdownExamId, setOpenDropdownExamId] = useState<string | null>(
-    null
-  );
 
   const queryClient = useQueryClient();
 
@@ -49,7 +38,6 @@ export default function ExamManagementPage() {
     onSuccess: response => {
       showSuccess(response || 'Exam deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['exams'] });
-      setOpenDropdownExamId(null);
     },
     onError: error => {
       console.error('Error deleting exam:', error);
@@ -105,7 +93,9 @@ export default function ExamManagementPage() {
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Duration</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right">
+                <div className="flex justify-end pr-6">Actions</div>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,58 +104,48 @@ export default function ExamManagementPage() {
                 <TableCell className="font-medium">{exam.title}</TableCell>
                 <TableCell>{longToString(exam.duration)}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu
-                    open={openDropdownExamId === exam.id}
-                    onOpenChange={isOpen => {
-                      setOpenDropdownExamId(isOpen ? exam.id : null);
-                    }}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onSelect={e => {
-                          e.preventDefault();
-                          setOpenDropdownExamId(null);
-                          setTimeout(() => {
-                            setSelectedExam(exam);
-                            setIsEditExamOpen(true);
-                          }, 100);
-                        }}
-                      >
-                        Edit
-                      </DropdownMenuItem>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => {
+                        setSelectedExam(exam);
+                        setIsEditExamOpen(true);
+                      }}
+                      title="Edit"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
 
-                      <DropdownMenuItem
-                        onClick={() =>
-                          navigate(`/admin/exams/${exam.id}/questions`)
-                        }
-                      >
-                        View Questions
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DeleteConfirmation
-                        title="Delete Exam"
-                        description={`Are you sure you want to delete exam "${exam.title}"? This action cannot be undone.`}
-                        onConfirm={() => handleDeleteExam(exam.id)}
-                        trigger={
-                          <DropdownMenuItem
-                            className="text-red-600"
-                            onSelect={e => {
-                              e.preventDefault();
-                            }}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        }
-                      />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() =>
+                        navigate(`/admin/exams/${exam.id}/questions`)
+                      }
+                      title="View Questions"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+
+                    <DeleteConfirmation
+                      title="Delete Exam"
+                      description={`Are you sure you want to delete exam "${exam.title}"? This action cannot be undone.`}
+                      onConfirm={() => handleDeleteExam(exam.id)}
+                      trigger={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      }
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
