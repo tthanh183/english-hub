@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Edit, Trash2, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Plus, Edit, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -12,12 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { deleteFlashCard, getAllFlashCards } from '@/services/flashCardService';
 import { getDeckById } from '@/services/deckService';
@@ -37,9 +31,6 @@ export default function FlashCardManagementPage() {
     useState<boolean>(false);
   const [selectedFlashCard, setSelectedFlashCard] =
     useState<FlashCardResponse | null>(null);
-  const [openDropdownCardId, setOpenDropdownCardId] = useState<string | null>(
-    null
-  );
 
   const { data: deck, isLoading: isDeckLoading } = useQuery<DeckResponse>({
     queryKey: ['deck', deckId],
@@ -131,7 +122,9 @@ export default function FlashCardManagementPage() {
                 <TableHead className="w-[20%]">#</TableHead>
                 <TableHead className="w-[40%]">Word</TableHead>
                 <TableHead className="w-[40%]">Meaning</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">
+                  <div className="flex justify-end pr-3">Actions</div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,47 +134,33 @@ export default function FlashCardManagementPage() {
                   <TableCell className="font-medium">{card.word}</TableCell>
                   <TableCell className="line-clamp-2">{card.meaning}</TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu
-                      open={openDropdownCardId === card.id}
-                      onOpenChange={isOpen => {
-                        setOpenDropdownCardId(isOpen ? card.id : null);
-                      }}
-                    >
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onSelect={e => {
-                            e.preventDefault();
-                            setOpenDropdownCardId(null);
-                            setTimeout(() => {
-                              handleEditCard(card);
-                            }, 100);
-                          }}
-                        >
-                          <Edit className="mr-2 h-4 w-4" /> Edit Card
-                        </DropdownMenuItem>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEditCard(card)}
+                        title="Edit Card"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
 
-                        <DeleteConfirmation
-                          title="Delete Flash Card"
-                          description={`Are you sure you want to delete the card "${card.word}"? This action cannot be undone.`}
-                          onConfirm={() => handleDeleteCard(card.id)}
-                          trigger={
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onSelect={e => {
-                                e.preventDefault();
-                              }}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          }
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      <DeleteConfirmation
+                        title="Delete Flash Card"
+                        description={`Are you sure you want to delete the card "${card.word}"? This action cannot be undone.`}
+                        onConfirm={() => handleDeleteCard(card.id)}
+                        trigger={
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive"
+                            title="Delete Card"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
