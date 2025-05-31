@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import AudioPlayer from '@/components/AudioPlayer';
 import { QuestionGroupResponse } from '@/types/questionType';
+import { Check, X } from 'lucide-react';
 
 export default function ExercisePage() {
   const { courseId, exerciseId } = useParams();
@@ -49,29 +50,27 @@ export default function ExercisePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Timer */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-white rounded-full shadow-md px-6 py-2 flex items-center">
-          <div className="text-xl font-bold text-gray-800">00:00:01</div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-        <div className="mb-4">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="bg-white rounded-lg shadow-md border p-6 mb-8">
+        <div className="mb-6">
           {currentGroup?.audioUrl && (
-            <AudioPlayer key={currentGroup.audioUrl} src={currentGroup.audioUrl} />
+            <div className="mb-4">
+              <AudioPlayer
+                key={currentGroup.audioUrl}
+                src={currentGroup.audioUrl}
+              />
+            </div>
           )}
 
           {currentGroup?.imageUrl && (
             <div
-              className="flex justify-center items-center my-2"
+              className="flex justify-center items-center my-4"
               style={{ height: '400px' }}
             >
               <img
                 src={currentGroup.imageUrl}
                 alt="TOEIC question"
-                className="rounded-lg shadow-sm"
+                className="rounded-lg shadow-md"
                 style={{
                   maxWidth: '100%',
                   maxHeight: '100%',
@@ -82,13 +81,15 @@ export default function ExercisePage() {
           )}
 
           {currentGroup?.passage && (
-            <div className="bg-gray-50 p-4 rounded-lg my-6">
-              <p>{currentGroup.passage}</p>
+            <div className="bg-gray-50 p-5 rounded-lg my-6 shadow-inner">
+              <p className="text-gray-800 leading-relaxed">
+                {currentGroup.passage}
+              </p>
             </div>
           )}
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-12">
           {questions.map((question, index) => {
             const isAnswered = !!selectedAnswers[question.id];
             const isCorrect =
@@ -96,9 +97,10 @@ export default function ExercisePage() {
 
             return (
               <div key={question.id} className="border-t pt-6">
-                <h3 className="text-lg font-semibold mb-3">
+                <h3 className="text-lg font-semibold mb-4">
                   {question.title || `Question ${index + 1}`}
                 </h3>
+
                 <RadioGroup
                   value={selectedAnswers[question.id] || ''}
                   onValueChange={value =>
@@ -114,69 +116,113 @@ export default function ExercisePage() {
                     const isSelected = selectedAnswers[question.id] === option;
                     const isCorrectOption = question.correctAnswer === option;
 
+                    // Xác định class cho mỗi option
+                    let optionClass =
+                      'cursor-pointer flex items-center p-3 rounded-lg border transition-all duration-200';
+
+                    if (isAnswered) {
+                      if (isCorrectOption) {
+                        optionClass += ' bg-green-50 border-green-500';
+                      } else if (isSelected) {
+                        optionClass += ' bg-red-50 border-red-500';
+                      } else {
+                        optionClass += ' bg-gray-50 border-gray-200';
+                      }
+                    } else {
+                      optionClass +=
+                        ' hover:bg-blue-50 hover:border-blue-300 border-gray-200';
+                    }
+
                     return (
                       <div
                         key={option}
-                        className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-200 ${
-                          isAnswered
-                            ? isCorrectOption
-                              ? 'bg-green-100 border border-green-500'
-                              : isSelected
-                              ? 'bg-red-100 border border-red-500'
-                              : 'bg-gray-100'
-                            : 'hover:bg-gray-50'
-                        }`}
+                        className={optionClass}
+                        onClick={() => {
+                          if (!isAnswered) {
+                            handleAnswerChange(question.id, option);
+                          }
+                        }}
                       >
-                        <div className="flex-shrink-0">
-                          <RadioGroupItem
-                            value={option}
-                            id={`${question.id}-${option}`}
-                            disabled={isAnswered}
-                            className="h-5 w-5"
-                          />
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 mr-3 flex items-center justify-center">
+                            <RadioGroupItem
+                              value={option}
+                              id={`${question.id}-${option}`}
+                              disabled={isAnswered}
+                              className="h-5 w-5"
+                            />
+                          </div>
+
+                          <div className="flex-1 flex items-center">
+                            <Label
+                              htmlFor={`${question.id}-${option}`}
+                              className={`text-gray-700 cursor-pointer leading-normal pt-0.5 ${
+                                isAnswered ? 'cursor-default' : ''
+                              }`}
+                            >
+                              <span className="font-medium">{option}.</span>{' '}
+                              {value !== null && value !== undefined
+                                ? String(value)
+                                : ''}
+                            </Label>
+                          </div>
                         </div>
 
-                        <Label
-                          htmlFor={`${question.id}-${option}`}
-                          className="flex-1 text-gray-700"
-                        >
-                          {`${option}. ${value || ''}`}
-                        </Label>
-
-                        {isAnswered && isSelected && (
-                          <span className="text-sm flex-shrink-0">
-                            {isCorrect ? '✅ Correct' : '❌ Incorrect'}
-                          </span>
+                        {isAnswered && (
+                          <div className="flex-shrink-0 ml-2 flex items-center">
+                            {isSelected && (
+                              <span
+                                className={`inline-flex items-center text-sm font-medium rounded-full px-2 py-1 ${
+                                  isCorrect
+                                    ? 'text-green-700 bg-green-100'
+                                    : 'text-red-700 bg-red-100'
+                                }`}
+                              >
+                                {isCorrect ? (
+                                  <Check className="h-4 w-4 mr-1" />
+                                ) : (
+                                  <X className="h-4 w-4 mr-1" />
+                                )}
+                                {isCorrect ? 'Correct' : 'Incorrect'}
+                              </span>
+                            )}
+                            {isCorrectOption && !isSelected && (
+                              <span className="inline-flex items-center text-sm font-medium text-green-700 bg-green-100 rounded-full px-2 py-1">
+                                <Check className="h-4 w-4 mr-1" />
+                                Correct
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     );
                   })}
                 </RadioGroup>
-
-                {isAnswered && !isCorrect && (
-                  <div className="mt-2 text-sm text-green-600">
-                    Correct Answer: {question.correctAnswer}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
 
-        <div className="flex justify-between mt-10">
+        <div className="flex justify-between mt-10 pt-4 border-t">
           <Button
             variant="outline"
             onClick={handleGroupPrevious}
             disabled={currentGroupIndex === 0}
+            className="px-6"
           >
-            Previous Question
+            Previous
           </Button>
+
+          <div className="text-sm font-medium text-gray-500">
+            {currentGroupIndex + 1} / {questionGroups?.length || 0}
+          </div>
+
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
             onClick={handleGroupNext}
             disabled={currentGroupIndex === (questionGroups?.length || 0) - 1}
+            className="bg-blue-600 hover:bg-blue-700 px-6"
           >
-            Next Question
+            Next
           </Button>
         </div>
       </div>
