@@ -34,3 +34,8 @@ export async function activateUser(id: string): Promise<UserResponse> {
   const response = await axiosInstance.patch(`/users/${id}/activate`);
   return response.data.result;
 }
+
+export async function getUserById(id: string): Promise<UserResponse> {
+  const response = await axiosInstance.get(`/users/${id}`);
+  return response.data.result;
+}
