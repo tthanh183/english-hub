@@ -24,5 +24,7 @@ public interface AuthenticationService {
 
   void logout(RefreshRequest refreshRequest);
 
+  void changePassword(ChangePasswordRequest changePasswordRequest);
+
   User getCurrentUser();
 }

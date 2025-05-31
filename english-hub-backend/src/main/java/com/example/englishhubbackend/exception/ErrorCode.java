@@ -89,6 +89,10 @@ public enum ErrorCode {
       1024,
       "User flashcard not found. Please check the user ID and flashcard ID and try again.",
       HttpStatus.NOT_FOUND),
+  INVALID_CURRENT_PASSWORD(
+      1025,
+      "The current password is incorrect. Please check and try again.",
+      HttpStatus.BAD_REQUEST),
   ;
 
   private int code;

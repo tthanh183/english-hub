@@ -26,7 +26,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-  private final String[] publicEndpoints = {"/api/auth/*"};
+  private final String[] publicEndpoints = {
+          "/api/auth/register",
+          "/api/auth/login",
+          "/api/auth/verify",
+          "/api/auth/resend",
+          "/api/auth/refresh",
+          "/api/auth/introspect"
+  };
 
   @Value("${security.jwt.secret-key}")
   private String secretKey;

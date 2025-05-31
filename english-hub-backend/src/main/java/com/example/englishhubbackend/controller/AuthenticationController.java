@@ -65,4 +65,11 @@ public class AuthenticationController {
     var result = authenticationService.introspect(request);
     return ApiResponse.<IntrospectResponse>builder().result(result).build();
   }
+
+  @PostMapping("/change-password")
+  public ApiResponse<String> changePassword(
+      @RequestBody ChangePasswordRequest changePasswordRequest) {
+    authenticationService.changePassword(changePasswordRequest);
+    return ApiResponse.<String>builder().message("Password changed successfully").build();
+  }
 }
