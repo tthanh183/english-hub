@@ -87,4 +87,12 @@ public class UserServiceImpl implements UserService {
     userMapper.updateUser(userUpdateRequest, user, roleService);
     return userMapper.toUserResponse(userRepository.save(user));
   }
+
+    @Override
+    public UserResponse getUserById(UUID userId) {
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
+    }
 }

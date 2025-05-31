@@ -18,4 +18,6 @@ public interface UserService {
   UserResponse createUser(UserCreateRequest userCreateRequest);
 
   UserResponse updateUser(UUID userId, UserUpdateRequest userUpdateRequest);
+
+  UserResponse getUserById(UUID userId);
 }

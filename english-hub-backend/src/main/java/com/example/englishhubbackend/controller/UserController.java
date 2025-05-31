@@ -52,4 +52,11 @@ public class UserController {
         .result(userService.updateUser(UUID.fromString(userId), userUpdateRequest))
         .build();
   }
+
+  @GetMapping("/{userId}")
+  public ApiResponse<UserResponse> getUserById(@PathVariable String userId) {
+  return ApiResponse.<UserResponse>builder()
+      .result(userService.getUserById(UUID.fromString(userId)))
+      .build();
+  }
 }
