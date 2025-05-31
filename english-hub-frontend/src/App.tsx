@@ -28,6 +28,7 @@ import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
 import FlashCardPage from './pages/home/FlashCardPage';
 import ReviewTodayPage from './pages/home/ReviewTodayPage';
+import ProfilePage from './pages/home/ProfilePage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
 
         <Route path={ROUTES.HOME} element={<HomeLayout />}>
           <Route index element={<HomePage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route
             path={ROUTES.COURSES_LISTENING_READING}
             element={<ListeningReadingPage />}

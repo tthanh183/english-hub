@@ -31,3 +31,14 @@ export async function logout(): Promise<string> {
   const response = await axiosInstance.post('/auth/logout');
   return response.data.result;
 }
+
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string
+): Promise<string> {
+  const response = await axiosInstance.post('/auth/change-password', {
+    currentPassword,
+    newPassword,
+  });
+  return response.data.result;
+}
