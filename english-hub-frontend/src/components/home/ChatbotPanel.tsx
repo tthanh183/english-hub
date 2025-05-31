@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, X, Send, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -29,10 +28,20 @@ export function ChatbotPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null); 
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
+    }, 100);
+  };
 
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      scrollToBottom();
       inputRef.current?.focus();
     }
   }, [messages, isOpen]);
@@ -62,7 +71,8 @@ export function ChatbotPanel() {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      scrollToBottom();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -111,7 +121,11 @@ export function ChatbotPanel() {
               <X className="h-5 w-5" />
             </Button>
           </div>
-          <ScrollArea className="flex-1 px-5 py-4 h-[550px]">
+
+          <div
+            ref={chatContainerRef}
+            className="flex-1 px-5 py-4 overflow-y-auto h-[550px] scroll-smooth"
+          >
             <div className="space-y-6">
               {messages.map(message => (
                 <div
@@ -171,7 +185,8 @@ export function ChatbotPanel() {
               )}
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
+
           <div className="p-4 border-t bg-gray-50">
             <div className="flex items-end gap-2">
               <Textarea
