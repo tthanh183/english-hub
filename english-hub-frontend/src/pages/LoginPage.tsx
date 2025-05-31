@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
@@ -16,16 +16,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/stores/authStore';
 import { login, resendVerificationCode } from '@/services/authService';
-import { showError } from '@/hooks/useToast';
+import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import { LoginResponse } from '@/types/authType';
+// Chỉ giữ những import đang dùng, không thêm mới
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [formError, setFormError] = useState<string>('');
 
-  const { setAuth } = useAuthStore();
+  const { setAuth, clearAuth } = useAuthStore();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    clearAuth();
+  }, [clearAuth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,6 +40,8 @@ export default function LoginPage() {
     } else if (name === 'password') {
       setPassword(value);
     }
+
+    if (formError) setFormError('');
   };
 
   const mutation = useMutation({
@@ -41,12 +49,15 @@ export default function LoginPage() {
     onSuccess: (response: LoginResponse) => {
       const { accessToken, refreshToken } = response;
       setAuth(accessToken, refreshToken);
+      showSuccess('Login successful');
       navigate('/');
     },
     onError: error => {
       if (isAxiosError(error)) {
-        showError(error.response?.data.message);
-        if (error.response?.data.code === 1012) {
+        const errorMessage = error.response?.data?.message || 'Login failed';
+        showError(errorMessage);
+
+        if (error.response?.data?.code === 1012) {
           resendVerificationCode(email);
           navigate('/verify', { state: { email } });
         }
@@ -54,14 +65,16 @@ export default function LoginPage() {
         showError('Something went wrong');
       }
     },
-    onSettled: () => {
-      setEmail('');
-      setPassword('');
-    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!email.trim() || !password.trim()) {
+      showError('Email and password are required');
+      return;
+    }
+
     mutation.mutate({ email, password });
   };
 
@@ -71,7 +84,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <Link to="/" className="text-2xl font-bold text-blue-600">
-              EnglishMaster
+              EnglishHub
             </Link>
           </div>
           <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
@@ -87,7 +100,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                name='email'
+                name="email"
                 value={email}
                 onChange={handleChange}
                 required
@@ -106,10 +119,10 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                value={password}
-                name='password'
-                onChange={handleChange}
                 placeholder="********"
+                name="password"
+                value={password}
+                onChange={handleChange}
                 required
               />
             </div>

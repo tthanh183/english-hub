@@ -47,13 +47,12 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
           return axiosInstance(originalRequest);
         } else {
-          window.location.href = '/';
+          useAuthStore.getState().logout();
         }
       } catch (err) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         useAuthStore.getState().logout();
-        window.location.href = '/login';
         return Promise.reject(err);
       }
     }

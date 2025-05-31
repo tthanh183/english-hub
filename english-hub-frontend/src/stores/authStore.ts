@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-
 import { getUserIdFromToken, isAdminFromToken } from '@/utils/jwtUtil';
 
 type AuthState = {
@@ -8,6 +7,7 @@ type AuthState = {
   isAdmin: boolean;
   setAuth: (accessToken: string | null, refreshToken: string | null) => void;
   logout: () => void;
+  clearAuth: () => void; 
 };
 
 export const useAuthStore = create<AuthState>(set => ({
@@ -31,6 +31,19 @@ export const useAuthStore = create<AuthState>(set => ({
   },
 
   logout: () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('isAdmin');
+
+    set({
+      isAuthenticated: false,
+      userId: null,
+      isAdmin: false,
+    });
+  },
+
+  clearAuth: () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userId');

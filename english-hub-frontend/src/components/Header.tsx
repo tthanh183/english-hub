@@ -15,6 +15,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { getUserById } from '@/services/userService';
 import { useMemo } from 'react';
+import { showSuccess } from '@/hooks/useToast';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -43,7 +44,11 @@ export default function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    showSuccess('Logged out successfully');
+
+    setTimeout(() => {
+      navigate('/login');
+    }, 300);
   };
 
   const initials = useMemo(() => {
