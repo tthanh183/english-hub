@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTodayReview, updateReview } from '@/services/reviewService';
-import { FlashCardResponse } from '@/types/flashCardType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { ROUTES } from '@/constants/routes';
 import { showSuccess, showError } from '@/hooks/useToast';
@@ -21,26 +20,35 @@ import { showSuccess, showError } from '@/hooks/useToast';
 export default function ReviewTodayPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const sessionCompletedRef = useRef(false);
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [studiedCards, setStudiedCards] = useState<string[]>([]);
   const [showRating, setShowRating] = useState(false);
+  const [isSessionCompleted, setIsSessionCompleted] = useState(false);
 
-  const {
-    data: reviewCards = [],
-    isLoading,
-    error,
-  } = useQuery<FlashCardResponse[]>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['today-review'],
     queryFn: getTodayReview,
+    refetchOnWindowFocus: false,
   });
+
+  const reviewCards = data || [];
+
+  useEffect(() => {
+    if (data && data.length > 0 && studiedCards.length === 0) {
+      sessionCompletedRef.current = false;
+    }
+  }, [data, studiedCards]);
 
   const { mutate: submitReview, isPending: isSubmitting } = useMutation({
     mutationFn: updateReview,
     onSuccess: () => {
       showSuccess('Review saved successfully!');
-      queryClient.invalidateQueries({ queryKey: ['today-review'] });
+      if (currentCardIndex < reviewCards.length - 1) {
+        queryClient.invalidateQueries({ queryKey: ['today-review'] });
+      }
     },
     onError: () => {
       showError('Failed to save review');
@@ -48,14 +56,52 @@ export default function ReviewTodayPage() {
   });
 
   useEffect(() => {
-    if (reviewCards.length === 0 && !isLoading && !error) {
+    if (
+      reviewCards.length === 0 &&
+      !isLoading &&
+      !error &&
+      !sessionCompletedRef.current
+    ) {
       showSuccess('No cards to review today! Come back tomorrow.');
-      navigate(ROUTES.DECK);
+      setTimeout(() => {
+        navigate(ROUTES.DECK);
+      }, 300);
     }
   }, [reviewCards, isLoading, error, navigate]);
 
   if (isLoading) {
     return <GlobalSkeleton />;
+  }
+
+  if (isSessionCompleted || sessionCompletedRef.current) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center mb-6">
+          <Link to={ROUTES.DECK} className="mr-4">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-800">Daily Review</h1>
+        </div>
+
+        <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold text-green-800 mb-2">
+            Review Completed!
+          </h2>
+          <p className="text-green-700 mb-4">
+            You've successfully completed your review session for today. Great
+            job! Come back tomorrow for more cards.
+          </p>
+          <Button
+            onClick={() => navigate(ROUTES.DECK)}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Back to Decks
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (error || reviewCards.length === 0) {
@@ -114,12 +160,9 @@ export default function ReviewTodayPage() {
             if (currentCardIndex < reviewCards.length - 1) {
               setCurrentCardIndex(prev => prev + 1);
             } else {
+              sessionCompletedRef.current = true;
+              setIsSessionCompleted(true);
               showSuccess('Review session completed!');
-
-              setTimeout(() => {
-                console.log('Navigating to DECK page:', ROUTES.DECK);
-                navigate(ROUTES.DECK, { replace: true });
-              }, 500);
             }
           }, 300);
         },
