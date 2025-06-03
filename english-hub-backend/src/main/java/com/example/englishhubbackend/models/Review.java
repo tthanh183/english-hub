@@ -6,11 +6,12 @@ import java.util.UUID;
 import lombok.*;
 
 @Entity
+@Table(name = "review")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFlashCard {
+public class Review {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;

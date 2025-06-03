@@ -6,10 +6,10 @@ import com.example.englishhubbackend.exception.AppException;
 import com.example.englishhubbackend.exception.ErrorCode;
 import com.example.englishhubbackend.mapper.FlashCardMapper;
 import com.example.englishhubbackend.models.FlashCard;
+import com.example.englishhubbackend.models.Review;
 import com.example.englishhubbackend.models.User;
-import com.example.englishhubbackend.models.UserFlashCard;
 import com.example.englishhubbackend.repository.FlashCardRepository;
-import com.example.englishhubbackend.repository.UserFlashCardRepository;
+import com.example.englishhubbackend.repository.ReviewRepository;
 import com.example.englishhubbackend.service.AuthenticationService;
 import com.example.englishhubbackend.service.ReviewService;
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReviewServiceImpl implements ReviewService {
-  UserFlashCardRepository userFlashCardRepository;
+  ReviewRepository reviewRepository;
   AuthenticationService authenticationService;
   FlashCardRepository flashCardRepository;
   FlashCardMapper flashCardMapper;
@@ -32,12 +32,12 @@ public class ReviewServiceImpl implements ReviewService {
   public List<FlashCardResponse> getCardsToReviewToday() {
     User currentUser = authenticationService.getCurrentUser();
 
-    List<UserFlashCard> cards =
-        userFlashCardRepository.findByUserIdAndNextPracticeDateLessThanEqual(
+    List<Review> cards =
+        reviewRepository.findByUserIdAndNextPracticeDateLessThanEqual(
             currentUser.getId(), LocalDate.now());
 
     return cards.stream()
-        .map(UserFlashCard::getFlashCard)
+        .map(Review::getFlashCard)
         .map(flashCardMapper::toFlashCardResponse)
         .collect(Collectors.toList());
   }
@@ -55,12 +55,12 @@ public class ReviewServiceImpl implements ReviewService {
             .findById(request.getFlashCardId())
             .orElseThrow(() -> new AppException(ErrorCode.FLASHCARD_NOT_FOUND));
 
-    UserFlashCard userCard =
-        userFlashCardRepository
+    Review userCard =
+        reviewRepository
             .findByUserIdAndFlashCardId(currentUser.getId(), request.getFlashCardId())
             .orElseGet(
                 () -> {
-                  UserFlashCard newCard = new UserFlashCard();
+                  Review newCard = new Review();
                   newCard.setUser(currentUser);
                   newCard.setFlashCard(flashCard);
                   newCard.setEasinessFactor(2.5f);
@@ -110,6 +110,6 @@ public class ReviewServiceImpl implements ReviewService {
     userCard.setLastReviewedDate(LocalDate.now());
     userCard.setNextPracticeDate(LocalDate.now().plusDays(interval));
 
-    userFlashCardRepository.save(userCard);
+    reviewRepository.save(userCard);
   }
 }
