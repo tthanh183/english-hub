@@ -131,7 +131,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     User user =
         userRepository
             .findByEmail(authenticateRequest.getEmail())
-            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
     if (!user.isEnabled()) {
       throw new AppException(ErrorCode.ACCOUNT_UNVERIFIED);

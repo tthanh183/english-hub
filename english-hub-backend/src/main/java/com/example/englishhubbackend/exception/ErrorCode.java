@@ -26,7 +26,7 @@ public enum ErrorCode {
       HttpStatus.BAD_REQUEST),
   UNAUTHENTICATED(
       1005,
-      "Incorrect username or password. Please check your credentials and try again.",
+      "Incorrect email or password. Please check your credentials and try again.",
       HttpStatus.UNAUTHORIZED),
   UNAUTHORIZED(
       1006,
@@ -42,7 +42,7 @@ public enum ErrorCode {
       HttpStatus.BAD_REQUEST),
   USER_NOT_FOUND(
       1010,
-      "User not found. Please check the email address and try again, or register if you don't have an account.",
+      "User not found. Please check the user ID and try again.",
       HttpStatus.NOT_FOUND),
   ACCOUNT_ALREADY_VERIFIED(1011, "Your account has already been verified.", HttpStatus.CONFLICT),
   ACCOUNT_UNVERIFIED(
