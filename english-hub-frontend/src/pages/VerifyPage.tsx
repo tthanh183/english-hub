@@ -39,7 +39,7 @@ export default function VerifyPage() {
     },
     onError: error => {
       if (isAxiosError(error)) {
-        showError("Verification code doesn't match");
+        showError(error.response?.data.message);
       } else {
         showError('Something went wrong');
       }

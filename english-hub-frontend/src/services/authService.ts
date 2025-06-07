@@ -24,7 +24,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
 
 export async function resendVerificationCode(email: string): Promise<string> {
   const response = await axiosInstance.post('/auth/resend', { email });
-  return response.data.result;
+  return response.data.message;
 }
 
 export async function logout(): Promise<string> {
