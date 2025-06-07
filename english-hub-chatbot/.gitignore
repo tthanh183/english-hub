@@ -16,6 +16,5 @@ __pycache__/
 *.egg
 
 
-/fine_tune/final_model
-/fine_tune/flan-t5-finetuned-vocab
 /fine_tune/flan-t5-finetuned-vocab-*
+/fine_tune/data/
