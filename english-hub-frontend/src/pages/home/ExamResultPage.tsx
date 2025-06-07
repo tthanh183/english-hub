@@ -178,7 +178,7 @@ export default function ExamResultPage() {
                               )}%)`
                             }
                           >
-                            {scoreDistributionData.map((entry, index) => (
+                            {scoreDistributionData.map((_, index) => (
                               <Cell
                                 key={`cell-${index}`}
                                 fill={COLORS[index % COLORS.length]}
