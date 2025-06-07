@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-model_path = "./flan-t5-finetuned-vocab-2705"
+model_path = "./flan-t5-finetuned-vocab-3105-ollama"
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_path).to(
     "cuda" if torch.cuda.is_available() else "cpu")
