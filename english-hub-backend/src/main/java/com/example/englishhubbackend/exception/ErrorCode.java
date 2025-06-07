@@ -14,7 +14,7 @@ public enum ErrorCode {
       1001, "The key provided is invalid. Please check and try again.", HttpStatus.BAD_REQUEST),
   USER_ALREADY_EXISTS(
       1002,
-      "A user with this email already exists. Please use a different email or login.",
+      "This email is already registered. Please use a different email or login.",
       HttpStatus.BAD_REQUEST),
   INVALID_EMAIL(
       1003,
@@ -38,7 +38,7 @@ public enum ErrorCode {
       1008, "The verification code has expired. Please request a new one.", HttpStatus.BAD_REQUEST),
   INVALID_VERIFICATION_CODE(
       1009,
-      "The verification code you entered is invalid. Please check and try again.",
+      "The verification code is invalid. Please try again.",
       HttpStatus.BAD_REQUEST),
   USER_NOT_FOUND(
       1010,

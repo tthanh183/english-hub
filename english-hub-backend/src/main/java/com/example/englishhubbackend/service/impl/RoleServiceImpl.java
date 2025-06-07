@@ -35,7 +35,6 @@ public class RoleServiceImpl implements RoleService {
   }
 
   @Override
-  @PreAuthorize("hasRole('ADMIN')")
   public Role getRole(String roleName) {
     return roleRepository.findById(roleName).orElse(null);
   }
