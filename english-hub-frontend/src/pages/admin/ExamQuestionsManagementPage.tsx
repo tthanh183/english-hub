@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
-  FileSpreadsheet,
   FileText,
   Pencil,
   Plus,
@@ -22,7 +21,6 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
-import ExcelImportDialog from '@/components/admin/ExcelImportDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   deleteQuestionFromExam,
@@ -39,7 +37,6 @@ export default function ExamQuestionsManagementPage() {
   const { examId } = useParams();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState<boolean>(false);
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
   const [isEditQuestionOpen, setIsEditQuestionOpen] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] =
@@ -143,15 +140,6 @@ export default function ExamQuestionsManagementPage() {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsImportDialogOpen(true)}
-          >
-            <FileSpreadsheet className="mr-2 h-4 w-4" /> Import from Excel
-          </Button>
         </div>
       </div>
 
@@ -281,11 +269,6 @@ export default function ExamQuestionsManagementPage() {
           question={selectedQuestion}
         />
       )}
-
-      <ExcelImportDialog
-        isImportDialogOpen={isImportDialogOpen}
-        setIsImportDialogOpen={setIsImportDialogOpen}
-      />
     </div>
   );
 }

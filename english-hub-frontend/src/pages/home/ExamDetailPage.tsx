@@ -195,7 +195,7 @@ export default function ExamDetailPage() {
       console.error('Failed to submit exam:', error);
       alert('There was an error submitting your exam. Please try again.');
     }
-  }, [selectedAnswers, examId, navigate ]);
+  }, [selectedAnswers, examId, navigate]);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -362,7 +362,9 @@ export default function ExamDetailPage() {
                   {groupQuestion.questions.map((question, index) => (
                     <div
                       key={question.id}
-                      ref={el => (questionRefs.current[question.id] = el)}
+                      ref={el => {
+                        questionRefs.current[question.id] = el;
+                      }}
                       className={cn(
                         'border-t pt-6 first:border-0',
                         activeQuestion === question.id

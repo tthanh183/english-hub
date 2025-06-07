@@ -210,7 +210,7 @@ export default function ExamQuestionDialog({
             <div className="lg:col-span-3">
               <Card>
                 <CardHeader>
-                  <CardTitle>{selectedPart}</CardTitle>
+                  <CardTitle>{QUESTION_TYPE_DISPLAY[selectedPart]}</CardTitle>
                   <CardDescription>
                     {getPartDescription(selectedPart)}
                   </CardDescription>

@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button';
 type AudioPlayerProps = {
   src: string | null;
   className?: string;
+  fileName?: string;
+  fileSize?: number;
+  onRemove?: () => void;
+  editable?: boolean;
 };
 
 export default function AudioPlayer({ src, className = '' }: AudioPlayerProps) {
