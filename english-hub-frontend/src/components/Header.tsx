@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, User, Settings, LogOut, Key } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -18,7 +18,6 @@ import { useMemo } from 'react';
 import { showSuccess } from '@/hooks/useToast';
 
 export default function Header() {
-  const navigate = useNavigate();
 
   const menuItems = [
     { title: 'TOEIC® Test Pro', href: '/toeic-test-pro' },
@@ -45,10 +44,6 @@ export default function Header() {
   const handleLogout = () => {
     logout();
     showSuccess('Logged out successfully');
-
-    setTimeout(() => {
-      navigate('/login');
-    }, 300);
   };
 
   const initials = useMemo(() => {

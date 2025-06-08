@@ -69,7 +69,7 @@ export default function DeckPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         {isAuthenticated && todayReviews.length > 0 && (
-          <Card className="overflow-hidden border-blue-200 hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-white">
+          <Card className="overflow-hidden border-blue-200 hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-white flex flex-col">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <CardTitle className="text-xl flex items-center">
@@ -85,7 +85,8 @@ export default function DeckPage() {
                 Review words scheduled for today based on spaced repetition
               </CardDescription>
             </CardHeader>
-            <CardContent className="pb-3">
+
+            <CardContent className="pb-3 flex-1">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="bg-blue-50 p-3 rounded-md">
                   <div className="flex items-center text-gray-500 mb-1">
@@ -107,9 +108,18 @@ export default function DeckPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-end pt-3 border-t">
+
+            <CardFooter className="flex items-center justify-between pt-3 border-t mt-auto">
+              <Link to="/review/history">
+                <Button
+                  variant="outline"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50 h-10"
+                >
+                  View History
+                </Button>
+              </Link>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 h-10"
                 onClick={handleStartTodayReview}
               >
                 Start Review
@@ -122,7 +132,7 @@ export default function DeckPage() {
         {decks.map((deck: DeckResponse) => (
           <Card
             key={deck.id}
-            className="overflow-hidden hover:shadow-md transition-shadow"
+            className="overflow-hidden hover:shadow-md transition-shadow flex flex-col"
           >
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
@@ -130,12 +140,13 @@ export default function DeckPage() {
               </div>
               <CardDescription>{deck.description}</CardDescription>
             </CardHeader>
-            <CardContent className="pb-3">
+
+            <CardContent className="pb-3 flex-1">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="bg-gray-50 p-3 rounded-md">
                   <div className="flex items-center text-gray-500 mb-1">
                     <BookOpen className="h-4 w-4 mr-1" />
-                    <span> Cards</span>
+                    <span>Cards</span>
                   </div>
                   <div className="font-semibold">12 cards</div>
                 </div>
@@ -150,17 +161,18 @@ export default function DeckPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between pt-3 border-t">
+
+            <CardFooter className="flex items-center justify-between pt-3 border-t mt-auto">
               <Link to={`/decks/${deck.id}/vocabularies`}>
                 <Button
                   variant="outline"
-                  className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                  className="text-blue-600 border-blue-600 hover:bg-blue-50 h-10"
                 >
                   Browse Cards
                 </Button>
               </Link>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 h-10"
                 onClick={() => handleStartFlashCard(deck.id)}
               >
                 Study Now
