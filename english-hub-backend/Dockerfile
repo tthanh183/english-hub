@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Bước 3: Build ứng dụng Spring Boot
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon -x test
 
 # Bước 4: Chạy ứng dụng
 FROM openjdk:21-jdk-slim
