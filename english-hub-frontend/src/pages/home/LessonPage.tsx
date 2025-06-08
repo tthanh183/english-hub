@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -76,14 +76,6 @@ export default function LessonPage() {
             className="prose max-w-non"
             dangerouslySetInnerHTML={{ __html: lesson?.content || '' }}
           ></div>
-
-          <div className="flex justify-center mt-8 mb-8">
-            <Link to="/practice/listening/part-1/test-1">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                Start Practice
-              </Button>
-            </Link>
-          </div>
         </div>
       </div>
     </div>
