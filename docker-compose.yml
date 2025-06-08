@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
+    networks:
+      - mynetwork
+    volumes:
+      - redis_data:/data
+
+  spring-backend:
+    build:
+      context: ./english-hub-backend
+    container_name: spring-backend
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+    env_file:
+      - .env
+
+  flask-ai:
+    build:
+      context: ./english-hub-chatbot
+    container_name: flask-ai
+    ports:
+      - "5000:5000"
+    networks:
+      - mynetwork
+    restart: always
+
+networks:
+  mynetwork:
+
+volumes:
+  redis_data:

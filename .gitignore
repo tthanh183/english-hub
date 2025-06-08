@@ -1,0 +1,16 @@
+/medium/.env
+.env
+env
+*.env
+venv
+.venv
+*.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.egg-info/
+*.egg
