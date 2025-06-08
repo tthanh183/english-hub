@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -20,13 +20,13 @@ import { showSuccess, showError } from '@/hooks/useToast';
 export default function ReviewTodayPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const sessionCompletedRef = useRef(false);
 
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [studiedCards, setStudiedCards] = useState<string[]>([]);
   const [showRating, setShowRating] = useState(false);
   const [isSessionCompleted, setIsSessionCompleted] = useState(false);
+  const [isCheckingForNewCards, setIsCheckingForNewCards] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['today-review'],
@@ -36,44 +36,71 @@ export default function ReviewTodayPage() {
 
   const reviewCards = data || [];
 
-  useEffect(() => {
-    if (data && data.length > 0 && studiedCards.length === 0) {
-      sessionCompletedRef.current = false;
-    }
-  }, [data, studiedCards]);
-
   const { mutate: submitReview, isPending: isSubmitting } = useMutation({
     mutationFn: updateReview,
     onSuccess: () => {
       showSuccess('Review saved successfully!');
-      if (currentCardIndex < reviewCards.length - 1) {
-        queryClient.invalidateQueries({ queryKey: ['today-review'] });
-      }
     },
     onError: () => {
       showError('Failed to save review');
     },
   });
 
+  const checkForNewCards = async () => {
+    setIsCheckingForNewCards(true);
+    try {
+      const result = await queryClient.fetchQuery({
+        queryKey: ['today-review'],
+        queryFn: getTodayReview,
+      });
+
+      if (result && result.length > 0) {
+        setCurrentCardIndex(0);
+        setStudiedCards([]);
+        setIsFlipped(false);
+        setShowRating(false);
+        setIsSessionCompleted(false);
+        setIsCheckingForNewCards(false);
+        showSuccess('New cards available! Continuing review...');
+      } else {
+        setIsSessionCompleted(true);
+        setIsCheckingForNewCards(false);
+        showSuccess('Review session completed!');
+      }
+    } catch {
+      setIsSessionCompleted(true);
+      setIsCheckingForNewCards(false);
+      showError('Failed to check for new cards');
+    }
+  };
+
   useEffect(() => {
     if (
       reviewCards.length === 0 &&
       !isLoading &&
       !error &&
-      !sessionCompletedRef.current
+      !isSessionCompleted &&
+      !isCheckingForNewCards
     ) {
       showSuccess('No cards to review today! Come back tomorrow.');
       setTimeout(() => {
         navigate(ROUTES.DECK);
       }, 300);
     }
-  }, [reviewCards, isLoading, error, navigate]);
+  }, [
+    reviewCards,
+    isLoading,
+    error,
+    navigate,
+    isSessionCompleted,
+    isCheckingForNewCards,
+  ]);
 
-  if (isLoading) {
+  if (isLoading || isCheckingForNewCards) {
     return <GlobalSkeleton />;
   }
 
-  if (isSessionCompleted || sessionCompletedRef.current) {
+  if (isSessionCompleted) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center mb-6">
@@ -85,20 +112,48 @@ export default function ReviewTodayPage() {
           <h1 className="text-2xl font-bold text-gray-800">Daily Review</h1>
         </div>
 
-        <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold text-green-800 mb-2">
-            Review Completed!
+        <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg text-center">
+          <div className="flex justify-center mb-4">
+            <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
+              <Zap className="h-8 w-8 text-green-600" />
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-semibold text-green-800 mb-4">
+            🎉 Review Session Completed!
           </h2>
-          <p className="text-green-700 mb-4">
-            You've successfully completed your review session for today. Great
-            job! Come back tomorrow for more cards.
+
+          <p className="text-green-700 mb-6 max-w-md mx-auto leading-relaxed">
+            Great job! You've finished reviewing all scheduled cards for this
+            session.
+            <br />
+            <br />
+            <span className="text-sm text-green-600 italic">
+              The system is now calculating new review schedules using the SM-2
+              algorithm based on your performance. New cards may become
+              available for review shortly.
+            </span>
           </p>
-          <Button
-            onClick={() => navigate(ROUTES.DECK)}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            Back to Decks
-          </Button>
+
+          <div className="space-y-3">
+            <Button
+              onClick={checkForNewCards}
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 mr-4"
+              disabled={isCheckingForNewCards}
+            >
+              {isCheckingForNewCards ? 'Checking...' : 'Check for New Reviews'}
+            </Button>
+            <Button
+              onClick={() => navigate(ROUTES.DECK)}
+              variant="outline"
+              className="px-6 py-2"
+            >
+              Back to Decks
+            </Button>
+            <div className="text-xs text-green-600 mt-2">
+              Tip: The system may generate new cards based on your performance!
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -160,9 +215,7 @@ export default function ReviewTodayPage() {
             if (currentCardIndex < reviewCards.length - 1) {
               setCurrentCardIndex(prev => prev + 1);
             } else {
-              sessionCompletedRef.current = true;
-              setIsSessionCompleted(true);
-              showSuccess('Review session completed!');
+              checkForNewCards();
             }
           }, 300);
         },
