@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const FLASK_URL = import.meta.env.VITE_FLASK_URL || 'http://localhost:5000';
+
 export async function sendChatMessage(message: string) {
   try {
-    const res = await axios.post('http://localhost:5000/ask', {
+    const res = await axios.post(`${FLASK_URL}/ask`, {
       prompt: message,
     });
 
