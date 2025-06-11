@@ -31,3 +31,4 @@ Werkzeug
 flask-cors
 sentencepiece
 protobuf
+langdetect
