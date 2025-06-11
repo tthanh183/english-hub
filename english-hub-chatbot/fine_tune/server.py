@@ -4,6 +4,7 @@ import torch
 import os
 from flask_cors import CORS
 import re
+from langdetect import detect, LangDetectException
 
 app = Flask(__name__)
 CORS(app)
@@ -29,17 +30,28 @@ def ask():
     if not prompt:
         return jsonify({"error": "Missing prompt"}), 400
 
+    # Language detection
+    try:
+        lang = detect(prompt)
+    except LangDetectException:
+        lang = "unknown"
+
+    if lang != "en":
+        return jsonify({
+            "response": "It seems you asked in a language other than English. Please ask your question in English."
+        })
+
     inputs = tokenizer(prompt, return_tensors="pt",
                        padding=True, truncation=True).to(model.device)
 
     outputs = model.generate(
         **inputs,
-        max_new_tokens=150,         # đủ dài để giải thích chi tiết
-        no_repeat_ngram_size=4,     # hạn chế lặp nhiều hơn
+        max_new_tokens=150,
+        no_repeat_ngram_size=4,
         early_stopping=True,
-        num_beams=10,               # beam search rộng hơn, chọn câu tốt hơn
-        temperature=0.3,            # giảm độ sáng tạo, tránh lỗi
-        repetition_penalty=2.0,     # phạt lặp từ mạnh hơn
+        num_beams=10,
+        temperature=0.3,
+        repetition_penalty=2.0,
     )
 
     decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
