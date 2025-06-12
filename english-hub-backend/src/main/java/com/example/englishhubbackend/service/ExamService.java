@@ -33,5 +33,5 @@ public interface ExamService {
 
   ExamSubmissionResponse submitExam(UUID examId, ExamSubmissionRequest examSubmissionRequest);
 
-    void deleteQuestionFromExam(UUID examId, UUID questionId);
+  void deleteQuestionFromExam(UUID examId, UUID questionId);
 }

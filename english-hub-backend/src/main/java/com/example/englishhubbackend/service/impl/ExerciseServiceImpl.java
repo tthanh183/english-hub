@@ -214,8 +214,10 @@ public class ExerciseServiceImpl implements ExerciseService {
             .findById(exerciseId)
             .orElseThrow(() -> new AppException(ErrorCode.EXERCISE_NOT_FOUND));
 
-    Question question = questionRepository.findById(questionId)
-        .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
+    Question question =
+        questionRepository
+            .findById(questionId)
+            .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
     if (!exercise.getQuestions().contains(question)) {
       throw new AppException(ErrorCode.QUESTION_NOT_FOUND);

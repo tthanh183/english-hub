@@ -101,10 +101,9 @@ public class ExamController {
   }
 
   @DeleteMapping("/{examId}/questions/{questionId}")
-    public ApiResponse<Void> deleteQuestionFromExam(
-        @PathVariable String examId, @PathVariable String questionId) {
-        examService.deleteQuestionFromExam(UUID.fromString(examId), UUID.fromString(questionId));
-        return ApiResponse.<Void>builder().message("Question deleted successfully").build();
-    }
-
+  public ApiResponse<Void> deleteQuestionFromExam(
+      @PathVariable String examId, @PathVariable String questionId) {
+    examService.deleteQuestionFromExam(UUID.fromString(examId), UUID.fromString(questionId));
+    return ApiResponse.<Void>builder().message("Question deleted successfully").build();
+  }
 }

@@ -289,12 +289,13 @@ public class ExamServiceImpl implements ExamService {
             .findById(examId)
             .orElseThrow(() -> new AppException(ErrorCode.EXAM_NOT_FOUND));
 
-    Question question = questionRepository
-        .findById(questionId)
-        .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
+    Question question =
+        questionRepository
+            .findById(questionId)
+            .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUND));
 
     if (!exam.getQuestions().contains(question)) {
-        throw new AppException(ErrorCode.QUESTION_NOT_FOUND);
+      throw new AppException(ErrorCode.QUESTION_NOT_FOUND);
     }
 
     questionRepository.delete(question);

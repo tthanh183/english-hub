@@ -27,12 +27,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 public class SecurityConfig {
   private final String[] publicEndpoints = {
-          "/api/auth/register",
-          "/api/auth/login",
-          "/api/auth/verify",
-          "/api/auth/resend",
-          "/api/auth/refresh",
-          "/api/auth/introspect"
+    "/api/auth/register",
+    "/api/auth/login",
+    "/api/auth/verify",
+    "/api/auth/resend",
+    "/api/auth/refresh",
+    "/api/auth/introspect"
   };
 
   @Value("${security.jwt.secret-key}")
@@ -81,10 +81,8 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "https://english-hub-frontend.netlify.app"
-    ));
+    configuration.setAllowedOrigins(
+        List.of("http://localhost:5173", "https://english-hub-frontend.netlify.app"));
 
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));

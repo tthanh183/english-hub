@@ -37,13 +37,9 @@ public enum ErrorCode {
   VERIFICATION_CODE_EXPIRED(
       1008, "The verification code has expired. Please request a new one.", HttpStatus.BAD_REQUEST),
   INVALID_VERIFICATION_CODE(
-      1009,
-      "The verification code is invalid. Please try again.",
-      HttpStatus.BAD_REQUEST),
+      1009, "The verification code is invalid. Please try again.", HttpStatus.BAD_REQUEST),
   USER_NOT_FOUND(
-      1010,
-      "User not found. Please check the user ID and try again.",
-      HttpStatus.NOT_FOUND),
+      1010, "User not found. Please check the user ID and try again.", HttpStatus.NOT_FOUND),
   ACCOUNT_ALREADY_VERIFIED(1011, "Your account has already been verified.", HttpStatus.CONFLICT),
   ACCOUNT_UNVERIFIED(
       1012,

@@ -205,17 +205,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public void changePassword(ChangePasswordRequest changePasswordRequest) {
-      User user = getCurrentUser();
-      if (user == null) {
-          throw new AppException(ErrorCode.UNAUTHENTICATED);
-      }
+    User user = getCurrentUser();
+    if (user == null) {
+      throw new AppException(ErrorCode.UNAUTHENTICATED);
+    }
 
-      if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
-          throw new AppException(ErrorCode.INVALID_CURRENT_PASSWORD);
-      }
+    if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
+      throw new AppException(ErrorCode.INVALID_CURRENT_PASSWORD);
+    }
 
-      user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-      userRepository.save(user);
+    user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+    userRepository.save(user);
   }
 
   @Override
