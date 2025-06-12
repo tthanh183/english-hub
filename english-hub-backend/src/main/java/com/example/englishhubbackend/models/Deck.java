@@ -28,6 +28,6 @@ public class Deck {
   @Column(name = "updated_at")
   LocalDate updatedDate;
 
-  @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "deck")
   List<FlashCard> flashCards;
 }

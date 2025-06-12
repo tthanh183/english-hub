@@ -12,6 +12,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class ReadingQuestion extends Question {
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToOne
   Passage passage;
 }

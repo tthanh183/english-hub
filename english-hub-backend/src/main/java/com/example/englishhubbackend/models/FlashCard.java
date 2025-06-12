@@ -20,7 +20,7 @@ public class FlashCard {
 
   String meaning;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "deck_id")
   private Deck deck;
 }

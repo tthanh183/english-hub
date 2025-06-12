@@ -27,6 +27,7 @@ public class Exam {
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "exam")
   List<Result> results;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "exam")
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "exam")
+  @ToString.Exclude
   List<Question> questions;
 }

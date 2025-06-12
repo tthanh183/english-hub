@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class ListeningQuestion extends Question {
-  @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToOne
   Audio audio;
 
   String imageUrl;

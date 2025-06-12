@@ -34,7 +34,7 @@ public class User {
   String verificationCode;
   LocalDateTime verificationCodeExpiresAt;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne
   @JoinColumn(name = "role_id")
   Role role;
 

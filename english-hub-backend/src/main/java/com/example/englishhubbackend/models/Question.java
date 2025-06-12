@@ -29,12 +29,12 @@ public abstract class Question {
   LocalDateTime createdAt;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "exercise_id", nullable = true)
+  @JoinColumn(name = "exercise_id")
   @ToString.Exclude
   Exercise exercise;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "exam_id", nullable = true)
+  @JoinColumn(name = "exam_id")
   @ToString.Exclude
   Exam exam;
 

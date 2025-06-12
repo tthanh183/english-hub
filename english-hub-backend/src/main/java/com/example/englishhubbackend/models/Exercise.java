@@ -28,7 +28,7 @@ public class Exercise {
   @JoinColumn(name = "course_id")
   Course course;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise")
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "exercise")
   @ToString.Exclude
   List<Question> questions;
 }
