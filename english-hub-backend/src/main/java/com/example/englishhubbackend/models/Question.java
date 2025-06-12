@@ -35,6 +35,7 @@ public abstract class Question {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "exam_id", nullable = true)
+  @ToString.Exclude
   Exam exam;
 
   String choiceA;
