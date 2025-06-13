@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @PreAuthorize("hasRole('ADMIN')")
   public List<UserResponse> getAllUsers() {
-    return userRepository.findAll().stream()
+    return userRepository.findAllByOrderByJoinDateDesc().stream()
         .map(userMapper::toUserResponse)
         .collect(Collectors.toList());
   }
