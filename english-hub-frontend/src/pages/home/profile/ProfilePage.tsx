@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 import { getUserById } from '@/services/userService';
 import { useAuthStore } from '@/stores/authStore';
 import { UserStatus } from '@/types/userType';
-import ChangePasswordForm from '@/pages/profile/ChangePasswordForm';
+import ChangePasswordForm from '@/pages/home/profile/ChangePasswordForm';
 
 export default function ProfilePage() {
   const userId = useAuthStore(state => state.userId);

@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import CategoryCard from '@/pages/main/CategoryCard';
+import CategoryCard from '@/pages/home/main/CategoryCard';
 import { ROUTES } from '@/constants/routes';
 
 export default function HomePage() {

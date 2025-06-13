@@ -28,7 +28,7 @@ export default function Header() {
     { title: 'Practice L&R', href: ROUTES.COURSES_LISTENING_READING },
     { title: 'Practice S&W', href: '/' },
     { title: 'Mock Tests', href: ROUTES.EXAM },
-    { title: 'Vocabulary', href: ROUTES.VOCABULARY },
+    { title: 'Vocabulary', href: ROUTES.DECK },
   ];
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);

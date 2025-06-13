@@ -2,7 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import { ROUTES } from './constants/routes';
-import HomePage from '@/pages/main/HomePage';
+import HomePage from '@/pages/home/main/HomePage';
 import VerifyPage from '@/pages/VerifyPage';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
@@ -28,7 +28,7 @@ import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
 import FlashCardPage from './pages/home/FlashCardPage';
 import ReviewTodayPage from './pages/home/ReviewTodayPage';
-import ProfilePage from './pages/profile/ProfilePage';
+import ProfilePage from './pages/home/profile/ProfilePage';
 
 function App() {
   return (
