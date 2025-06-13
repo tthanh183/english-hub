@@ -19,12 +19,11 @@ import { login, resendVerificationCode } from '@/services/authService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import { LoginResponse } from '@/types/authType';
-// Chỉ giữ những import đang dùng, không thêm mới
+import { ROUTES } from '@/constants/routes';
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [formError, setFormError] = useState<string>('');
 
   const { setAuth, clearAuth } = useAuthStore();
   const navigate = useNavigate();
@@ -41,7 +40,6 @@ export default function LoginPage() {
       setPassword(value);
     }
 
-    if (formError) setFormError('');
   };
 
   const mutation = useMutation({
@@ -50,7 +48,7 @@ export default function LoginPage() {
       const { accessToken, refreshToken } = response;
       setAuth(accessToken, refreshToken);
       showSuccess('Login successful');
-      navigate('/');
+      navigate(ROUTES.HOME, { replace: true });
     },
     onError: error => {
       if (isAxiosError(error)) {
@@ -59,7 +57,7 @@ export default function LoginPage() {
 
         if (error.response?.data?.code === 1012) {
           resendVerificationCode(email);
-          navigate('/verify', { state: { email } });
+          navigate(ROUTES.VERIFY, { state: { email } });
         }
       } else {
         showError('Something went wrong');
@@ -83,7 +81,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
+            <Link to={ROUTES.HOME} className="text-2xl font-bold text-blue-600">
               EnglishHub
             </Link>
           </div>
@@ -109,12 +107,6 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-blue-600 hover:text-blue-800"
-                >
-                  Forgot password?
-                </Link>
               </div>
               <Input
                 id="password"
@@ -139,7 +131,7 @@ export default function LoginPage() {
             <div className="text-center text-sm">
               Don't have an account?{' '}
               <Link
-                to="/register"
+                to={ROUTES.REGISTER}
                 className="text-blue-600 hover:text-blue-800"
               >
                 Sign up
