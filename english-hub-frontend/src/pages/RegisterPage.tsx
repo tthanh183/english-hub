@@ -19,6 +19,7 @@ import { RegisterRequest } from '@/types/authType';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import { UserResponse } from '@/types/userType';
+import { ROUTES } from '@/constants/routes';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -36,7 +37,7 @@ export default function RegisterPage() {
         'User created successfully. Visit your email to verify your account.'
       );
       setTimeout(() => {
-        navigate('/verify', { state: { email: response.email } });
+        navigate(ROUTES.VERIFY, { state: { email: response.email } });
       }, 1000);
     },
     onError: error => {
@@ -65,6 +66,20 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.username.trim()) {
+      showError('Username is required');
+      return;
+    }
+    if (!formData.email.trim()) {
+      showError('Email is required');
+      return;
+    }
+    if (!formData.password.trim()) {
+      showError('Password is required');
+      return;
+    }
+
     mutation.mutate(formData);
   };
 
@@ -73,7 +88,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
+            <Link to={ROUTES.HOME} className="text-2xl font-bold text-blue-600">
               EnglishHub
             </Link>
           </div>
@@ -132,7 +147,10 @@ export default function RegisterPage() {
             </Button>
             <div className="text-center text-sm">
               Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-800">
+              <Link
+                to={ROUTES.LOGIN}
+                className="text-blue-600 hover:text-blue-800"
+              >
                 Sign in
               </Link>
             </div>
