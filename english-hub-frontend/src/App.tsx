@@ -1,6 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
+import { ROUTES } from './constants/routes';
 import HomePage from '@/pages/HomePage';
 import VerifyPage from '@/pages/VerifyPage';
 import LoginPage from '@/pages/LoginPage';
@@ -8,7 +9,6 @@ import RegisterPage from '@/pages/RegisterPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
 import CourseManagementPage from '@/pages/admin/CourseManagementPage';
-import { ROUTES } from './constants/routes';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';
