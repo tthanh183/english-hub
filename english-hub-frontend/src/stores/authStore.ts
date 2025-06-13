@@ -7,7 +7,6 @@ type AuthState = {
   userId: string | null;
   isAdmin: boolean;
   setAuth: (accessToken: string | null, refreshToken: string | null) => void;
-  logout: () => void;
   clearAuth: () => void; 
 };
 
@@ -29,19 +28,6 @@ export const useAuthStore = create<AuthState>(set => ({
         isAdmin: isAdminFromToken(accessToken),
       });
     }
-  },
-
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('isAdmin');
-
-    set({
-      isAuthenticated: false,
-      userId: null,
-      isAdmin: false,
-    });
   },
 
   clearAuth: () => {

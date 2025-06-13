@@ -11,27 +11,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { isAxiosError } from 'axios';
 
 import { useAuthStore } from '@/stores/authStore';
 import { getUserById } from '@/services/userService';
-import { showSuccess } from '@/hooks/useToast';
+import { showError, showSuccess } from '@/hooks/useToast';
 import { ROUTES } from '@/constants/routes';
+import { logout } from '@/services/authService';
 
 export default function Header() {
   const menuItems = [
     { title: 'TOEIC® Test Pro', href: '/' },
     { title: 'Learning Path', href: '/' },
-    { title: 'Practice L&R', href: '/courses/listening-reading' },
+    { title: 'Practice L&R', href: ROUTES.COURSES_LISTENING_READING },
     { title: 'Practice S&W', href: '/' },
-    { title: 'Mock Tests', href: '/exams' },
-    { title: 'Vocabulary', href: '/decks' },
+    { title: 'Mock Tests', href: ROUTES.EXAM },
+    { title: 'Vocabulary', href: ROUTES.VOCABULARY },
   ];
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const userId = useAuthStore(state => state.userId);
-  const logout = useAuthStore(state => state.logout);
 
   const { data: userData, isLoading } = useQuery({
     queryKey: ['user', userId],
@@ -42,9 +43,23 @@ export default function Header() {
     refetchOnMount: false,
   });
 
+  const mutation = useMutation({
+    mutationFn: logout,
+    onSuccess: response => {
+      showSuccess(response);
+      useAuthStore.getState().clearAuth();
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Something went wrong');
+      }
+    },
+  });
+
   const handleLogout = () => {
-    logout();
-    showSuccess('Logged out successfully');
+    mutation.mutate();
   };
 
   const initials = useMemo(() => {

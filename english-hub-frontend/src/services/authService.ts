@@ -28,8 +28,11 @@ export async function resendVerificationCode(email: string): Promise<string> {
 }
 
 export async function logout(): Promise<string> {
-  const response = await axiosInstance.post('/auth/logout');
-  return response.data.result;
+  const refreshToken = localStorage.getItem('refreshToken');
+  const response = await axiosInstance.post('/auth/logout', {
+    refreshToken: refreshToken || '',
+  });
+  return response.data.message;
 }
 
 export async function changePassword(
