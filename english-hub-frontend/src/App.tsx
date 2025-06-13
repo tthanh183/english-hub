@@ -28,7 +28,7 @@ import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
 import FlashCardPage from './pages/home/FlashCardPage';
 import ReviewTodayPage from './pages/home/ReviewTodayPage';
-import ProfilePage from './pages/home/ProfilePage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 function App() {
   return (

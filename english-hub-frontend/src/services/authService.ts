@@ -40,5 +40,5 @@ export async function changePassword(
     currentPassword,
     newPassword,
   });
-  return response.data.result;
+  return response.data.message;
 }

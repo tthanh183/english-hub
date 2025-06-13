@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { changePassword } from '@/services/authService';
+
 import { showSuccess, showError } from '@/hooks/useToast';
+import { changePassword } from '@/services/authService';
 
 interface ChangePasswordFormProps {
   onSuccess?: () => void;
@@ -13,11 +14,11 @@ interface ChangePasswordFormProps {
 export default function ChangePasswordForm({
   onSuccess,
 }: ChangePasswordFormProps) {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -28,8 +29,6 @@ export default function ChangePasswordForm({
 
     if (!newPassword) {
       newErrors.newPassword = 'New password is required';
-    } else if (newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters';
     }
 
     if (!confirmPassword) {
@@ -50,22 +49,14 @@ export default function ChangePasswordForm({
     setIsLoading(true);
 
     try {
-      await changePassword(currentPassword, newPassword);
-      showSuccess('Password changed successfully');
+      const response = await changePassword(currentPassword, newPassword);
+      showSuccess(response);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       if (onSuccess) onSuccess();
-    } catch (error: unknown) {
-      let errorMessage = 'Failed to change password';
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      showError(errorMessage);
+    } catch {
+      showError('Failed to change password. Please try again.');
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getUserById } from '@/services/userService';
-import { useAuthStore } from '@/stores/authStore';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Card,
@@ -11,14 +9,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserStatus } from '@/types/userType';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-import ChangePasswordForm from '@/components/home/ChangePasswordForm';
+
+import { getUserById } from '@/services/userService';
+import { useAuthStore } from '@/stores/authStore';
+import { UserStatus } from '@/types/userType';
+import ChangePasswordForm from '@/pages/profile/ChangePasswordForm';
 
 export default function ProfilePage() {
   const userId = useAuthStore(state => state.userId);
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState<string>('profile');
 
   const { data: userData, isLoading } = useQuery({
     queryKey: ['user', userId],
