@@ -15,7 +15,7 @@ import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';
 import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
-import UserManagementPage from '@/pages/admin/UserManagementPage';
+import UserManagementPage from '@/pages/admin/user-management/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import ExamManagementPage from '@/pages/admin/ExamManagementPage';
 import ExamQuestionsManagementPage from './pages/admin/ExamQuestionsManagementPage';

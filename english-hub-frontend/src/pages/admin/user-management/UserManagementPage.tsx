@@ -3,7 +3,6 @@ import { MoreHorizontal, Plus, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
-
 import {
   Table,
   TableBody,
@@ -19,9 +18,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 import { UserResponse, UserStatus, UserRole } from '@/types/userType';
 import {
   activateUser,
@@ -30,7 +29,7 @@ import {
 } from '@/services/userService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
-import UserDialog from '@/components/admin/UserDialog';
+import UserDialog from '@/pages/admin/user-management/UserDialog';
 
 export default function UserManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -62,7 +61,6 @@ export default function UserManagementPage() {
       } else {
         showError('Failed to deactivate user');
       }
-      console.log(error);
     },
   });
 
@@ -215,14 +213,7 @@ export default function UserManagementPage() {
                         {user.status === UserStatus.ACTIVE
                           ? 'Deactivate'
                           : 'Activate'}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => console.log('Delete user')}
-                      >
-                        Delete
-                      </DropdownMenuItem>
+                      </DropdownMenuItem>                
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

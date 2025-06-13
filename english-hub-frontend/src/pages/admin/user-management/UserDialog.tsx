@@ -2,7 +2,6 @@ import { Plus, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
 import {
   Dialog,
   DialogContent,
@@ -21,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import {
   UserCreateRequest,
   UserResponse,
@@ -34,7 +34,7 @@ import { Spinner } from '@/components/Spinner';
 type UserDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  user?: UserResponse | null; 
+  user?: UserResponse | null;
 };
 
 export default function UserDialog({
@@ -110,14 +110,14 @@ export default function UserDialog({
     onOpenChange(false);
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (isEditMode && user) {
-      await updateUserMutation.mutateAsync({
+      updateUserMutation.mutate({
         id: user.id,
         user: userData as UserUpdateRequest,
       });
     } else {
-      await createUserMutation.mutateAsync(userData as UserCreateRequest);
+      createUserMutation.mutate(userData as UserCreateRequest);
     }
   };
 
