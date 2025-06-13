@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { getUserIdFromToken, isAdminFromToken } from '@/utils/jwtUtil';
 
 type AuthState = {

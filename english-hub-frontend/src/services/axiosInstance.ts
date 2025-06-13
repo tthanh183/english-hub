@@ -27,7 +27,11 @@ axiosInstance.interceptors.response.use(
   async error => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -40,8 +44,6 @@ axiosInstance.interceptors.response.use(
 
           const { accessToken, refreshToken: newRefreshToken } =
             response.data.result;
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', newRefreshToken);
           useAuthStore.getState().setAuth(accessToken, newRefreshToken);
 
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -50,8 +52,6 @@ axiosInstance.interceptors.response.use(
           useAuthStore.getState().logout();
         }
       } catch (err) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
         useAuthStore.getState().logout();
         return Promise.reject(err);
       }
