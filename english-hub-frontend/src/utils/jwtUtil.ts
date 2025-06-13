@@ -9,8 +9,7 @@ export const getUserIdFromToken = (token: string): string => {
   try {
     const decodedToken = jwtDecode<TokenPayload>(token);
     return decodedToken.sub;
-  } catch (error) {
-    console.error('Error decoding token: ', error);
+  } catch {
     return '';
   }
 };
@@ -19,8 +18,7 @@ export const isAdminFromToken = (token: string): boolean => {
   try {
     const decodedToken = jwtDecode<TokenPayload>(token);
     return decodedToken.scope === 'ADMIN';
-  } catch (error) {
-    console.error('Error decoding token: ', error);
+  } catch {
     return false;
   }
 };
