@@ -8,6 +8,8 @@ import com.example.englishhubbackend.dto.response.UserResponse;
 import com.example.englishhubbackend.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
 import java.text.ParseException;
+
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +23,7 @@ public class AuthenticationController {
   AuthenticationService authenticationService;
 
   @PostMapping("/register")
-  public ApiResponse<UserResponse> register(@RequestBody RegisterRequest registerRequest) {
+  public ApiResponse<UserResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
     return ApiResponse.<UserResponse>builder()
         .result(authenticationService.register(registerRequest))
         .build();

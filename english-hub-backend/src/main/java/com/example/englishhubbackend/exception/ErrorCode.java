@@ -10,7 +10,7 @@ public enum ErrorCode {
       9999,
       "An unexpected error occurred. Please try again later.",
       HttpStatus.INTERNAL_SERVER_ERROR),
-  INVALID_KEY(
+  VALIDATION_ERROR(
       1001, "The key provided is invalid. Please check and try again.", HttpStatus.BAD_REQUEST),
   USER_ALREADY_EXISTS(
       1002,
