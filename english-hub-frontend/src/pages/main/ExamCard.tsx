@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-interface PracticeCardProps {
+interface ExamCardProps {
   title: string;
   description: string;
   questions: number;
@@ -12,14 +12,14 @@ interface PracticeCardProps {
   category: string;
 }
 
-export function PracticeCard({
+export default function ExamCard({
   title,
   description,
   questions,
   time,
   difficulty,
   category,
-}: PracticeCardProps) {
+}: ExamCardProps) {
   const difficultyColor =
     {
       Easy: 'bg-green-100 text-green-800',

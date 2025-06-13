@@ -2,7 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import { ROUTES } from './constants/routes';
-import HomePage from '@/pages/HomePage';
+import HomePage from '@/pages/main/HomePage';
 import VerifyPage from '@/pages/VerifyPage';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
