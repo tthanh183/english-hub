@@ -1,8 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
 
-import Header from '@/layouts/HomeLayout/Header';
-import Footer from '@/layouts/HomeLayout/Footer';
-import Chatbot from '@/layouts/HomeLayout/Chatbot';
+import Header from '@/layouts/home-layout/Header';
+import Footer from '@/layouts/home-layout/Footer';
+import Chatbot from '@/layouts/home-layout/Chatbot';
 
 export default function HomeLayout() {
   const location = useLocation();
