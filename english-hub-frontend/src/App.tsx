@@ -7,7 +7,7 @@ import VerifyPage from '@/pages/VerifyPage';
 import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import AdminDashboardLayout from '@/layouts/AdminDashboardLayout';
+import AdminDashboardLayout from '@/layouts/AdminLayout/AdminDashboardLayout';
 import CourseManagementPage from '@/pages/admin/CourseManagementPage';
 import HomeLayout from './layouts/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';

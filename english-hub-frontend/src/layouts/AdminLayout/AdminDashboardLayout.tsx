@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BarChart,
   BookOpen,
   ClipboardList,
   Home,
@@ -15,23 +14,24 @@ import {
 import { Button } from '@/components/ui/button';
 import { useMobile } from '@/hooks/useMobile';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/constants/routes';
 
 export default function AdminDashboardLayout() {
   const isMobile = useMobile();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
-    { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'User Management', href: '/admin/users', icon: Users },
-    { name: 'Course Management', href: '/admin/courses', icon: BookOpen },
-    { name: 'Exam Management', href: '/admin/exams', icon: ClipboardList },
+    { name: 'Dashboard', href: ROUTES.ADMIN, icon: Home },
+    { name: 'User Management', href: ROUTES.ADMIN_USERS, icon: Users },
+    { name: 'Course Management', href: ROUTES.ADMIN_COURSES, icon: BookOpen },
+    { name: 'Exam Management', href: ROUTES.ADMIN_EXAMS, icon: ClipboardList },
     {
       name: 'Deck Management',
-      href: '/admin/decks',
+      href: ROUTES.ADMIN_DECKS,
       icon: Layers,
     },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
   ];
 
   return (
@@ -90,9 +90,10 @@ export default function AdminDashboardLayout() {
           <Button
             variant="ghost"
             className="w-full justify-start text-muted-foreground"
+            onClick={() => navigate(ROUTES.HOME)}
           >
             <LogOut className="h-5 w-5 mr-2" />
-            Log out
+            Home
           </Button>
         </div>
       </div>
