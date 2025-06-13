@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Menu, User, Settings, LogOut, Key } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useAuthStore } from '@/stores/authStore';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -13,17 +12,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useQuery } from '@tanstack/react-query';
-import { getUserById } from '@/services/userService';
 import { useMemo } from 'react';
+
+import { useAuthStore } from '@/stores/authStore';
+import { getUserById } from '@/services/userService';
 import { showSuccess } from '@/hooks/useToast';
+import { ROUTES } from '@/constants/routes';
 
 export default function Header() {
-
   const menuItems = [
-    { title: 'TOEIC® Test Pro', href: '/toeic-test-pro' },
-    { title: 'Learning Path', href: '/learning-path' },
+    { title: 'TOEIC® Test Pro', href: '/' },
+    { title: 'Learning Path', href: '/' },
     { title: 'Practice L&R', href: '/courses/listening-reading' },
-    { title: 'Practice S&W', href: '/courses/speaking-writing' },
+    { title: 'Practice S&W', href: '/' },
     { title: 'Mock Tests', href: '/exams' },
     { title: 'Vocabulary', href: '/decks' },
   ];
@@ -57,7 +58,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center">
+          <Link to={ROUTES.HOME} className="flex items-center">
             <span className="text-xl font-bold text-blue-600">EnglishHub</span>
           </Link>
 
@@ -110,7 +111,7 @@ export default function Header() {
                             </div>
                           </div>
                         )}
-                        <Link to="/profile" className="block w-full">
+                        <Link to={ROUTES.PROFILE} className="block w-full">
                           <Button
                             variant="outline"
                             size="sm"
@@ -119,7 +120,7 @@ export default function Header() {
                             <User className="h-4 w-4 mr-2" /> My Profile
                           </Button>
                         </Link>
-                        <Link to="/settings" className="block w-full">
+                        <Link to="/" className="block w-full">
                           <Button
                             variant="outline"
                             size="sm"
@@ -129,7 +130,7 @@ export default function Header() {
                             Settings
                           </Button>
                         </Link>
-                        <Link to="/change-password" className="block w-full">
+                        <Link to={ROUTES.PROFILE} className="block w-full">
                           <Button
                             variant="outline"
                             size="sm"
@@ -154,7 +155,7 @@ export default function Header() {
                         asChild
                         className="w-full"
                       >
-                        <Link to="/login">Login</Link>
+                        <Link to={ROUTES.LOGIN}>Login</Link>
                       </Button>
                     )}
                   </div>
@@ -193,13 +194,13 @@ export default function Header() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/profile" className="cursor-pointer">
+                    <Link to={ROUTES.PROFILE} className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       <span>My Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/settings" className="cursor-pointer">
+                    <Link to="/" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Account Settings</span>
                     </Link>
@@ -216,7 +217,7 @@ export default function Header() {
               </DropdownMenu>
             ) : (
               <Button variant="outline" size="sm" asChild>
-                <Link to="/login">Login</Link>
+                <Link to={ROUTES.LOGIN}>Login</Link>
               </Button>
             )}
           </div>
