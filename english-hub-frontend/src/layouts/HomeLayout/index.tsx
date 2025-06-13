@@ -2,7 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import Header from '@/layouts/HomeLayout/Header';
 import Footer from '@/layouts/HomeLayout/Footer';
-import { ChatButton } from '@/components/home/ChatbotButton';
+import Chatbot from '@/layouts/HomeLayout/Chatbot';
 
 export default function HomeLayout() {
   const location = useLocation();
@@ -15,7 +15,7 @@ export default function HomeLayout() {
         <Outlet />
       </main>
       <Footer />
-      {!isExamPage && <ChatButton />}
+      {!isExamPage && <Chatbot />}
     </div>
   );
 }
