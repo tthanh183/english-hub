@@ -12,7 +12,7 @@ import CourseManagementPage from '@/pages/admin/course-management/CourseManageme
 import HomeLayout from '@/layouts/home-layout/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';
-import AdminCourseDetailPage from './pages/admin/AdminCourseDetailPage';
+import AdminCourseDetailPage from './pages/admin/course-management/course-detail/AdminCourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
 import UserManagementPage from '@/pages/admin/user-management/UserManagementPage';

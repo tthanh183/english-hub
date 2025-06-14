@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, BookOpen, FileText, Plus } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import LessonItem from '@/components/admin/LessonItem';
+
+import LessonItem from '@/pages/admin/course-management/course-detail/LessonItem';
 import { LessonResponse } from '@/types/lessonType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
@@ -14,9 +14,10 @@ import ExerciseItem from '@/components/admin/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { getAllExercises } from '@/services/exerciseService';
 import { ExerciseDetail } from '@/components/admin/ExerciseDetail';
-import LessonDialog from '@/components/admin/LessonDialog';
+import LessonDialog from '@/pages/admin/course-management/course-detail/LessonDialog';
 import { getCourseById } from '@/services/courseService';
 import ExerciseDialog from '@/components/admin/ExerciseDialog';
+import { ROUTES } from '@/constants/routes';
 
 export default function AdminCourseDetailPage() {
   const [activeTab, setActiveTab] = useState('lessons');
@@ -96,7 +97,7 @@ export default function AdminCourseDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" asChild>
-          <Link to="/admin/courses">
+          <Link to={ROUTES.ADMIN_COURSES}>
             <ArrowLeft className="h-4 w-4" />
             <span className="sr-only">Back</span>
           </Link>

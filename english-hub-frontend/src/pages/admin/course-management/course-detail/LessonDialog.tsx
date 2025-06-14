@@ -5,7 +5,6 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
 import {
   Dialog,
   DialogContent,
@@ -17,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+
 import {
   LessonCreateRequest,
   LessonResponse,
@@ -29,7 +29,7 @@ import { Spinner } from '@/components/Spinner';
 type LessonDialogProps = {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  lesson?: LessonResponse | null; 
+  lesson?: LessonResponse | null;
 };
 
 export default function LessonDialog({
@@ -48,16 +48,18 @@ export default function LessonDialog({
   });
 
   useEffect(() => {
-    if (isOpen) {
-      if (lesson) {
-        setLessonData({
-          title: lesson.title,
-          duration: lesson.duration || 0,
-          content: lesson.content || '',
-        });
-      } else {
-        resetDialogState();
-      }
+    if (isOpen && lesson) {
+      setLessonData({
+        title: lesson.title,
+        duration: lesson.duration || 0,
+        content: lesson.content || '',
+      });
+    } else {
+      setLessonData({
+        title: '',
+        duration: 0,
+        content: '',
+      });
     }
   }, [isOpen, lesson]);
 
@@ -117,12 +119,13 @@ export default function LessonDialog({
 
   function handleSettled() {
     onOpenChange(false);
+    resetDialogState();
   }
 
   const resetDialogState = () => {
     setLessonData({
       title: '',
-      duration: 600000, 
+      duration: 600000,
       content: '',
     });
   };
@@ -207,18 +210,32 @@ export default function LessonDialog({
 
           <div className="grid gap-2">
             <Label htmlFor="lesson-content">Content</Label>
-            <ReactQuill
-              theme="snow"
-              value={lessonData.content}
-              onChange={content => setLessonData({ ...lessonData, content })}
-              style={{ height: '300px', marginBottom: '50px' }} // Thêm margin để không bị che bởi toolbar
-            />
+            <div style={{ width: '100%', overflow: 'hidden' }}>
+              <ReactQuill
+                theme="snow"
+                value={lessonData.content}
+                onChange={content => setLessonData({ ...lessonData, content })}
+                style={{
+                  height: '200px',
+                  maxHeight: '250px',
+                  marginBottom: '50px',
+                  width: '100%',
+                }}
+                modules={{
+                  toolbar: [
+                    ['bold', 'italic', 'underline'],
+                    ['blockquote', 'code-block'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['link', 'image'],
+                    ['clean'],
+                  ],
+                }}
+              />
+            </div>
           </div>
         </div>
 
-        <DialogFooter className="mt-12">
-          {' '}
-          {/* Thêm margin-top để không bị ReactQuill che lấp */}
+        <DialogFooter className="mt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>

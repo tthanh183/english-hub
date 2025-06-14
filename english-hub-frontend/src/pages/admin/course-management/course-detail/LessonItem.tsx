@@ -1,15 +1,15 @@
 import { LessonResponse } from '@/types/lessonType';
-import { Calendar, Clock, Edit, Grip, Trash2 } from 'lucide-react';
-
+import { Calendar, Clock, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { longToString } from '@/utils/timeUtil';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteLesson } from '@/services/lessonService';
-import { showError, showSuccess } from '@/hooks/useToast';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
-import { DeleteConfirmation } from './DeleteConfirmation';
+
+import { longToString } from '@/utils/timeUtil';
+import { deleteLesson } from '@/services/lessonService';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
 type LessonItemProps = {
   lesson: LessonResponse;
@@ -26,6 +26,7 @@ export default function LessonItem({
 }: LessonItemProps) {
   const { courseId } = useParams();
   const queryClient = useQueryClient();
+
   const deleteLessonMutation = useMutation({
     mutationFn: ({
       courseId,
@@ -67,9 +68,6 @@ export default function LessonItem({
         isSelected ? 'border-primary bg-muted/50' : ''
       }`}
     >
-      <div className="flex items-center mr-2">
-        <Grip className="h-4 w-4 text-muted-foreground" />
-      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center">
           <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">
