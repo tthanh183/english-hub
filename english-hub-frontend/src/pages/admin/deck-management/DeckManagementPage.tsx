@@ -27,13 +27,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DeckResponse } from '@/types/deckType';
-import DeckDialog from '@/components/admin/DeckDialog';
+import DeckDialog from '@/pages/admin/deck-management/DeckDialog';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { deleteDeck, getAllDecks } from '@/services/deckService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 
-export default function VocabularyDecks() {
+export default function DeckManagementPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isAddDeckOpen, setIsAddDeckOpen] = useState<boolean>(false);
   const [isEditDeckOpen, setIsEditDeckOpen] = useState<boolean>(false);
@@ -176,7 +176,7 @@ export default function VocabularyDecks() {
               <CardContent>
                 <div className="text-sm text-gray-500 mt-1">
                   <div className="flex items-center gap-2 justify-between">
-                    <span>20 cards</span>
+                    <span>12 cards</span>
                     <span>
                       Updated {new Date(deck.updatedDate).toLocaleDateString()}
                     </span>

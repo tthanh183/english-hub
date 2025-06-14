@@ -23,7 +23,7 @@ import {
 import { createDeck, updateDeck } from '@/services/deckService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
-import GlobalSkeleton from '../GlobalSkeleton';
+import GlobalSkeleton from '@/components/GlobalSkeleton';
 
 type DeckDialogProps = {
   isOpen: boolean;
@@ -64,8 +64,6 @@ export default function DeckDialog({
 
   const saveDeckMutation = useMutation({
     mutationFn: async () => {
-      console.log('deckData', deckData);
-
       if (isEditMode && deck) {
         return updateDeck(deck.id, deckData as DeckUpdateRequest);
       } else {
