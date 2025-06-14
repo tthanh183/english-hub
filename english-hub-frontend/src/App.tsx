@@ -14,7 +14,7 @@ import ListeningReadingPage from './pages/home/course/HomeCoursePage';
 import HomeCourseDetailPage from './pages/home/course/course-detail/HomeCourseDetailPage';
 import AdminCourseDetailPage from './pages/admin/course-management/course-detail/AdminCourseDetailPage';
 import LessonPage from './pages/home/course/course-detail/lesson/LessonPage';
-import ExercisePage from './pages/home/ExercisePage';
+import ExercisePage from './pages/home/course/course-detail/exercise/ExercisePage';
 import UserManagementPage from '@/pages/admin/user-management/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import ExamManagementPage from '@/pages/admin/exam-management/ExamManagementPage';

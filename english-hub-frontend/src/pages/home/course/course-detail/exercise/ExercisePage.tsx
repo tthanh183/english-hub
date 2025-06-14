@@ -116,7 +116,6 @@ export default function ExercisePage() {
                     const isSelected = selectedAnswers[question.id] === option;
                     const isCorrectOption = question.correctAnswer === option;
 
-                    // Xác định class cho mỗi option
                     let optionClass =
                       'cursor-pointer flex items-center p-3 rounded-lg border transition-all duration-200';
 
