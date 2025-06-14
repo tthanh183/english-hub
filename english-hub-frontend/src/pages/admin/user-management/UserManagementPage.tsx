@@ -59,7 +59,7 @@ export default function UserManagementPage() {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
-        showError('Failed to deactivate user');
+        showError('Failed to deactivate user. Please try again.');
       }
     },
   });
@@ -77,7 +77,7 @@ export default function UserManagementPage() {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
-        showError('Failed to activate user');
+        showError('Failed to activate user. Please try again.');
       }
     },
   });
@@ -213,7 +213,7 @@ export default function UserManagementPage() {
                         {user.status === UserStatus.ACTIVE
                           ? 'Deactivate'
                           : 'Activate'}
-                      </DropdownMenuItem>                
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

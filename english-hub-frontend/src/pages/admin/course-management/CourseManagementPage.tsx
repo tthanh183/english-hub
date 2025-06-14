@@ -59,7 +59,7 @@ export default function CourseManagementPage() {
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
-        showError('Failed to delete course');
+        showError('Failed to delete course. Please try again.');
       }
     }
   };

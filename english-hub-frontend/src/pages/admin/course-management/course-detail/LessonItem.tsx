@@ -49,7 +49,7 @@ export default function LessonItem({
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
-        showError('Something went wrong');
+        showError('Failed to delete lesson. Please try again.');
       }
     },
   });

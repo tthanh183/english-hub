@@ -32,6 +32,7 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { deleteDeck, getAllDecks } from '@/services/deckService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
+import { isAxiosError } from 'axios';
 
 export default function DeckManagementPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -56,8 +57,11 @@ export default function DeckManagementPage() {
       queryClient.invalidateQueries({ queryKey: ['decks'] });
     },
     onError: error => {
-      console.error('Error deleting deck:', error);
-      showError('Failed to delete vocabulary deck');
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to delete vocabulary deck. Please try again.');
+      }
     },
   });
 

@@ -19,6 +19,7 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { longToString } from '@/utils/timeUtil';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
+import { isAxiosError } from 'axios';
 
 export default function ExamManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -40,8 +41,11 @@ export default function ExamManagementPage() {
       queryClient.invalidateQueries({ queryKey: ['exams'] });
     },
     onError: error => {
-      console.error('Error deleting exam:', error);
-      showError('Failed to delete exam. Please try again.');
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to delete exam. Please try again.');
+      }
     },
   });
 
@@ -116,7 +120,7 @@ export default function ExamManagementPage() {
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    
+
                     <Button
                       variant="ghost"
                       size="icon"

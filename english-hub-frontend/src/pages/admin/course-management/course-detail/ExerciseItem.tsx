@@ -51,7 +51,7 @@ export default function ExerciseItem({
       if (isAxiosError(error)) {
         showError(error.response?.data.message);
       } else {
-        showError('Something went wrong');
+        showError('Failed to delete exercise. Please try again.');
       }
     },
   });

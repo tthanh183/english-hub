@@ -61,7 +61,7 @@ export default function ExerciseQuestionList({
     },
     onError: error => {
       console.error('Error deleting question:', error);
-      showError('Failed to delete question');
+      showError('Failed to delete question. Please try again.');
     },
   });
 

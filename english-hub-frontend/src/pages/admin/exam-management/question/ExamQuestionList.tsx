@@ -33,6 +33,7 @@ import ExamQuestionDialog from '@/pages/admin/exam-management/question/ExamQuest
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 import { ROUTES } from '@/constants/routes';
+import { isAxiosError } from 'axios';
 
 export default function ExamQuestionList() {
   const { examId } = useParams();
@@ -74,8 +75,11 @@ export default function ExamQuestionList() {
       queryClient.invalidateQueries({ queryKey: ['questions', examId] });
     },
     onError: error => {
-      console.error('Error deleting question:', error);
-      showError('Failed to delete question. Please try again.');
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to delete question. Please try again.');
+      }
     },
   });
 

@@ -20,6 +20,7 @@ import { DeckResponse } from '@/types/deckType';
 import FlashCardDialog from '@/pages/admin/flashcard-management/FlashCardDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
+import { isAxiosError } from 'axios';
 
 export default function FlashCardManagementPage() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -53,8 +54,11 @@ export default function FlashCardManagementPage() {
       queryClient.invalidateQueries({ queryKey: ['flashcards', deckId] });
     },
     onError: error => {
-      console.error('Error deleting flash card:', error);
-      showError('Failed to delete flash card');
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to delete flash card. Please try again.');
+      }
     },
   });
 
