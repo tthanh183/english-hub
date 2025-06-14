@@ -17,7 +17,7 @@ import { deleteFlashCard, getAllFlashCards } from '@/services/flashCardService';
 import { getDeckById } from '@/services/deckService';
 import { FlashCardResponse } from '@/types/flashCardType';
 import { DeckResponse } from '@/types/deckType';
-import FlashCardDialog from '@/components/admin/FlashCardDialog';
+import FlashCardDialog from '@/pages/admin/flashcard-management/FlashCardDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
 

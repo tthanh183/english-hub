@@ -23,7 +23,7 @@ import ExamPage from './pages/home/ExamPage';
 import ExamDetailPage from './pages/home/ExamDetailPage';
 import ExamResultPage from './pages/home/ExamResultPage';
 import DeckManagementPage from './pages/admin/deck-management/DeckManagementPage';
-import FlashCardManagementPage from './pages/admin/FlashCardManagementPage';
+import FlashCardManagementPage from './pages/admin/flashcard-management/FlashCardManagementPage';
 import DeckPage from './pages/home/DeckPage';
 import VocabularyPage from './pages/home/VocabularyPage';
 import FlashCardPage from './pages/home/FlashCardPage';

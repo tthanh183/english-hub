@@ -77,7 +77,6 @@ export default function FlashCardDialog({
     },
     onSuccess: (response: FlashCardResponse) => {
       if (isEditMode) {
-        // Update existing card in cache
         queryClient.setQueryData<FlashCardResponse[]>(
           ['flashcards', deckId],
           (oldCards = []) => {
@@ -90,7 +89,6 @@ export default function FlashCardDialog({
         );
         showSuccess('Flash card updated successfully');
       } else {
-        // Add new card to cache
         queryClient.setQueryData<FlashCardResponse[]>(
           ['flashcards', deckId],
           (oldCards = []) => [...oldCards, response]
