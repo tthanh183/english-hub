@@ -12,22 +12,24 @@ import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2, Plus, FileText } from 'lucide-react';
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'react-router-dom';
+
 import {
   deleteQuestionFromExercise,
   getQuestionsFromExercise,
 } from '@/services/exerciseService';
-import { useParams } from 'react-router-dom';
 import { QuestionResponse, QuestionType } from '@/types/questionType';
-import ExerciseQuestionDialog from './exercise/ExerciseQuestionDialog';
+import ExerciseQuestionDialog from './ExerciseQuestionDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
-import { DeleteConfirmation } from './DeleteConfirmation';
+import { DeleteConfirmation } from '../../../../../components/admin/DeleteConfirmation';
 
-type ExerciseDetailCardProps = {
+type ExerciseQuestionListCardProps = {
   selectedExercise?: ExerciseResponse;
-  setSelectedExercise?: (exercise: ExerciseResponse | null) => void;
 };
 
-export function ExerciseDetail({ selectedExercise }: ExerciseDetailCardProps) {
+export default function ExerciseQuestionList({
+  selectedExercise,
+}: ExerciseQuestionListCardProps) {
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState<boolean>(false);
   const [isEditQuestionOpen, setIsEditQuestionOpen] = useState<boolean>(false);
 

@@ -21,18 +21,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
 import {
   QUESTION_TYPE_DISPLAY,
   QuestionResponse,
   QuestionType,
 } from '@/types/questionType';
-import ExercisePart1Dialog from './ExercisePart1Dialog';
-import ExercisePart2Dialog from './ExercisePart2Dialog';
-import ExercisePart3Dialog from './ExercisePart3Dialog';
-import ExercisePart4Dialog from './ExercisePart4Dialog';
-import ExercisePart5Dialog from './ExercisePart5Dialog';
-import ExercisePart6Dialog from './ExercisePart6Dialog';
-import ExercisePart7Dialog from './ExercisePart7Dialog';
+import ExercisePart1Dialog from '../../../../../components/admin/exercise/ExercisePart1Dialog';
+import ExercisePart2Dialog from '../../../../../components/admin/exercise/ExercisePart2Dialog';
+import ExercisePart3Dialog from '../../../../../components/admin/exercise/ExercisePart3Dialog';
+import ExercisePart4Dialog from '../../../../../components/admin/exercise/ExercisePart4Dialog';
+import ExercisePart5Dialog from '../../../../../components/admin/exercise/ExercisePart5Dialog';
+import ExercisePart6Dialog from '../../../../../components/admin/exercise/ExercisePart6Dialog';
+import ExercisePart7Dialog from '../../../../../components/admin/exercise/ExercisePart7Dialog';
 
 type ExerciseQuestionDialogProps = {
   isOpen: boolean;
@@ -210,7 +211,7 @@ export default function ExerciseQuestionDialog({
             <div className="lg:col-span-3">
               <Card>
                 <CardHeader>
-                  <CardTitle>{selectedPart}</CardTitle>
+                  <CardTitle>{QUESTION_TYPE_DISPLAY[selectedPart]}</CardTitle>
                   <CardDescription>
                     {getPartDescription(selectedPart)}
                   </CardDescription>

@@ -13,7 +13,7 @@ import { getAllLessons } from '@/services/lessonService';
 import ExerciseItem from '@/pages/admin/course-management/course-detail/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { getAllExercises } from '@/services/exerciseService';
-import { ExerciseDetail } from '@/components/admin/ExerciseDetail';
+import ExerciseQuestionList from '@/pages/admin/course-management/course-detail/question/ExerciseQuestionList';
 import LessonDialog from '@/pages/admin/course-management/course-detail/LessonDialog';
 import { getCourseById } from '@/services/courseService';
 import ExerciseDialog from '@/pages/admin/course-management/course-detail/ExerciseDialog';
@@ -199,7 +199,7 @@ export default function AdminCourseDetailPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ExerciseDetail selectedExercise={selectedExercise} />
+                <ExerciseQuestionList selectedExercise={selectedExercise} />
               </CardContent>
             </Card>
           ) : (
