@@ -15,14 +15,14 @@ type LessonItemProps = {
   lesson: LessonResponse;
   isSelected: boolean;
   order: number;
-  onSelect: () => void;
+  onEdit: () => void;
 };
 
 export default function LessonItem({
   lesson,
   isSelected,
   order,
-  onSelect,
+  onEdit,
 }: LessonItemProps) {
   const { courseId } = useParams();
   const queryClient = useQueryClient();
@@ -95,7 +95,7 @@ export default function LessonItem({
           variant="ghost"
           size="icon"
           className="h-8 w-8"
-          onClick={onSelect}
+          onClick={onEdit}
         >
           <Edit className="h-4 w-4" />
         </Button>

@@ -36,18 +36,16 @@ export default function ExerciseDialog({
   exercise = null,
 }: ExerciseDialogProps) {
   const isEditMode = !!exercise;
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState<string>('');
 
   const { courseId } = useParams();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (isOpen) {
-      if (exercise) {
-        setTitle(exercise.title);
-      } else {
-        setTitle('');
-      }
+    if (isOpen && exercise) {
+      setTitle(exercise.title || '');
+    } else {
+      setTitle('');
     }
   }, [isOpen, exercise]);
 
@@ -104,6 +102,7 @@ export default function ExerciseDialog({
 
   function handleSettled() {
     onOpenChange(false);
+    setTitle('');
   }
 
   const handleSubmit = () => {

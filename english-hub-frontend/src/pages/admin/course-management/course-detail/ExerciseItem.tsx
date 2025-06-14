@@ -1,18 +1,19 @@
-import { Calendar, Clock, Edit, Eye, Grip, Trash } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { longToString } from '@/utils/timeUtil';
-import { ExerciseResponse } from '@/types/exerciseType';
+import { Calendar, Clock, Edit, Eye, Trash } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteExercise } from '@/services/exerciseService';
-import { showError, showSuccess } from '@/hooks/useToast';
+import { Button } from '@/components/ui/button';
 import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
-import { DeleteConfirmation } from './DeleteConfirmation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { longToString } from '@/utils/timeUtil';
+import { ExerciseResponse } from '@/types/exerciseType';
+import { deleteExercise } from '@/services/exerciseService';
+import { showError, showSuccess } from '@/hooks/useToast';
+import { DeleteConfirmation } from '../../../../components/admin/DeleteConfirmation';
 
 type LessonItemProps = {
   exercise: ExerciseResponse;
+  isSelected: boolean;
   order: number;
   onSelect: () => void;
   onEdit: () => void;
@@ -20,6 +21,7 @@ type LessonItemProps = {
 
 export default function ExerciseItem({
   exercise,
+  isSelected,
   order,
   onSelect,
   onEdit,
@@ -61,10 +63,12 @@ export default function ExerciseItem({
     });
   };
   return (
-    <div key={exercise.id} className="flex items-center p-3 rounded-md border">
-      <div className="flex items-center mr-2">
-        <Grip className="h-4 w-4 text-muted-foreground" />
-      </div>
+    <div
+      key={exercise.id}
+      className={`flex items-center p-3 rounded-md border ${
+        isSelected ? 'border-primary bg-muted/50' : ''
+      }`}
+    >
       <div className="flex-1 min-w-0">
         <div className="flex items-center">
           <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center mr-2">

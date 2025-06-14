@@ -10,13 +10,13 @@ import LessonItem from '@/pages/admin/course-management/course-detail/LessonItem
 import { LessonResponse } from '@/types/lessonType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
-import ExerciseItem from '@/components/admin/ExerciseItem';
+import ExerciseItem from '@/pages/admin/course-management/course-detail/ExerciseItem';
 import { ExerciseResponse } from '@/types/exerciseType';
 import { getAllExercises } from '@/services/exerciseService';
 import { ExerciseDetail } from '@/components/admin/ExerciseDetail';
 import LessonDialog from '@/pages/admin/course-management/course-detail/LessonDialog';
 import { getCourseById } from '@/services/courseService';
-import ExerciseDialog from '@/components/admin/ExerciseDialog';
+import ExerciseDialog from '@/pages/admin/course-management/course-detail/ExerciseDialog';
 import { ROUTES } from '@/constants/routes';
 
 export default function AdminCourseDetailPage() {
@@ -25,21 +25,19 @@ export default function AdminCourseDetailPage() {
   const [isEditLessonOpen, setIsEditLessonOpen] = useState<boolean>(false);
   const [isAddExerciseOpen, setIsAddExerciseOpen] = useState<boolean>(false);
   const [isEditExerciseOpen, setIsEditExerciseOpen] = useState<boolean>(false);
-  const [isViewExerciseOpen, setIsViewExerciseOpen] = useState<boolean>(false);
-
-  const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
-    null
-  );
-  const [selectedExercise, setSelectedExercise] =
-    useState<ExerciseResponse | null>(null);
+  const [editedLesson, setEditedLesson] = useState<LessonResponse | null>(null);
   const [editedExercise, setEditedExercise] = useState<ExerciseResponse | null>(
     null
   );
 
+  const [isViewExerciseOpen, setIsViewExerciseOpen] = useState<boolean>(false);
+  const [selectedExercise, setSelectedExercise] =
+    useState<ExerciseResponse | null>(null);
+
   const { courseId } = useParams();
 
   useEffect(() => {
-    setSelectedLesson(null);
+    setEditedLesson(null);
   }, [activeTab]);
 
   const { data: course } = useQuery({
@@ -57,12 +55,12 @@ export default function AdminCourseDetailPage() {
     queryFn: () => getAllExercises(courseId || ''),
   });
 
-  const handleSelectLesson = (id: string) => {
-    if (selectedLesson?.id !== id) {
-      setSelectedLesson(lessons.find(lesson => lesson.id === id) || null);
+  const handleEditLesson = (id: string) => {
+    if (editedLesson?.id !== id) {
+      setEditedLesson(lessons.find(lesson => lesson.id === id) || null);
       setIsEditLessonOpen(true);
     } else {
-      setSelectedLesson(null);
+      setEditedLesson(null);
       setIsEditLessonOpen(false);
     }
   };
@@ -145,9 +143,9 @@ export default function AdminCourseDetailPage() {
                     <LessonItem
                       key={lesson.id}
                       lesson={lesson}
-                      isSelected={selectedLesson?.id === lesson.id}
+                      isSelected={editedLesson?.id === lesson.id}
                       order={idx + 1}
-                      onSelect={() => handleSelectLesson(lesson.id)}
+                      onEdit={() => handleEditLesson(lesson.id)}
                     />
                   ))}
 
@@ -169,11 +167,11 @@ export default function AdminCourseDetailPage() {
               </CardContent>
             </Card>
 
-            {selectedLesson && (
+            {editedLesson && (
               <LessonDialog
                 isOpen={isEditLessonOpen}
                 onOpenChange={setIsEditLessonOpen}
-                lesson={selectedLesson}
+                lesson={editedLesson}
               />
             )}
           </div>
@@ -226,6 +224,7 @@ export default function AdminCourseDetailPage() {
                       <ExerciseItem
                         key={exercise.id}
                         exercise={exercise}
+                        isSelected={editedExercise?.id === exercise.id}
                         order={idx + 1}
                         onSelect={() => handleSelectExercise(exercise.id)}
                         onEdit={() => handleEditExercise(exercise.id)}
