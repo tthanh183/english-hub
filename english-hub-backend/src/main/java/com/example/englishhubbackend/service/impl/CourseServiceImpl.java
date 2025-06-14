@@ -63,11 +63,6 @@ public class CourseServiceImpl implements CourseService {
   @PreAuthorize("hasRole('ADMIN')")
   public void deleteCourse(UUID courseId) {
     Course course = getCourseEntityById(courseId);
-    String imageUrl = course.getImageUrl();
-    if (imageUrl != null && !imageUrl.isEmpty()) {
-      String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-      s3Service.deleteFileFromS3(fileName);
-    }
     courseRepository.delete(course);
   }
 
