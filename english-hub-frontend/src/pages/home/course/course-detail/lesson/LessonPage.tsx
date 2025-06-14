@@ -1,6 +1,4 @@
 import { useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getLessonById } from '@/services/lessonService';
 import { useEffect, useState } from 'react';
@@ -58,14 +56,6 @@ export default function LessonPage() {
           <h1 className="text-2xl font-bold text-gray-800">
             {lesson?.title || 'Lesson Details'}
           </h1>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="text-gray-500">
-              <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-            </Button>
-            <Button variant="outline" size="sm" className="text-gray-500">
-              Next <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
         </div>
         <Breadcrumb breadcrumbData={breadcrumbData} />
       </div>

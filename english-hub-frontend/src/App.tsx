@@ -13,7 +13,7 @@ import HomeLayout from '@/layouts/home-layout/HomeLayout';
 import ListeningReadingPage from './pages/home/course/HomeCoursePage';
 import HomeCourseDetailPage from './pages/home/course/course-detail/HomeCourseDetailPage';
 import AdminCourseDetailPage from './pages/admin/course-management/course-detail/AdminCourseDetailPage';
-import LessonPage from './pages/home/LessonPage';
+import LessonPage from './pages/home/course/course-detail/lesson/LessonPage';
 import ExercisePage from './pages/home/ExercisePage';
 import UserManagementPage from '@/pages/admin/user-management/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
