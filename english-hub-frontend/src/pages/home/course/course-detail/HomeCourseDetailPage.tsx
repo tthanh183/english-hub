@@ -1,11 +1,10 @@
 import { Link, useParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check } from 'lucide-react';
+import { ChevronRight, FileText } from 'lucide-react';
 import Breadcrumb from '@/components/home/Breadcrumb';
 import { useQuery } from '@tanstack/react-query';
 import { getAllCourses, getCourseById } from '@/services/courseService';
-import OtherCourses from '@/components/home/OtherCourses';
+import OtherCourses from '@/pages/home/course/course-detail/OtherCourses';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { getAllLessons } from '@/services/lessonService';
 import { getAllExercises } from '@/services/exerciseService';
@@ -83,7 +82,7 @@ export default function HomeCourseDetailPage() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Lessons</h2>
                 <div className="text-sm text-gray-500">
-                  {lessons?.length} / {lessons?.length} Lessons
+                  {lessons?.length} Lessons
                 </div>
               </div>
 
@@ -105,8 +104,8 @@ export default function HomeCourseDetailPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="text-green-500">
-                        <Check className="h-5 w-5" />
+                      <div className="text-gray-400">
+                        <FileText className="h-5 w-5" />
                       </div>
                     </Link>
                   ))}
@@ -119,7 +118,9 @@ export default function HomeCourseDetailPage() {
             >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Exercises</h2>
-                <div className="text-sm text-gray-500">0/22 exercises</div>
+                <div className="text-sm text-gray-500">
+                  {exercises?.length} exercises
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -139,22 +140,12 @@ export default function HomeCourseDetailPage() {
                             {exercise.title}
                           </span>
                         </div>
-                        <div className="text-xs text-gray-500">6 questions</div>
                       </div>
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-red-200 text-red-500 text-xs">
-                        0%
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 bg-gray-50 text-gray-600">
+                        <ChevronRight className="h-4 w-4" />
                       </div>
                     </Link>
                   ))}
-
-                <div className="text-center mt-6">
-                  <Button
-                    variant="outline"
-                    className="text-blue-600 border-blue-600 hover:bg-blue-50"
-                  >
-                    Show More 17 Practice Tests
-                  </Button>
-                </div>
               </div>
             </TabsContent>
           </Tabs>
