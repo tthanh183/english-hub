@@ -75,7 +75,7 @@ export default function UserManagementPage() {
     },
     onError: error => {
       if (isAxiosError(error)) {
-        showError(error.response?.data.message);
+        showError(error.response?.data.message || 'An unexpected error occurred');
       } else {
         showError('Failed to activate user. Please try again.');
       }

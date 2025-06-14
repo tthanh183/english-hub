@@ -76,7 +76,9 @@ export default function ExamQuestionList() {
     },
     onError: error => {
       if (isAxiosError(error)) {
-        showError(error.response?.data.message);
+        showError(
+          error.response?.data.message || 'An unexpected error occurred'
+        );
       } else {
         showError('Failed to delete question. Please try again.');
       }

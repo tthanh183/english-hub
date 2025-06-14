@@ -58,7 +58,9 @@ export default function DeckManagementPage() {
     },
     onError: error => {
       if (isAxiosError(error)) {
-        showError(error.response?.data.message);
+        showError(
+          error.response?.data.message || 'An unexpected error occurred'
+        );
       } else {
         showError('Failed to delete vocabulary deck. Please try again.');
       }

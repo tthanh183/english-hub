@@ -22,6 +22,7 @@ import { QuestionResponse, QuestionType } from '@/types/questionType';
 import ExerciseQuestionDialog from './ExerciseQuestionDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '../../../../../components/admin/DeleteConfirmation';
+import { isAxiosError } from 'axios';
 
 type ExerciseQuestionListCardProps = {
   selectedExercise?: ExerciseResponse;
@@ -60,8 +61,13 @@ export default function ExerciseQuestionList({
       });
     },
     onError: error => {
-      console.error('Error deleting question:', error);
-      showError('Failed to delete question. Please try again.');
+      if (isAxiosError(error)) {
+        showError(
+          error.response?.data.message || 'An unexpected error occurred'
+        );
+      } else {
+        showError('Failed to delete question. Please try again.');
+      }
     },
   });
 
