@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteExam, getAllExams } from '@/services/examService';
-import ExamDialog from '@/components/admin/ExamDialog';
+import ExamDialog from '@/pages/admin/exam-management/ExamDialog';
 import { ExamResponse } from '@/types/examType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { longToString } from '@/utils/timeUtil';
@@ -109,6 +109,18 @@ export default function ExamManagementPage() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      onClick={() =>
+                        navigate(`/admin/exams/${exam.id}/questions`)
+                      }
+                      title="View Questions"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
                       onClick={() => {
                         setSelectedExam(exam);
                         setIsEditExamOpen(true);
@@ -116,18 +128,6 @@ export default function ExamManagementPage() {
                       title="Edit"
                     >
                       <Edit className="h-4 w-4" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() =>
-                        navigate(`/admin/exams/${exam.id}/questions`)
-                      }
-                      title="View Questions"
-                    >
-                      <Eye className="h-4 w-4" />
                     </Button>
 
                     <DeleteConfirmation
