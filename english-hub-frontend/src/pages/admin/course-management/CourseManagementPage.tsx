@@ -1,23 +1,24 @@
 import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
 import { deleteCourse, getAllCourses } from '@/services/courseService';
-import CourseCard from '@/components/admin/CourseCard';
+import CourseCard from '@/pages/admin/course-management/CourseCard';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { CourseResponse } from '@/types/courseType';
 import { showError, showSuccess } from '@/hooks/useToast';
-import CourseDialog from '@/components/admin/CourseDialog';
-import { Button } from '@/components/ui/button';
+import CourseDialog from '@/pages/admin/course-management/CourseDialog';
+import { isAxiosError } from 'axios';
 
 export default function CourseManagementPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isAddCourseOpen, setIsAddCourseOpen] = useState<boolean>(false);
+  const [isEditCourseOpen, setIsEditCourseOpen] = useState<boolean>(false);
   const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(
     null
   );
-  const [isEditCourseOpen, setIsEditCourseOpen] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
   const { data: courses = [], isLoading } = useQuery({
@@ -55,7 +56,11 @@ export default function CourseManagementPage() {
             : []
       );
     } catch (error) {
-      console.error('Error deleting course:', error);
+      if (isAxiosError(error)) {
+        showError(error.response?.data.message);
+      } else {
+        showError('Failed to delete course');
+      }
     }
   };
 

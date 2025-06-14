@@ -8,7 +8,7 @@ import LoginPage from '@/pages/LoginPage';
 import RegisterPage from '@/pages/RegisterPage';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/admin-layout/AdminDashboardLayout';
-import CourseManagementPage from '@/pages/admin/CourseManagementPage';
+import CourseManagementPage from '@/pages/admin/course-management/CourseManagementPage';
 import HomeLayout from '@/layouts/home-layout/HomeLayout';
 import ListeningReadingPage from './pages/home/ListeningReadingPage';
 import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';

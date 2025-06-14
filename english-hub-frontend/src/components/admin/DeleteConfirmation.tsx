@@ -15,8 +15,6 @@ type DeleteConfirmationProps = {
   title: string;
   description: string;
   trigger: React.ReactNode;
-  confirmText?: string;
-  cancelText?: string;
 };
 
 export function DeleteConfirmation({
@@ -24,10 +22,8 @@ export function DeleteConfirmation({
   title,
   description,
   trigger,
-  confirmText = 'Delete',
-  cancelText = 'Cancel',
 }: DeleteConfirmationProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleConfirm = () => {
     onConfirm();
@@ -54,13 +50,13 @@ export function DeleteConfirmation({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={e => e.stopPropagation()}>
-              {cancelText}
+              Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className="bg-red-500 hover:bg-red-600"
             >
-              {confirmText}
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

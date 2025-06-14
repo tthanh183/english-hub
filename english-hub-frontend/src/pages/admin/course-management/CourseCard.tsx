@@ -1,19 +1,13 @@
 import { format } from 'date-fns';
-import { BookOpen, GraduationCap, Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
-import { DeleteConfirmation } from './DeleteConfirmation';
+import { DeleteConfirmation } from '../../../components/admin/DeleteConfirmation';
+import { CourseResponse } from '@/types/courseType';
 
 type CourseCardProps = {
-  course: {
-    id: string;
-    title: string;
-    description: string;
-    imageUrl: string;
-    createdDate: Date;
-    updatedDate: Date;
-  };
+  course: CourseResponse;
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -45,17 +39,6 @@ export default function CourseCard({
           <p className="text-sm text-muted-foreground line-clamp-3">
             {course.description}
           </p>
-        </div>
-
-        <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
-          <div className="flex items-center space-x-1">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            <span>5 lessons</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <GraduationCap className="h-4 w-4 text-muted-foreground" />
-            <span>8 tests</span>
-          </div>
         </div>
 
         <div className="text-xs text-muted-foreground space-y-1 mt-4 flex justify-between">

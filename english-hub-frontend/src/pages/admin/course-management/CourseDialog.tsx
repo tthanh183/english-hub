@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { Plus, Save } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -15,6 +14,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+
 import {
   CourseCreateRequest,
   CourseResponse,
@@ -24,7 +24,6 @@ import { createCourse, updateCourse } from '@/services/courseService';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { Spinner } from '@/components/Spinner';
 import { deleteFileFromS3, uploadFileToS3 } from '@/services/s3Service';
-import GlobalSkeleton from '../GlobalSkeleton';
 
 type CourseDialogProps = {
   isOpen: boolean;
@@ -53,23 +52,21 @@ export default function CourseDialog({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (isOpen) {
-      if (course) {
-        setCourseData({
-          title: course.title,
-          description: course.description,
-          imageUrl: course.imageUrl,
-        });
-        setPreviewUrl(course.imageUrl);
-      } else {
-        setCourseData({
-          title: '',
-          description: '',
-          imageUrl: '',
-        });
-        setImageFile(null);
-        setPreviewUrl(null);
-      }
+    if (isOpen && course) {
+      setCourseData({
+        title: course.title,
+        description: course.description,
+        imageUrl: course.imageUrl,
+      });
+      setPreviewUrl(course.imageUrl);
+    } else {
+      setCourseData({
+        title: '',
+        description: '',
+        imageUrl: '',
+      });
+      setImageFile(null);
+      setPreviewUrl(null);
     }
   }, [isOpen, course]);
 
@@ -124,13 +121,14 @@ export default function CourseDialog({
 
     let imageUrl = courseData.imageUrl;
 
-    if (isEditMode) {
-      if (imageFile) {
-        await deleteFileFromS3(course.imageUrl!);
-      }
+    if (isEditMode && imageFile) {
+      await deleteFileFromS3(course.imageUrl!);
+      imageUrl = await uploadFileToS3(imageFile);
     }
 
-    imageUrl = await uploadFileToS3(imageFile!);
+    if (!isEditMode && imageFile) {
+      imageUrl = await uploadFileToS3(imageFile);
+    }
 
     if (isEditMode && course) {
       updateCourseMutation.mutate({
@@ -173,10 +171,6 @@ export default function CourseDialog({
   const isPending = isEditMode
     ? updateCourseMutation.isPending
     : createCourseMutation.isPending;
-
-  if (isPending) {
-    return <GlobalSkeleton />;
-  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
