@@ -18,7 +18,7 @@ import ExercisePage from './pages/home/ExercisePage';
 import UserManagementPage from '@/pages/admin/user-management/UserManagementPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import ExamManagementPage from '@/pages/admin/exam-management/ExamManagementPage';
-import ExamQuestionsManagementPage from './pages/admin/ExamQuestionsManagementPage';
+import ExamQuestionsManagementPage from './pages/admin/exam-management/question/ExamQuestionList';
 import ExamPage from './pages/home/ExamPage';
 import ExamDetailPage from './pages/home/ExamDetailPage';
 import ExamResultPage from './pages/home/ExamResultPage';

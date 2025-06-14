@@ -26,13 +26,13 @@ import {
   QuestionResponse,
   QuestionType,
 } from '@/types/questionType';
-import ExamPart1Dialog from './ExamPart1Dialog';
-import ExamPart2Dialog from './ExamPart2Dialog';
-import ExamPart3Dialog from './ExamPart3Dialog';
-import ExamPart4Dialog from './ExamPart4Dialog';
-import ExamPart5Dialog from './ExamPart5Dialog';
-import ExamPart6Dialog from './ExamPart6Dialog';
-import ExamPart7Dialog from './ExamPart7Dialog';
+import ExamPart1Dialog from '../../../../components/admin/exam/ExamPart1Dialog';
+import ExamPart2Dialog from '../../../../components/admin/exam/ExamPart2Dialog';
+import ExamPart3Dialog from '../../../../components/admin/exam/ExamPart3Dialog';
+import ExamPart4Dialog from '../../../../components/admin/exam/ExamPart4Dialog';
+import ExamPart5Dialog from '../../../../components/admin/exam/ExamPart5Dialog';
+import ExamPart6Dialog from '../../../../components/admin/exam/ExamPart6Dialog';
+import ExamPart7Dialog from '../../../../components/admin/exam/ExamPart7Dialog';
 
 type ExamQuestionDialogProps = {
   isOpen: boolean;

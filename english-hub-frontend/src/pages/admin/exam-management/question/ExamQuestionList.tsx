@@ -29,11 +29,12 @@ import {
 } from '@/services/examService';
 import { Spinner } from '@/components/Spinner';
 import { ExamResponse } from '@/types/examType';
-import ExamQuestionDialog from '@/components/admin/exam/ExamQuestionDialog';
+import ExamQuestionDialog from '@/pages/admin/exam-management/question/ExamQuestionDialog';
 import { showError, showSuccess } from '@/hooks/useToast';
 import { DeleteConfirmation } from '@/components/admin/DeleteConfirmation';
+import { ROUTES } from '@/constants/routes';
 
-export default function ExamQuestionsManagementPage() {
+export default function ExamQuestionList() {
   const { examId } = useParams();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
@@ -120,7 +121,7 @@ export default function ExamQuestionsManagementPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/exams">
+        <Link to={ROUTES.ADMIN_EXAMS}>
           <Button variant="outline" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
