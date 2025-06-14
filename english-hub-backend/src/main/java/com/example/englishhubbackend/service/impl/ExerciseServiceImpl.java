@@ -134,7 +134,6 @@ public class ExerciseServiceImpl implements ExerciseService {
     Question question = questionService.createQuestionEntity(questionCreateRequest);
     UUID groupId = UUID.randomUUID();
     question.setGroupId(groupId);
-    question.setCreatedAt(LocalDateTime.now());
     question.setExercise(exercise);
     return questionService.mapQuestionToResponse(questionService.saveQuestion(question));
   }
