@@ -1,10 +1,10 @@
 import { getAllCourses } from '@/services/courseService';
 import { useQuery } from '@tanstack/react-query';
-import CourseCard from '@/components/home/CourseCard';
+import CourseCard from '@/pages/home/course/CourseCard';
 import { CourseResponse } from '@/types/courseType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 
-export default function ListeningReadingPage() {
+export default function HomeCoursePage() {
   const { data: courses, isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: getAllCourses,

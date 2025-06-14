@@ -10,7 +10,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminDashboardLayout from '@/layouts/admin-layout/AdminDashboardLayout';
 import CourseManagementPage from '@/pages/admin/course-management/CourseManagementPage';
 import HomeLayout from '@/layouts/home-layout/HomeLayout';
-import ListeningReadingPage from './pages/home/ListeningReadingPage';
+import ListeningReadingPage from './pages/home/course/HomeCoursePage';
 import HomeCourseDetailPage from './pages/home/HomeCourseDetailPage';
 import AdminCourseDetailPage from './pages/admin/course-management/course-detail/AdminCourseDetailPage';
 import LessonPage from './pages/home/LessonPage';
