@@ -24,10 +24,9 @@ import ExamDetailPage from './pages/home/exam/ExamDetailPage';
 import ExamResultPage from './pages/home/exam/ExamResultPage';
 import DeckManagementPage from './pages/admin/deck-management/DeckManagementPage';
 import FlashCardManagementPage from './pages/admin/flashcard-management/FlashCardManagementPage';
-import DeckPage from './pages/home/DeckPage';
-import VocabularyPage from './pages/home/VocabularyPage';
-import FlashCardPage from './pages/home/FlashCardPage';
-import ReviewTodayPage from './pages/home/ReviewTodayPage';
+import DeckPage from './pages/home/deck/DeckPage';
+import FlashCardPage from './pages/home/deck/FlashCardPage';
+import ReviewTodayPage from './pages/home/deck/ReviewTodayPage';
 import ProfilePage from './pages/home/profile/ProfilePage';
 
 function App() {
@@ -59,7 +58,6 @@ function App() {
           </Route>
 
           <Route path={ROUTES.DECK} element={<DeckPage />} />
-          <Route path={ROUTES.VOCABULARY} element={<VocabularyPage />} />
           <Route element={<ProtectedRoute adminRequired={false} />}>
             <Route path={ROUTES.FLASH_CARD} element={<FlashCardPage />} />
             <Route path={ROUTES.REVIEW_TODAY} element={<ReviewTodayPage />} />

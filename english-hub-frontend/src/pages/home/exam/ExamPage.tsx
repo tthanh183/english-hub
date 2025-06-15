@@ -14,6 +14,7 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { longToString } from '@/utils/timeUtil';
 import { useAuthStore } from '@/stores/authStore';
 import { showError } from '@/hooks/useToast';
+import { ROUTES } from '@/constants/routes';
 
 export default function ExamPage() {
   const { data: exams, isLoading } = useQuery({
@@ -44,7 +45,7 @@ export default function ExamPage() {
           TOEIC Mock Tests
         </h1>
         <p className="text-gray-600">
-          Practice with real TOEIC tests, updated regularly with the latest
+          Practice with real TOEIC tests, updated regularly with the latest.
         </p>
       </div>
 
@@ -150,7 +151,7 @@ export default function ExamPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Link to="/decks">
+            <Link to={ROUTES.DECK}>
               <Button
                 size="lg"
                 variant="outline"
@@ -159,9 +160,9 @@ export default function ExamPage() {
                 Study Vocabulary
               </Button>
             </Link>
-            <Link to="/exam">
+            <Link to={ROUTES.EXAM}>
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                Take Test
+                Take Exam
               </Button>
             </Link>
           </div>

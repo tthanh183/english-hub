@@ -17,6 +17,7 @@ import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { useAuthStore } from '@/stores/authStore';
 import { showError } from '@/hooks/useToast';
 import { Badge } from '@/components/ui/badge';
+import { ROUTES } from '@/constants/routes';
 
 export default function DeckPage() {
   const { data: decks = [], isLoading: isDecksLoading } = useQuery({
@@ -86,8 +87,8 @@ export default function DeckPage() {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="pb-3 flex-1">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+            <CardContent className="pb-3 flex-1 flex items-end">
+              <div className="grid grid-cols-2 gap-4 text-sm w-full">
                 <div className="bg-blue-50 p-3 rounded-md">
                   <div className="flex items-center text-gray-500 mb-1">
                     <BookOpen className="h-4 w-4 mr-1" />
@@ -109,17 +110,9 @@ export default function DeckPage() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex items-center justify-between pt-3 border-t mt-auto">
-              <Link to="/review/history">
-                <Button
-                  variant="outline"
-                  className="text-blue-600 border-blue-600 hover:bg-blue-50 h-10"
-                >
-                  View History
-                </Button>
-              </Link>
+            <CardFooter className="flex items-center justify-end pt-3 border-t">
               <Button
-                className="bg-blue-600 hover:bg-blue-700 h-10"
+                className="bg-blue-600 hover:bg-blue-700 h-10 w-full"
                 onClick={handleStartTodayReview}
               >
                 Start Review
@@ -138,11 +131,13 @@ export default function DeckPage() {
               <div className="flex justify-between items-start">
                 <CardTitle className="text-xl">{deck.name}</CardTitle>
               </div>
-              <CardDescription>{deck.description}</CardDescription>
+              <CardDescription className="leading-relaxed">
+                {deck.description}
+              </CardDescription>
             </CardHeader>
 
-            <CardContent className="pb-3 flex-1">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+            <CardContent className="pb-3 flex-1 flex items-end">
+              <div className="grid grid-cols-2 gap-4 text-sm w-full">
                 <div className="bg-gray-50 p-3 rounded-md">
                   <div className="flex items-center text-gray-500 mb-1">
                     <BookOpen className="h-4 w-4 mr-1" />
@@ -162,17 +157,9 @@ export default function DeckPage() {
               </div>
             </CardContent>
 
-            <CardFooter className="flex items-center justify-between pt-3 border-t mt-auto">
-              <Link to={`/decks/${deck.id}/vocabularies`}>
-                <Button
-                  variant="outline"
-                  className="text-blue-600 border-blue-600 hover:bg-blue-50 h-10"
-                >
-                  Browse Cards
-                </Button>
-              </Link>
+            <CardFooter className="flex items-center justify-end pt-3 border-t">
               <Button
-                className="bg-blue-600 hover:bg-blue-700 h-10"
+                className="bg-blue-600 hover:bg-blue-700 h-10 w-full"
                 onClick={() => handleStartFlashCard(deck.id)}
               >
                 Study Now
@@ -183,22 +170,33 @@ export default function DeckPage() {
         ))}
       </div>
 
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-8">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-8">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-4 md:mb-0">
             <h2 className="text-2xl font-bold text-blue-800 mb-2">
-              Create Your Own Vocabulary Deck
+              📈 Improve Your TOEIC Score
             </h2>
             <p className="text-blue-700 max-w-xl">
-              Create custom vocabulary decks tailored to your learning needs and
-              import words from various sources.
+              Join thousands of learners who achieved their target scores
+              through consistent practice and improvement
             </p>
           </div>
-          <Link to="/vocabulary/create">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Create New Deck
-            </Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link to={ROUTES.DECK}>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+              >
+                Study Vocabulary
+              </Button>
+            </Link>
+            <Link to={ROUTES.EXAM}>
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                Take Exam
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

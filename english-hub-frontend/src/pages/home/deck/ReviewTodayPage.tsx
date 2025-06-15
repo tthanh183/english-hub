@@ -1,66 +1,57 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import {
   ArrowLeft,
   X,
-  Clock,
   RotateCcw,
   ChevronLeft,
   ChevronRight,
   Zap,
   CheckCircle,
 } from 'lucide-react';
-import { getDeckById } from '@/services/deckService';
-import { getAllFlashCards } from '@/services/flashCardService';
-import { updateReview } from '@/services/reviewService';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getTodayReview, updateReview } from '@/services/reviewService';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import { ROUTES } from '@/constants/routes';
 import { showSuccess, showError } from '@/hooks/useToast';
+import { isAxiosError } from 'axios';
 
-export default function FlashCardPage() {
-  const { deckId } = useParams<{ deckId: string }>();
+export default function ReviewTodayPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [studiedCards, setStudiedCards] = useState<string[]>([]);
-  const [showRating, setShowRating] = useState(false);
+  const [showRating, setShowRating] = useState<boolean>(false);
 
   const { mutate: submitReview, isPending: isSubmitting } = useMutation({
     mutationFn: (data: { flashCardId: string; rating: number }) =>
       updateReview(data),
-    onSuccess: () => {
-      showSuccess('Card review saved successfully');
-      queryClient.invalidateQueries({ queryKey: ['flashcards', deckId] });
-    },
-    onError: () => {
-      showError('Failed to save review. Please try again.');
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(
+          error.response?.data.message || 'An unexpected error occurred'
+        );
+      } else {
+        showError('Failed to save review. Please try again.');
+      }
     },
   });
 
   const {
-    data: deck,
-    isLoading: isDeckLoading,
-    error: deckError,
+    data: reviewCards = [],
+    isLoading,
+    error,
   } = useQuery({
-    queryKey: ['deck', deckId],
-    queryFn: () => getDeckById(deckId || ''),
-    enabled: !!deckId,
-  });
-
-  const {
-    data: flashCards = [],
-    isLoading: isCardsLoading,
-    error: cardsError,
-  } = useQuery({
-    queryKey: ['flashcards', deckId],
-    queryFn: () => getAllFlashCards(deckId || ''),
-    enabled: !!deckId,
+    queryKey: ['today-review'],
+    queryFn: getTodayReview,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -68,21 +59,21 @@ export default function FlashCardPage() {
     setCurrentCardIndex(0);
     setIsFlipped(false);
     setShowRating(false);
-  }, [deckId]);
+  }, []);
 
-  if (isDeckLoading || isCardsLoading) {
+  if (isLoading) {
     return <GlobalSkeleton />;
   }
 
-  if (deckError || cardsError || !deck || flashCards.length === 0) {
+  if (error || reviewCards.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border-l-4 border-red-500 p-4">
-          <h2 className="text-red-800 font-medium">Error</h2>
-          <p className="text-red-700">
-            {flashCards.length === 0
-              ? "This deck doesn't have any flashcards yet."
-              : "Couldn't load flashcards. Please try again."}
+        <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+          <h2 className="text-blue-800 font-medium">No Cards to Review</h2>
+          <p className="text-blue-700">
+            {reviewCards.length === 0
+              ? 'You have no cards scheduled for review today. Great job!'
+              : "Couldn't load review cards. Please try again."}
           </p>
           <div className="mt-4">
             <Button onClick={() => navigate(ROUTES.DECK)}>Back to Decks</Button>
@@ -92,10 +83,10 @@ export default function FlashCardPage() {
     );
   }
 
-  const currentCard = flashCards[currentCardIndex];
-  const progress = ((currentCardIndex + 1) / flashCards.length) * 100;
+  const currentCard = reviewCards[currentCardIndex];
+  const progress = ((currentCardIndex + 1) / reviewCards.length) * 100;
   const studiedCount = studiedCards.length;
-  const totalCards = flashCards.length;
+  const totalCards = reviewCards.length;
 
   const handleFlipCard = () => {
     setIsFlipped(!isFlipped);
@@ -122,10 +113,15 @@ export default function FlashCardPage() {
           setTimeout(() => {
             setIsFlipped(false);
 
-            if (currentCardIndex < flashCards.length - 1) {
+            if (currentCardIndex < reviewCards.length - 1) {
               setCurrentCardIndex(currentCardIndex + 1);
             } else if (studiedCount + 1 >= totalCards) {
-              showSuccess("You've completed all cards in this deck!");
+              showSuccess(
+                "You've completed today's review! The system is calculating new schedules..."
+              );
+              setTimeout(() => navigate(ROUTES.DECK), 2000);
+            } else {
+              showSuccess('Card review saved successfully');
             }
           }, 10);
         },
@@ -142,36 +138,26 @@ export default function FlashCardPage() {
   };
 
   const handleNextCard = () => {
-    if (currentCardIndex < flashCards.length - 1) {
+    if (currentCardIndex < reviewCards.length - 1) {
       setCurrentCardIndex(currentCardIndex + 1);
       setIsFlipped(false);
       setShowRating(false);
     }
   };
 
-  const handleRandomCard = () => {
-    let newIndex = currentCardIndex;
-    while (newIndex === currentCardIndex && flashCards.length > 1) {
-      newIndex = Math.floor(Math.random() * flashCards.length);
-    }
-    setCurrentCardIndex(newIndex);
-    setIsFlipped(false);
-    setShowRating(false);
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center">
-          <Link to={`${ROUTES.DECK}`} className="mr-4">
+          <Link to={ROUTES.DECK} className="mr-4">
             <Button variant="outline" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">{deck.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Today's Review</h1>
             <p className="text-sm text-gray-600">
-              Card {currentCardIndex + 1} of {flashCards.length}
+              Card {currentCardIndex + 1} of {reviewCards.length}
             </p>
           </div>
         </div>
@@ -214,7 +200,7 @@ export default function FlashCardPage() {
             >
               <div className="text-3xl font-bold mb-4">{currentCard.word}</div>
               <div className="mt-6 text-gray-400 text-sm">
-                Click to reveal definition
+                Click to reveal meaning
               </div>
             </Card>
 
@@ -304,20 +290,12 @@ export default function FlashCardPage() {
             <RotateCcw className="h-4 w-4 mr-2" />
             Flip Card
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleRandomCard}
-            className="flex items-center"
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            Random Card
-          </Button>
         </div>
 
         <Button
           variant="outline"
           onClick={handleNextCard}
-          disabled={currentCardIndex === flashCards.length - 1}
+          disabled={currentCardIndex === reviewCards.length - 1}
           className="flex items-center"
         >
           Next Card

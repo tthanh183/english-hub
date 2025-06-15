@@ -30,7 +30,6 @@ export const ROUTES = {
   EXAM_RESULT: '/exams/exam-results/:examId',
 
   DECK: '/decks',
-  VOCABULARY: '/decks/:deckId/vocabularies',
   FLASH_CARD: '/decks/:deckId/flashcards',
   REVIEW_TODAY: '/review/today',
 };
