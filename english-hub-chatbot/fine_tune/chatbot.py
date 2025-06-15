@@ -6,13 +6,11 @@ import torch
 from datasets import Dataset
 from transformers import T5Tokenizer, T5ForConditionalGeneration, TrainingArguments, Trainer
 
-# 1. Tải mô hình Flan-T5-Large từ Hugging Face
 model_name = "google/flan-t5-base"
 tokenizer = T5Tokenizer.from_pretrained(model_name)
 model = T5ForConditionalGeneration.from_pretrained(model_name).to("cuda")
 
-# 2. Xử lý file CSV vocab
-df = pd.read_csv("/kaggle/input/words-ollama/words.csv")  # Sửa path nếu cần
+df = pd.read_csv("/kaggle/input/words-ollama/words.csv")  
 
 definition_templates = [
     "What does {word} mean?",
@@ -47,15 +45,13 @@ for _, row in df.iterrows():
         response = example
         data_vocab.append({"instruction": instruction, "response": response})
 
-# 3. Đọc dữ liệu ngoài (out-domain)
-out_domain_file = "/kaggle/input/ood-json/ood_data.jsonl"  # Sửa path đúng
+out_domain_file = "/kaggle/input/ood-json/ood_data.jsonl"
 data_out_domain = []
 with open(out_domain_file, "r") as f:
     for line in f:
         item = json.loads(line)
         data_out_domain.append(item)
 
-# 4. Bổ sung dữ liệu chào hỏi, tạm biệt, giới thiệu
 greeting_templates = [
     "Hi, how are you?", "Hello, nice to meet you.", "Good morning!", "Hey there!", "Hi", "Hello"
 ]
@@ -78,7 +74,6 @@ for temp in intro_templates:
     data_vocab.append(
         {"instruction": temp, "response": "I'm a language model trained to assist you with various tasks!"})
     
-# 5. Kết hợp dữ liệu
 data_all = data_vocab + data_out_domain
 dataset = Dataset.from_pandas(pd.DataFrame(data_all).reset_index(drop=True))
 
@@ -87,7 +82,6 @@ print("Number of samples in data_out_domain:", len(data_out_domain))
 print("Total number of samples after merging:", len(data_all))
 
 
-# 6. Tokenize dữ liệu
 max_length = 256
 
 
@@ -105,11 +99,10 @@ def preprocess(example):
 tokenized_dataset = dataset.map(preprocess)
 
 
-# 7. Thiết lập huấn luyện
 training_args = TrainingArguments(
     output_dir="./flan-t5-finetuned-vocab",
-    per_device_train_batch_size=8,  # Giữ batch size hợp lý
-    num_train_epochs=4,  # Giảm xuống 3 epoch thay vì 10
+    per_device_train_batch_size=8, 
+    num_train_epochs=4, 
     learning_rate=3e-5,
     fp16=True,
     save_strategy="epoch",
@@ -118,7 +111,6 @@ training_args = TrainingArguments(
     report_to="none"
 )
 
-# 8. Trainer
 trainer = Trainer(
     model=model,
     args=training_args,
@@ -128,7 +120,6 @@ trainer = Trainer(
 
 trainer.train()
 
-# 9. Lưu mô hình
 model.save_pretrained("./flan-t5-finetuned-vocab")
 tokenizer.save_pretrained("./flan-t5-finetuned-vocab")
 

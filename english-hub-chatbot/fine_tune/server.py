@@ -30,7 +30,6 @@ def ask():
     if not prompt:
         return jsonify({"error": "Missing prompt"}), 400
 
-    # Language detection
     try:
         lang = detect(prompt)
     except LangDetectException:
