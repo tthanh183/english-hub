@@ -10,13 +10,25 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getQuestionGroupsFromExam, submitExam } from '@/services/examService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { QuestionGroupResponse, QuestionType } from '@/types/questionType';
 import GlobalSkeleton from '@/components/GlobalSkeleton';
 import AudioPlayer from '@/components/AudioPlayer';
+import { isAxiosError } from 'axios';
+import { showError } from '@/hooks/useToast';
 
 const testParts = [
   {
@@ -75,6 +87,7 @@ export default function ExamDetailPage() {
   const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [showQuestionNav, setShowQuestionNav] = useState(true);
   const [timeLeft, setTimeLeft] = useState(120 * 60);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -174,35 +187,64 @@ export default function ExamDetailPage() {
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }, []);
 
-  const handleSubmitExam = useCallback(async () => {
-    if (!window.confirm('Are you sure you want to submit your exam?')) {
-      return;
-    }
+  const confirmSubmit = () => {
+    setShowConfirm(true);
+  };
+
+  const submitMutation = useMutation({
+    mutationFn: ({
+      examId,
+      answers,
+    }: {
+      examId: string;
+      answers: Record<string, string>;
+    }) => submitExam(examId, answers),
+    onSuccess: result => {
+      navigate(`/exams/exam-results/${result.id}`, {
+        state: { examResult: result },
+      });
+    },
+    onError: error => {
+      if (isAxiosError(error)) {
+        showError(
+          error.response?.data.message || 'An unexpected error occurred'
+        );
+      } else {
+        showError('Failed to submit exam. Please try again later.');
+      }
+    },
+  });
+
+  const handleSubmitExam = () => {
+    setShowConfirm(false);
 
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
 
-    try {
-      console.log('Submitting exam with answers:', selectedAnswers);
+    submitMutation.mutate({
+      examId: examId as string,
+      answers: selectedAnswers,
+    });
+  };
 
-      const result = await submitExam(examId as string, selectedAnswers);
-
-      navigate(`/exams/exam-results/${result.id}`, {
-        state: { examResult: result },
-      });
-    } catch (error) {
-      console.error('Failed to submit exam:', error);
-      alert('There was an error submitting your exam. Please try again.');
+  const autoSubmitExam = useCallback(async () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
     }
-  }, [selectedAnswers, examId, navigate]);
+
+    submitMutation.mutate({
+      examId: examId as string,
+      answers: selectedAnswers,
+    });
+  }, [selectedAnswers, examId, submitMutation]);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setTimeLeft(prevTime => {
         if (prevTime <= 1) {
           clearInterval(timerRef.current as NodeJS.Timeout);
-          handleSubmitExam();
+          autoSubmitExam();
           return 0;
         }
         return prevTime - 1;
@@ -214,7 +256,7 @@ export default function ExamDetailPage() {
         clearInterval(timerRef.current);
       }
     };
-  }, [handleSubmitExam]);
+  }, [autoSubmitExam]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -289,7 +331,7 @@ export default function ExamDetailPage() {
               <Button
                 variant="destructive"
                 className="w-full"
-                onClick={handleSubmitExam}
+                onClick={confirmSubmit}
               >
                 Submit
               </Button>
@@ -454,46 +496,11 @@ export default function ExamDetailPage() {
             ))}
           </div>
 
-          <div className="rounded-lg overflow-hidden mb-6 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <div className="flex min-w-max">
-                {testParts.map(part => {
-                  const partQuestions =
-                    currentPart === part.id
-                      ? getAllQuestionsForCurrentPart()
-                      : [];
-
-                  const answeredCount = partQuestions.filter(
-                    q => selectedAnswers[q.id]
-                  ).length;
-
-                  return (
-                    <div
-                      key={part.id}
-                      className={cn(
-                        'px-6 py-4 text-center border-b-2 cursor-pointer min-w-[120px]',
-                        currentPart === part.id
-                          ? 'border-blue-600 text-blue-600'
-                          : 'border-gray-200'
-                      )}
-                      onClick={() => setCurrentPart(part.id)}
-                    >
-                      <div className="font-medium">{part.name}</div>
-                      <div className="text-xs mt-1 opacity-80">
-                        {answeredCount}/{part.questions} questions
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
           <div className="lg:hidden flex space-x-2 mb-6">
             <Button
               variant="destructive"
               className="flex-1"
-              onClick={handleSubmitExam}
+              onClick={confirmSubmit}
             >
               Submit
             </Button>
@@ -585,6 +592,29 @@ export default function ExamDetailPage() {
           <ChevronUp className="h-5 w-5" />
         </Button>
       </div>
+
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit Exam</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to submit your exam? You have answered{' '}
+              {answeredQuestions} out of {totalQuestions} questions. You won't
+              be able to make changes after submission.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSubmitExam}
+              disabled={submitMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {submitMutation.isPending ? 'Submitting...' : 'Submit Exam'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

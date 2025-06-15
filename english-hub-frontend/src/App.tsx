@@ -19,9 +19,9 @@ import UserManagementPage from '@/pages/admin/user-management/UserManagementPage
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import ExamManagementPage from '@/pages/admin/exam-management/ExamManagementPage';
 import ExamQuestionsManagementPage from './pages/admin/exam-management/question/ExamQuestionList';
-import ExamPage from './pages/home/ExamPage';
-import ExamDetailPage from './pages/home/ExamDetailPage';
-import ExamResultPage from './pages/home/ExamResultPage';
+import ExamPage from './pages/home/exam/ExamPage';
+import ExamDetailPage from './pages/home/exam/ExamDetailPage';
+import ExamResultPage from './pages/home/exam/ExamResultPage';
 import DeckManagementPage from './pages/admin/deck-management/DeckManagementPage';
 import FlashCardManagementPage from './pages/admin/flashcard-management/FlashCardManagementPage';
 import DeckPage from './pages/home/DeckPage';
