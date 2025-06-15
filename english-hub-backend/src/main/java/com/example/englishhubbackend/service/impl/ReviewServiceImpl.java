@@ -29,7 +29,8 @@ public class ReviewServiceImpl implements ReviewService {
   FlashCardRepository flashCardRepository;
   FlashCardMapper flashCardMapper;
 
-  public List<FlashCardResponse> getCardsToReviewToday() {
+    @Override
+    public List<FlashCardResponse> getCardsToReviewToday() {
     User currentUser = authenticationService.getCurrentUser();
 
     List<Review> cards =
