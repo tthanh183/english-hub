@@ -49,10 +49,10 @@ axiosInstance.interceptors.response.use(
           originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
           return axiosInstance(originalRequest);
         } else {
-          useAuthStore.getState().logout();
+          useAuthStore.getState().clearAuth();
         }
       } catch (err) {
-        useAuthStore.getState().logout();
+        useAuthStore.getState().clearAuth();
         return Promise.reject(err);
       }
     }
