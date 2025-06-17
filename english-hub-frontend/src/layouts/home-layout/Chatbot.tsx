@@ -18,7 +18,7 @@ export default function Chatbot() {
     {
       id: 'welcome',
       content:
-        "👋 Hi! I'm your English assistant. How can I help you today? You can ask me about English vocabulary, grammar, pronunciation or any other language-related questions.",
+        "👋 Hi! I'm your English assistant. I can help you understand English vocabulary, explain meanings, and give you clear examples.",
       timestamp: new Date(),
       isUser: false,
     },
