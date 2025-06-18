@@ -103,6 +103,8 @@ export default function FlashCardPage() {
 
     if (!isFlipped && !studiedCards.includes(currentCard.id)) {
       setShowRating(true);
+    } else {
+      setShowRating(false);
     }
   };
 
